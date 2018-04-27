@@ -25,11 +25,10 @@ namespace KKHondaBackend
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.AddDbContext<dbwebContext>(options =>
-            //   options.UseSqlServer(Configuration.GetConnectionString("KKConnection")));
             services.AddDbContext<dbwebContext>(options =>
-               options.UseSqlServer(@"Server=PHICHAT-IT\MSSQL;Database=dbweb;Trusted_Connection=True;")
-               );
+               options.UseSqlServer(Configuration.GetConnectionString("KKConnection")));
+            //var conn = @"Server=203.154.126.61,1433;Database=dbweb;User Id=sa;Password=sql@2012";
+            //services.AddDbContext<dbwebContext>(options => options.UseSqlServer(conn));
             services.AddMvc();
         }
 

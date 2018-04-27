@@ -2,25 +2,25 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using KKHondaBackend.Data;
 using KKHondaBackend.Models;
 
-namespace KKHondaBackend.Controllers.Selling
+// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+
+namespace KKHondaBackend.Controllers.Products
 {
-    [Produces("application/json")]
-    [Route("api/Selling")]
-    public class SellingController : Controller
+    [Route("api/[controller]")]
+    public class ProductsController : Controller
     {
         private readonly dbwebContext ctx;
 
-        public SellingController(dbwebContext context)
+        public ProductsController(dbwebContext context)
         {
             ctx = context;
         }
 
-        // GET: api/Selling
+        // GET: api/values
         [HttpGet]
         public IActionResult GetInitProduct()
         {
@@ -47,7 +47,7 @@ namespace KKHondaBackend.Controllers.Selling
 
             var brands = ctx.ProductBrand
                             .Where(p => p.BrandStatus.Equals(1))
-                            .Select(a => new 
+                            .Select(a => new
                             {
                                 BrandId = a.BrandId,
                                 BrandCode = a.BrandCode,
@@ -57,7 +57,7 @@ namespace KKHondaBackend.Controllers.Selling
 
             var classes = ctx.ProductClass
                              .Where(p => p.ClassStatus.Equals(1))
-                             .Select(p => new 
+                             .Select(p => new
                              {
                                  ClassId = p.ClassId,
                                  ClassCode = p.ClassCode,
@@ -67,7 +67,7 @@ namespace KKHondaBackend.Controllers.Selling
 
             var models = ctx.ProductModel
                             .Where(prop => prop.ModelStatus.Equals(1))
-                            .Select(prop => new 
+                            .Select(prop => new
                             {
                                 ModelId = prop.ModelId,
                                 ModelName = prop.ModelName,
@@ -77,7 +77,7 @@ namespace KKHondaBackend.Controllers.Selling
 
             var colors = ctx.ProductColor
                             .Where(prop => prop.ColorStatus.Equals(1))
-                            .Select(prop => new 
+                            .Select(prop => new
                             {
                                 ColorId = prop.ColorId,
                                 ColorCode = prop.ColorCode,
@@ -97,26 +97,26 @@ namespace KKHondaBackend.Controllers.Selling
             return Ok(obj);
         }
 
-        // GET: api/Selling/5
-        [HttpGet("{id}", Name = "Get")]
+        // GET api/values/5
+        [HttpGet("{id}")]
         public string Get(int id)
         {
             return "value";
         }
-        
-        // POST: api/Selling
+
+        // POST api/values
         [HttpPost]
         public void Post([FromBody]string value)
         {
         }
-        
-        // PUT: api/Selling/5
+
+        // PUT api/values/5
         [HttpPut("{id}")]
         public void Put(int id, [FromBody]string value)
         {
         }
-        
-        // DELETE: api/ApiWithActions/5
+
+        // DELETE api/values/5
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
