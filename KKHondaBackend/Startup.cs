@@ -8,6 +8,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.EntityFrameworkCore;
+using KKHondaBackend.Data;
 
 namespace KKHondaBackend
 {
@@ -23,6 +25,11 @@ namespace KKHondaBackend
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //services.AddDbContext<dbwebContext>(options =>
+            //   options.UseSqlServer(Configuration.GetConnectionString("KKConnection")));
+            services.AddDbContext<dbwebContext>(options =>
+               options.UseSqlServer(@"Server=PHICHAT-IT\MSSQL;Database=dbweb;Trusted_Connection=True;")
+               );
             services.AddMvc();
         }
 
