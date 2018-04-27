@@ -89,8 +89,8 @@ ipch/
 *.vsp
 *.vspx
 *.sap
-/.appsetting.json
-/.appsetting.Development.json
+/appsetting.json
+/appsetting.Development.json
 
 # TFS 2012 Local Workspace
 $tf/
