@@ -10,7 +10,7 @@ using KKHondaBackend.Models;
 
 namespace KKHondaBackend.Controllers.Products
 {
-    [Route("api/[controller]")]
+    [Route("api/Products/[controller]")]
     public class ProductsController : Controller
     {
         private readonly dbwebContext ctx;
@@ -95,6 +95,21 @@ namespace KKHondaBackend.Controllers.Products
             };
 
             return Ok(obj);
+        }
+
+        [HttpGet("/Products", Name = "Types")]
+        public IActionResult GetTypes()
+        {
+
+            var types = (from prop in ctx.ProductType
+                         where prop.TypeStatus.Equals(1) && (prop.TypeId.Equals(1) || prop.TypeId.Equals(2) || prop.TypeId.Equals(3))
+                         select new
+                         {
+                             TypeId = prop.TypeId,
+                             TypeCode = prop.TypeCode,
+                             TypeName = prop.TypeName
+                         }).ToList();
+            return Ok(types);
         }
 
         // GET api/values/5

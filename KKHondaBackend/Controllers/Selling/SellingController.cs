@@ -22,7 +22,7 @@ namespace KKHondaBackend.Controllers.Selling
 
         // GET: api/Selling
         [HttpGet]
-        public IActionResult GetInitProduct()
+        public IActionResult GetAll()
         {
 
             var types = (from prop in ctx.ProductType
@@ -95,6 +95,90 @@ namespace KKHondaBackend.Controllers.Selling
             };
 
             return Ok(obj);
+        }
+
+        [HttpGet("Selling/Types")]
+        public IActionResult GetTypes(){
+            
+            var types = (from prop in ctx.ProductType
+                         where prop.TypeStatus.Equals(1) && (prop.TypeId.Equals(1) || prop.TypeId.Equals(2) || prop.TypeId.Equals(3))
+                         select new
+                         {
+                             TypeId = prop.TypeId,
+                             TypeCode = prop.TypeCode,
+                             TypeName = prop.TypeName
+                         }).ToList();
+            return Ok(types);
+        }
+
+        [HttpGet("/Categories")]
+        public IActionResult GetCategories()
+        {
+            var categories = (from prop in ctx.ProductCategory
+                              where prop.CatStatus.Equals(1) && (prop.CatCode.Equals("MB") || prop.CatCode.Equals("BB"))
+                              select new
+                              {
+                                  CatId = prop.CatId,
+                                  CatCode = prop.CatCode,
+                                  CatName = prop.CatName
+                              }).ToList();
+            return Ok(categories);
+        }
+
+        [HttpGet("/Brands")]
+        public IActionResult GetBrands()
+        {
+            var brands = ctx.ProductBrand
+                      .Where(p => p.BrandStatus.Equals(1))
+                      .Select(a => new
+                      {
+                          BrandId = a.BrandId,
+                          BrandCode = a.BrandCode,
+                          BrandName = a.BrandName
+                      }).ToList();
+            return Ok(brands);
+        }
+
+        [HttpGet("/Classes")]
+        public IActionResult GetClasses()
+        {
+            var classes = ctx.ProductClass
+                             .Where(p => p.ClassStatus.Equals(1))
+                             .Select(p => new
+                             {
+                                 ClassId = p.ClassId,
+                                 ClassCode = p.ClassCode,
+                                 ClassName = p.ClassName
+                             }).ToList();
+            return Ok(classes);
+        }
+
+        [HttpGet("/Colors")]
+        public IActionResult GetColors()
+        {
+            var colors = ctx.ProductColor
+                            .Where(prop => prop.ColorStatus.Equals(1))
+                            .Select(prop => new
+                            {
+                                ColorId = prop.ColorId,
+                                ColorCode = prop.ColorCode,
+                                ColorName = prop.ColorName
+                            }).ToList();
+            return Ok(colors);
+        }
+
+        [HttpGet("Models")]
+        public IActionResult GetModels()
+        {
+            var models = ctx.ProductModel
+                           .Where(prop => prop.ModelStatus.Equals(1))
+                           .Select(prop => new
+                           {
+                               ModelId = prop.ModelId,
+                               ModelName = prop.ModelName,
+                               ModelCode = prop.ModelCode
+                           }).ToList();
+            return Ok(models);
         }
 
         // GET: api/Selling/5
