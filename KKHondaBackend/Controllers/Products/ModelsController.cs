@@ -21,9 +21,8 @@ namespace KKHondaBackend.Controllers.Products
             ctx = context;
         }
 
-
         // GET: api/values
-        [HttpGet]
+        [HttpGet("")]
         public IActionResult Get()
         {
 
@@ -36,16 +35,29 @@ namespace KKHondaBackend.Controllers.Products
                                 ModelCode = prop.ModelCode
                             }).ToList();
             if (models == null)
-                return NotFound();
+                return NoContent();
 
             return Ok(models);
         }
-
-        // GET api/values/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        
+        [HttpGet("FilterByKey")]
+        public IActionResult FilterByKey(int typeId, int catId, int brandId)
         {
-            return "value";
+            var models = (from m in ctx.ProductModel
+                          join p in ctx.Product on m.ModelId equals p.ModelId into a
+                          from b in a.DefaultIfEmpty()
+                          where b.TypeId == typeId && b.CatId == catId && b.BrandId == brandId
+                          select new
+                          {
+                              ModelId = b.ModelId,
+                              ModelName = m.ModelName,
+                              ModelCode = m.ModelCode
+                          }).ToList();
+
+            if (models == null)
+                return NoContent();
+            
+            return Ok(models);
         }
 
     }

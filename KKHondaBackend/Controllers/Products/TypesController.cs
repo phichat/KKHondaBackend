@@ -26,7 +26,7 @@ namespace KKHondaBackend.Controllers.Products
         public IActionResult Get()
         {
             var types = (from prop in ctx.ProductType
-                         where prop.TypeStatus.Equals(1) && (prop.TypeId.Equals(1) || prop.TypeId.Equals(2) || prop.TypeId.Equals(3))
+                         where prop.TypeStatus.Equals(1)
                          select new
                          {
                              TypeId = prop.TypeId,

@@ -33,16 +33,30 @@ namespace KKHondaBackend.Controllers.Products
                                ColorName = prop.ColorName
                            }).ToList();
             if (colors == null)
-                return NotFound();
+                return NoContent();
 
             return Ok(colors);
         }
 
         // GET api/values/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        [HttpGet("FilterByKey")]
+        public IActionResult FilterByKey(int modelId)
         {
-            return "value";
+            var colors = (from m in ctx.ProductColor
+                          join p in ctx.Product on m.ColorId equals p.ColorId into a
+                          from b in a.DefaultIfEmpty()
+                          where b.ModelId.Equals(modelId)
+                          select new
+                          {
+                              ColorId = b.ColorId,
+                              ColorCode = m.ColorCode,
+                              ColorName = m.ColorName
+                          }).ToList();
+
+            if (colors == null)
+                return NoContent();
+
+            return Ok(colors);
         }
 
 

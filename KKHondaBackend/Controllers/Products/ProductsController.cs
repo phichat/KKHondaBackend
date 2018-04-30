@@ -24,117 +24,61 @@ namespace KKHondaBackend.Controllers.Products
         [HttpGet]
         public IActionResult GetInitProduct()
         {
+            //var obj = new Dictionary<string, object> {
+            //    {"types", types},
+            //    {"brands", brands},
+            //    {"classes", classes},
+            //    {"colors", colors},
+            //    {"models", models},
+            //    {"categories", categories}
+            //};
 
-            var types = (from prop in ctx.ProductType
-                         where prop.TypeStatus.Equals(1) && (prop.TypeId.Equals(1) || prop.TypeId.Equals(2) || prop.TypeId.Equals(3))
-                         select new
-                         {
-                             TypeId = prop.TypeId,
-                             TypeCode = prop.TypeCode,
-                             TypeName = prop.TypeName
-                         }).ToList();
-
-
-            var categories = (from prop in ctx.ProductCategory
-                              where prop.CatStatus.Equals(1) && (prop.CatCode.Equals("MB") || prop.CatCode.Equals("BB"))
-                              select new
-                              {
-                                  CatId = prop.CatId,
-                                  CatCode = prop.CatCode,
-                                  CatName = prop.CatName
-                              }).ToList();
+            return Ok();
+        }
 
 
-            var brands = ctx.ProductBrand
-                            .Where(p => p.BrandStatus.Equals(1))
-                            .Select(a => new
+        [HttpGet("FilterByKey")]
+        public IActionResult FilterByKey(int typeId, int catId, int brandId, int modelId, int colorId)
+        {
+            var quantity = (from p in ctx.Product
+                            join t in ctx.TransferLog on p.ItemId equals t.ItemId into a
+                            from b in a.DefaultIfEmpty()
+                            where p.TypeId.Equals(typeId) && p.CatId.Equals(catId) && p.BrandId.Equals(brandId) &&
+                            b.ModelId.Equals(modelId) && b.ColorId.Equals(colorId)
+                            select new
                             {
-                                BrandId = a.BrandId,
-                                BrandCode = a.BrandCode,
-                                BrandName = a.BrandName
+                                engineNo = b.EngineNo,
+                                frameNo = b.FrameNo,
+                                qty = b.Qty,
+                                bQty = b.BQty
                             }).ToList();
 
+            var product = (from p in ctx.Product
+                           join t in ctx.TransferLog on p.ItemId equals t.ItemId into a
+                           from b in a.DefaultIfEmpty()
+                           where p.TypeId.Equals(typeId) && p.CatId.Equals(catId) && p.BrandId.Equals(brandId) &&
+                            p.ModelId.Equals(modelId) && p.ColorId.Equals(colorId)
+                           select new
+                           {
+                               typeId = p.TypeId,
+                               catId = p.CatId,
+                               brandId = p.BrandId,
+                               modelId = p.ModelId,
+                               colorId = p.ColorId,
+                               quantity = quantity,
+                               sellPrice = p.SellPrice,
+                               sellPrice2 = p.SellPrice,
+                               sellVatPrice = p.SellVatPrice,
+                               sellVat = p.SellVat,
+                               discountPrice = 0,
+                               discountVat = 0,
+                               sellNet = p.SellNet
+                           }).ToList();
 
-            var classes = ctx.ProductClass
-                             .Where(p => p.ClassStatus.Equals(1))
-                             .Select(p => new
-                             {
-                                 ClassId = p.ClassId,
-                                 ClassCode = p.ClassCode,
-                                 ClassName = p.ClassName
-                             }).ToList();
+            if (product == null)
+                return NoContent();
 
-
-            var models = ctx.ProductModel
-                            .Where(prop => prop.ModelStatus.Equals(1))
-                            .Select(prop => new
-                            {
-                                ModelId = prop.ModelId,
-                                ModelName = prop.ModelName,
-                                ModelCode = prop.ModelCode
-                            }).ToList();
-
-
-            var colors = ctx.ProductColor
-                            .Where(prop => prop.ColorStatus.Equals(1))
-                            .Select(prop => new
-                            {
-                                ColorId = prop.ColorId,
-                                ColorCode = prop.ColorCode,
-                                ColorName = prop.ColorName
-                            }).ToList();
-
-
-            var obj = new Dictionary<string, object> {
-                {"types", types},
-                {"brands", brands},
-                {"classes", classes},
-                {"colors", colors},
-                {"models", models},
-                {"categories", categories}
-            };
-
-            return Ok(obj);
-        }
-
-        [HttpGet("/Products", Name = "Types")]
-        public IActionResult GetTypes()
-        {
-
-            var types = (from prop in ctx.ProductType
-                         where prop.TypeStatus.Equals(1) && (prop.TypeId.Equals(1) || prop.TypeId.Equals(2) || prop.TypeId.Equals(3))
-                         select new
-                         {
-                             TypeId = prop.TypeId,
-                             TypeCode = prop.TypeCode,
-                             TypeName = prop.TypeName
-                         }).ToList();
-            return Ok(types);
-        }
-
-        // GET api/values/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // POST api/values
-        [HttpPost]
-        public void Post([FromBody]string value)
-        {
-        }
-
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
-        {
-        }
-
-        // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            return Ok(product);
         }
     }
 }
