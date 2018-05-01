@@ -32,7 +32,8 @@ namespace KKHondaBackend.Controllers.Products
                             {
                                 ModelId = prop.ModelId,
                                 ModelName = prop.ModelName,
-                                ModelCode = prop.ModelCode
+                                ModelCode = prop.ModelCode,
+                                ModelType = prop.ModelType
                             }).ToList();
             if (models == null)
                 return NoContent();
@@ -51,7 +52,8 @@ namespace KKHondaBackend.Controllers.Products
                           {
                               ModelId = b.ModelId,
                               ModelName = m.ModelName,
-                              ModelCode = m.ModelCode
+                              ModelCode = m.ModelCode,
+                              ModelType = m.ModelType
                           }).ToList();
 
             if (models == null)
