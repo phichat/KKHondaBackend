@@ -38,26 +38,41 @@ namespace KKHondaBackend.Controllers.Products
 
 
         [HttpGet("FilterByKey")]
-        public IActionResult FilterByKey(int typeId, int catId, int brandId, int modelId, int colorId)
+        public IActionResult FilterByKey(int branchId, int typeId, int catId, int brandId, int modelId, int colorId)
         {
             var quantity = (from p in ctx.Product
-                            join t in ctx.TransferLog on p.ItemId equals t.ItemId into a
-                            from b in a.DefaultIfEmpty()
-                            where p.TypeId.Equals(typeId) && p.CatId.Equals(catId) && p.BrandId.Equals(brandId) &&
-                            b.ModelId.Equals(modelId) && b.ColorId.Equals(colorId)
+                            join s in ctx.StockReceive on p.ItemId equals s.ItemId into a1
+                            from a2 in a1.DefaultIfEmpty()
+                            join t in ctx.TransferLog on a2.LogId equals t.LogId into a3
+                            from a4 in a3.DefaultIfEmpty()
+                            where a2.BranchId.Equals(branchId) &&
+                            p.TypeId.Equals(typeId) && p.CatId.Equals(catId) && 
+                            p.BrandId.Equals(brandId) && p.ModelId.Equals(modelId) && 
+                            p.ColorId.Equals(colorId)
+
+                            group a4 by new
+                            {
+                                a4.EngineNo,
+                                a4.FrameNo,
+                                a2.ReceiveQty,
+                                a2.BalanceQty
+                            } into g
+
                             select new
                             {
-                                engineNo = b.EngineNo,
-                                frameNo = b.FrameNo,
-                                qty = b.Qty,
+                                engineNo = g.EngineNo,
+                                frameNo = g.FrameNo,
+                                qty = g.Sum(x => x),
                                 bQty = b.BQty
                             }).ToList();
 
             var product = (from p in ctx.Product
-                           join t in ctx.TransferLog on p.ItemId equals t.ItemId into a
+                           join s in ctx.StockReceive on p.ItemId equals s.ItemId into a
                            from b in a.DefaultIfEmpty()
-                           where p.TypeId.Equals(typeId) && p.CatId.Equals(catId) && p.BrandId.Equals(brandId) &&
-                            p.ModelId.Equals(modelId) && p.ColorId.Equals(colorId)
+                           where b.BranchId.Equals(branchId) &&
+                            p.TypeId.Equals(typeId) && p.CatId.Equals(catId) && 
+                            p.BrandId.Equals(brandId) && p.ModelId.Equals(modelId) && 
+                            p.ColorId.Equals(colorId)
                            select new
                            {
                                typeId = p.TypeId,
