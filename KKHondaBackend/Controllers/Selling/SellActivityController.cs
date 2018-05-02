@@ -45,10 +45,27 @@ namespace KKHondaBackend.Controllers.Selling
         }
 
         // GET api/values/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        [HttpGet("FilterByKey")]
+        public IActionResult FilterByKey(int sellTypeId)
         {
-            return "value";
+            var sellActivity = (from s in ctx.SellActivity
+                                join t in ctx.SellType on s.SellTypeId equals t.SellTypeId into a
+                                from b in a.DefaultIfEmpty()
+                                where s.ActiveStatus.Equals(true) && s.SellTypeId.Equals(sellTypeId)
+                                select new
+                                {
+                                    activityId = s.ActivityId,
+                                    activityCode = s.ActivityCode,
+                                    activityName = s.ActivityName,
+                                    sellTypeId = b.SellTypeId,
+                                    sellTypeCode = b.SellTypeCode,
+                                    sellTypeName = b.SellTypeName
+                                }).ToList();
+
+            if (sellActivity == null)
+                return NoContent();
+
+            return Ok(sellActivity);
         }
 
         // POST api/values
