@@ -40,59 +40,59 @@ namespace KKHondaBackend.Controllers.Products
         [HttpGet("FilterByKey")]
         public IActionResult FilterByKey(int branchId, int typeId, int catId, int brandId, int modelId, int colorId)
         {
-            //var quantity = (from p in ctx.Product
-                            //join s in ctx.StockReceive on p.ItemId equals s.ItemId into a1
-                            //from a2 in a1.DefaultIfEmpty()
-                            //join t in ctx.TransferLog on a2.LogId equals t.LogId into a3
-                            //from a4 in a3.DefaultIfEmpty()
+            var branch = (from p in ctx.Product
+                            join s in ctx.StockReceive on p.ItemId equals s.ItemId into a
+                            from b in a.DefaultIfEmpty()
+                            join tl in ctx.TransferLog on b.LogId equals tl.LogId into a2
+                            from c in a2.DefaultIfEmpty()
 
-                            //where a2.BranchId.Equals(branchId) &&
-                            //p.TypeId.Equals(typeId) && p.CatId.Equals(catId) && 
-                            //p.BrandId.Equals(brandId) && p.ModelId.Equals(modelId) && 
-                            //p.ColorId.Equals(colorId)
+                            where b.BranchId.Equals(branchId) &&
+                             b.ReceiveQty > 0 &&
+                             p.TypeId.Equals(typeId) &&
+                             p.CatId.Equals(catId) &&
+                             p.BrandId.Equals(brandId) &&
+                             p.ModelId.Equals(modelId) &&
+                             p.ColorId.Equals(colorId)
 
-                            //group a4 by new
-                            //{
-                            //    a4.EngineNo,
-                            //    a4.FrameNo
-                            //} into g
+                            select new
+                            {
+                                engineNo = c.EngineNo,
+                                frameNo = c.FrameNo,
+                                receiveQty = b.ReceiveQty,
+                                balanceQty = b.BalanceQty
+                            }).ToList();
 
-                            //select new
-                            //{
-                            //    engineNo = ,
-                            //    frameNo = g.FrameNo,
-                            //    qty = g.Sum(x => x.),
-                            //    bQty = b.BQty
-                            //}).ToList();
+            var product = (from p in ctx.Product
+                           join s in ctx.StockReceive on p.ItemId equals s.ItemId into a
+                           from b in a.DefaultIfEmpty()
 
-            //var product = (from p in ctx.Product
-            //               join s in ctx.StockReceive on p.ItemId equals s.ItemId into a
-            //               from b in a.DefaultIfEmpty()
-            //               where b.BranchId.Equals(branchId) &&
-            //                p.TypeId.Equals(typeId) && p.CatId.Equals(catId) && 
-            //                p.BrandId.Equals(brandId) && p.ModelId.Equals(modelId) && 
-            //                p.ColorId.Equals(colorId)
-            //               select new
-            //               {
-            //                   typeId = p.TypeId,
-            //                   catId = p.CatId,
-            //                   brandId = p.BrandId,
-            //                   modelId = p.ModelId,
-            //                   colorId = p.ColorId,
-            //                   quantity = quantity,
-            //                   sellPrice = p.SellPrice,
-            //                   sellPrice2 = p.SellPrice,
-            //                   sellVatPrice = p.SellVatPrice,
-            //                   sellVat = p.SellVat,
-            //                   discountPrice = 0,
-            //                   discountVat = 0,
-            //                   sellNet = p.SellNet
-            //               }).ToList();
+                           where p.TypeId.Equals(typeId) &&
+                             p.CatId.Equals(catId) &&
+                             p.BrandId.Equals(brandId) &&
+                             p.ModelId.Equals(modelId) &&
+                             p.ColorId.Equals(colorId)
 
-            //if (product == null)
-                //return NoContent();
+                           select new
+                           {
+                               itemId = p.ItemId,
+                               typeId = p.TypeId,
+                               catId = p.CatId,
+                               modelId = p.ModelId,
+                               colorId = p.ColorId,
+                               branch = branch,
+                               sellPrice = p.SellPrice,
+                               sellPrice2 = p.SellPrice,
+                               sellVatPrice = p.SellVatPrice,
+                               sellVat = p.SellVat,
+                               discountPrice = 0,
+                               discountVat = 0,
+                               sellNet = p.SellNet
+                           }).ToList();
 
-            return Ok();
+            if (product == null)
+                return NoContent();
+
+            return Ok(product);
         }
     }
 }
