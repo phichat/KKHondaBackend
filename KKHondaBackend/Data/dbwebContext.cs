@@ -9,6 +9,8 @@ namespace KKHondaBackend.Data
     {
         public dbwebContext(DbContextOptions<dbwebContext> options) : base(options) { }
 
+        public virtual DbSet<Booking> Booking { get; set; }
+        public virtual DbSet<BookingItem> BookingItem { get; set; }
         public virtual DbSet<Branch> Branch { get; set; }
         public virtual DbSet<CampaignH> CampaignH { get; set; }
         public virtual DbSet<Company> Company { get; set; }
@@ -73,16 +75,304 @@ namespace KKHondaBackend.Data
         // Unable to generate entity type for table 'dbo.freeze_d'. Please see the warning messages.
         // Unable to generate entity type for table 'dbo.sale_activity'. Please see the warning messages.
 
-        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        //{
-        //    if (!optionsBuilder.IsConfigured)
-        //    {
-
-        //    }
-        //}
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Booking>(entity =>
+            {
+                entity.ToTable("_booking");
+
+                entity.HasIndex(e => e.BookingNo)
+                    .HasName("U_book_no")
+                    .IsUnique();
+
+                entity.HasIndex(e => e.CreateBy)
+                    .HasName("I_Create");
+
+                entity.HasIndex(e => e.CustomerCode)
+                    .HasName("I_Customer");
+
+                entity.HasIndex(e => e.UpdateBy)
+                    .HasName("I_Update");
+
+                entity.Property(e => e.BookingId).HasColumnName("booking_id");
+
+                entity.Property(e => e.BookAddress).HasColumnName("book_address");
+
+                entity.Property(e => e.BookContactNo)
+                    .HasColumnName("book_contact_no")
+                    .HasMaxLength(250);
+
+                entity.Property(e => e.BookDeposit)
+                    .HasColumnName("book_deposit")
+                    .HasColumnType("numeric(18, 2)");
+
+                entity.Property(e => e.BookDiscountB)
+                    .HasColumnName("book_discount_b")
+                    .HasColumnType("numeric(18, 2)");
+
+                entity.Property(e => e.BookDiscountP)
+                    .HasColumnName("book_discount_p")
+                    .HasColumnType("numeric(18, 2)");
+
+                entity.Property(e => e.BookDiscountPPrice)
+                    .HasColumnName("book_discount_p_price")
+                    .HasColumnType("numeric(18, 2)");
+
+                entity.Property(e => e.BookEmail)
+                    .HasColumnName("book_email")
+                    .HasMaxLength(250);
+
+                entity.Property(e => e.BookFName)
+                    .HasColumnName("book_f_name")
+                    .HasMaxLength(250);
+
+                entity.Property(e => e.BookGender).HasColumnName("book_gender");
+
+                entity.Property(e => e.BookIdCard)
+                    .HasColumnName("book_id_card")
+                    .HasMaxLength(250);
+
+                entity.Property(e => e.BookNetPrice)
+                    .HasColumnName("book_net_price")
+                    .HasColumnType("numeric(18, 2)");
+
+                entity.Property(e => e.BookNickName)
+                    .HasColumnName("book_nick_name")
+                    .HasMaxLength(250);
+
+                entity.Property(e => e.BookOutstandingPrice)
+                    .HasColumnName("book_outstanding_price")
+                    .HasColumnType("numeric(18, 2)");
+
+                entity.Property(e => e.BookReceiveDate)
+                    .HasColumnName("book_receive_date")
+                    .HasMaxLength(250);
+
+                entity.Property(e => e.BookRemark).HasColumnName("book_remark");
+
+                entity.Property(e => e.BookSName)
+                    .HasColumnName("book_s_name")
+                    .HasMaxLength(250);
+
+                entity.Property(e => e.BookSellPrice)
+                    .HasColumnName("book_sell_price")
+                    .HasColumnType("numeric(18, 2)");
+
+                entity.Property(e => e.BookTitleName)
+                    .HasColumnName("book_title_name")
+                    .HasMaxLength(250);
+
+                entity.Property(e => e.BookTotalDiscount)
+                    .HasColumnName("book_total_discount")
+                    .HasColumnType("numeric(18, 2)");
+
+                entity.Property(e => e.BookVat)
+                    .HasColumnName("book_vat")
+                    .HasColumnType("numeric(18, 2)");
+
+                entity.Property(e => e.BookVatPrice)
+                    .HasColumnName("book_vat_price")
+                    .HasColumnType("numeric(18, 2)");
+
+                entity.Property(e => e.BookingDate)
+                    .HasColumnName("booking_date")
+                    .HasMaxLength(250);
+
+                entity.Property(e => e.BookingDepositType).HasColumnName("booking_deposit_type");
+
+                entity.Property(e => e.BookingNo)
+                    .HasColumnName("booking_no")
+                    .HasMaxLength(250);
+
+                entity.Property(e => e.BookingPaymentType).HasColumnName("booking_payment_type");
+
+                entity.Property(e => e.BookingStatus).HasColumnName("booking_status");
+
+                entity.Property(e => e.BookingType).HasColumnName("booking_type");
+
+                entity.Property(e => e.CreateBy).HasColumnName("create_by");
+
+                entity.Property(e => e.CreateDate)
+                    .HasColumnName("create_date")
+                    .HasColumnType("datetime");
+
+                entity.Property(e => e.CustomerCode)
+                    .HasColumnName("customer_code")
+                    .HasMaxLength(250);
+
+                entity.Property(e => e.FreeAct).HasColumnName("free_act");
+
+                entity.Property(e => e.FreeTag).HasColumnName("free_tag");
+
+                entity.Property(e => e.FreeWarranty).HasColumnName("free_warranty");
+
+                entity.Property(e => e.UpdateBy).HasColumnName("update_by");
+
+                entity.Property(e => e.UpdateDate)
+                    .HasColumnName("update_date")
+                    .HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<BookingItem>(entity =>
+            {
+                entity.HasKey(e => e.RunId);
+
+                entity.ToTable("_booking_item");
+
+                entity.HasIndex(e => e.BrandId)
+                    .HasName("I_brand_id");
+
+                entity.HasIndex(e => e.CatId)
+                    .HasName("I_cat_id");
+
+                entity.HasIndex(e => e.ClassId)
+                    .HasName("I_class_id");
+
+                entity.HasIndex(e => e.ColorId)
+                    .HasName("I_color_id");
+
+                entity.HasIndex(e => e.CreateBy)
+                    .HasName("I_create_by");
+
+                entity.HasIndex(e => e.ItemId)
+                    .HasName("I_item_id");
+
+                entity.HasIndex(e => e.ModelId)
+                    .HasName("I_model_id");
+
+                entity.HasIndex(e => e.TypeId)
+                    .HasName("I_type_id");
+
+                entity.HasIndex(e => e.UnitId)
+                    .HasName("I_unit_id");
+
+                entity.HasIndex(e => e.UpdateBy)
+                    .HasName("I_update_by");
+
+                entity.Property(e => e.RunId).HasColumnName("run_id");
+
+                entity.Property(e => e.BookingId).HasColumnName("booking_id");
+
+                entity.Property(e => e.BrandId).HasColumnName("brand_id");
+
+                entity.Property(e => e.CatId).HasColumnName("cat_id");
+
+                entity.Property(e => e.ClassId).HasColumnName("class_id");
+
+                entity.Property(e => e.ColorId).HasColumnName("color_id");
+
+                entity.Property(e => e.CostNet)
+                    .HasColumnName("cost_net")
+                    .HasColumnType("numeric(18, 2)");
+
+                entity.Property(e => e.CostPrice)
+                    .HasColumnName("cost_price")
+                    .HasColumnType("numeric(18, 2)");
+
+                entity.Property(e => e.CostVat)
+                    .HasColumnName("cost_vat")
+                    .HasColumnType("numeric(18, 2)");
+
+                entity.Property(e => e.CostVatPrice)
+                    .HasColumnName("cost_vat_price")
+                    .HasColumnType("numeric(18, 2)");
+
+                entity.Property(e => e.CreateBy).HasColumnName("create_by");
+
+                entity.Property(e => e.CreateDate)
+                    .HasColumnName("create_date")
+                    .HasColumnType("datetime");
+
+                entity.Property(e => e.ItemDetailType).HasColumnName("item_detail_type");
+
+                entity.Property(e => e.ItemId).HasColumnName("item_id");
+
+                entity.Property(e => e.ItemQty).HasColumnName("item_qty");
+
+                entity.Property(e => e.ItemType).HasColumnName("item_type");
+
+                entity.Property(e => e.ModelId).HasColumnName("model_id");
+
+                entity.Property(e => e.PartClass)
+                    .HasColumnName("part_class")
+                    .HasMaxLength(250);
+
+                entity.Property(e => e.PartCode)
+                    .HasColumnName("part_code")
+                    .HasMaxLength(250);
+
+                entity.Property(e => e.PartName)
+                    .HasColumnName("part_name")
+                    .HasMaxLength(250);
+
+                entity.Property(e => e.PartSource)
+                    .HasColumnName("part_source")
+                    .HasMaxLength(250);
+
+                entity.Property(e => e.PartSpareCode)
+                    .HasColumnName("part_spare_code")
+                    .HasMaxLength(250);
+
+                entity.Property(e => e.RealDiscountB)
+                    .HasColumnName("real_discount_b")
+                    .HasColumnType("numeric(18, 2)");
+
+                entity.Property(e => e.RealDiscountP)
+                    .HasColumnName("real_discount_p")
+                    .HasColumnType("numeric(18, 2)");
+
+                entity.Property(e => e.RealDiscountPPrice)
+                    .HasColumnName("real_discount_p_price")
+                    .HasColumnType("numeric(18, 2)");
+
+                entity.Property(e => e.RealNetPrice)
+                    .HasColumnName("real_net_price")
+                    .HasColumnType("numeric(18, 2)");
+
+                entity.Property(e => e.RealSellPrice)
+                    .HasColumnName("real_sell_price")
+                    .HasColumnType("numeric(18, 2)");
+
+                entity.Property(e => e.RealTotalDiscount)
+                    .HasColumnName("real_total_discount")
+                    .HasColumnType("numeric(18, 2)");
+
+                entity.Property(e => e.RealVat)
+                    .HasColumnName("real_vat")
+                    .HasColumnType("numeric(18, 2)");
+
+                entity.Property(e => e.RealVatPrice)
+                    .HasColumnName("real_vat_price")
+                    .HasColumnType("numeric(18, 2)");
+
+                entity.Property(e => e.SellNet)
+                    .HasColumnName("sell_net")
+                    .HasColumnType("numeric(18, 2)");
+
+                entity.Property(e => e.SellPrice)
+                    .HasColumnName("sell_price")
+                    .HasColumnType("numeric(18, 2)");
+
+                entity.Property(e => e.SellVat)
+                    .HasColumnName("sell_vat")
+                    .HasColumnType("numeric(18, 2)");
+
+                entity.Property(e => e.SellVatPrice)
+                    .HasColumnName("sell_vat_price")
+                    .HasColumnType("numeric(18, 2)");
+
+                entity.Property(e => e.TypeId).HasColumnName("type_id");
+
+                entity.Property(e => e.UnitId).HasColumnName("unit_id");
+
+                entity.Property(e => e.UpdateBy).HasColumnName("update_by");
+
+                entity.Property(e => e.UpdateDate)
+                    .HasColumnName("update_date")
+                    .HasColumnType("datetime");
+            });
+
             modelBuilder.Entity<Branch>(entity =>
             {
                 entity.ToTable("_branch");
@@ -3414,6 +3704,10 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.ReceiverId).HasColumnName("receiver_id");
 
                 entity.Property(e => e.SenderId).HasColumnName("sender_id");
+
+                entity.Property(e => e.TranferNo)
+                    .HasColumnName("tranfer_no")
+                    .HasMaxLength(250);
 
                 entity.Property(e => e.UpdateBy).HasColumnName("update_by");
 

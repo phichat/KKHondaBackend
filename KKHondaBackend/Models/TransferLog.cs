@@ -7,6 +7,7 @@ namespace KKHondaBackend.Models
     {
         public int LogId { get; set; }
         public int? LogType { get; set; }
+        public string TranferNo { get; set; }
         public string LogRef { get; set; }
         public int? SenderId { get; set; }
         public int? ReceiverId { get; set; }
