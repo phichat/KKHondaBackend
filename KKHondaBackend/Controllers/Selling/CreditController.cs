@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using KKHondaBackend.Data;
+using KKHondaBackend.Models;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace KKHondaBackend.Controllers.Selling
 {
-    [Route("api/[controller]")]
+    [Route("api/Selling/[controller]")]
     public class CreditController : Controller
     {
         // GET: api/values
@@ -27,9 +29,9 @@ namespace KKHondaBackend.Controllers.Selling
 
         // POST api/values
         [HttpPost]
-        public void Post([FromBody]string value)
+        public IActionResult Post([FromBody]Credit value)
         {
-            var s = value;
+            return Ok(value);
         }
 
         // PUT api/values/5

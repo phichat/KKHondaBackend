@@ -10,6 +10,7 @@ namespace KKHondaBackend.Models
         public string ActivityName { get; set; }
         public int SellTypeId { get; set; }
         public bool? ActiveStatus { get; set; }
+        public decimal? PromotionalPrice { get; set; }
         public int CreateBy { get; set; }
         public DateTime CreateDate { get; set; }
         public int? UpdateBy { get; set; }

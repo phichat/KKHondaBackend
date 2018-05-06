@@ -15,6 +15,7 @@ namespace KKHondaBackend.Data
         public virtual DbSet<CampaignH> CampaignH { get; set; }
         public virtual DbSet<Company> Company { get; set; }
         public virtual DbSet<ContractH> ContractH { get; set; }
+        public virtual DbSet<Credit> Credit { get; set; }
         public virtual DbSet<LogAdmin> LogAdmin { get; set; }
         public virtual DbSet<MAmphor> MAmphor { get; set; }
         public virtual DbSet<MBranch> MBranch { get; set; }
@@ -702,6 +703,71 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.VatRate)
                     .HasColumnName("vat_rate")
                     .HasColumnType("decimal(18, 0)");
+            });
+
+            modelBuilder.Entity<Credit>(entity =>
+            {
+                entity.ToTable("credit");
+
+                entity.Property(e => e.CreditId)
+                    .HasColumnName("credit_id")
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.BookingId).HasColumnName("booking_id");
+
+                entity.Property(e => e.CreateBy).HasColumnName("create_by");
+
+                entity.Property(e => e.CreateDate)
+                    .HasColumnName("create_date")
+                    .HasColumnType("datetime");
+
+                entity.Property(e => e.Deposit)
+                    .HasColumnName("deposit")
+                    .HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.DepositPrice)
+                    .HasColumnName("deposit_price")
+                    .HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.DueDate).HasColumnName("due_date");
+
+                entity.Property(e => e.FirstPayment)
+                    .HasColumnName("first_payment")
+                    .HasColumnType("date");
+
+                entity.Property(e => e.InstalmentEnd).HasColumnName("instalment_end");
+
+                entity.Property(e => e.InstalmentPrice)
+                    .HasColumnName("instalment_price")
+                    .HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.Interest)
+                    .HasColumnName("interest")
+                    .HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.NetPrice)
+                    .HasColumnName("net_price")
+                    .HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.NowVat)
+                    .HasColumnName("now_vat")
+                    .HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.PromotionalPrice).HasColumnName("promotional_price");
+
+                entity.Property(e => e.Remain)
+                    .HasColumnName("remain")
+                    .HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.SellAcitvityId).HasColumnName("sell_acitvityId");
+
+                entity.Property(e => e.SellType).HasColumnName("sell_type");
+
+                entity.Property(e => e.UpdateBy).HasColumnName("update_by");
+
+                entity.Property(e => e.UpdateDate)
+                    .HasColumnName("update_date")
+                    .HasColumnType("datetime");
             });
 
             modelBuilder.Entity<LogAdmin>(entity =>
@@ -2734,6 +2800,8 @@ namespace KKHondaBackend.Data
                     .HasColumnName("create_date")
                     .HasColumnType("datetime");
 
+                entity.Property(e => e.PromotionalPrice).HasColumnName("promotional_price");
+
                 entity.Property(e => e.SellTypeId).HasColumnName("sell_type_id");
 
                 entity.Property(e => e.UpdateBy).HasColumnName("update_by");
@@ -3933,5 +4001,6 @@ namespace KKHondaBackend.Data
                     .HasMaxLength(250);
             });
         }
+
     }
 }
