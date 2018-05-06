@@ -13,6 +13,13 @@ namespace KKHondaBackend.Controllers.Selling
     [Route("api/Selling/[controller]")]
     public class CreditController : Controller
     {
+        private readonly dbwebContext ctx;
+
+        public CreditController(dbwebContext context)
+        {
+            ctx = context;
+        }
+
         // GET: api/values
         [HttpGet]
         public IEnumerable<string> Get()
@@ -29,9 +36,23 @@ namespace KKHondaBackend.Controllers.Selling
 
         // POST api/values
         [HttpPost]
-        public IActionResult Post([FromBody]Credit value)
+        public IActionResult Post([FromBody]Credit credit)
         {
-            return Ok(value);
+            if (credit == null) {
+                return NotFound();
+            }
+
+            try {
+                credit.CreateDate = DateTime.Now;
+
+                ctx.Add(credit);
+                ctx.SaveChanges();
+
+                return Ok();
+                
+            } catch(Exception){
+                return StatusCode(500);
+            }
         }
 
         // PUT api/values/5
