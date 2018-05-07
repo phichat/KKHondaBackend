@@ -707,11 +707,13 @@ namespace KKHondaBackend.Data
 
             modelBuilder.Entity<Credit>(entity =>
             {
+
+                entity.HasKey(e => e.CreditId);
+                      
                 entity.ToTable("credit");
 
-                entity.Property(e => e.CreditId)
-                    .HasColumnName("credit_id")
-                    .ValueGeneratedNever();
+                entity.Property(e => e.CreditId).HasColumnName("credit_id");
+                    //.ValueGeneratedNever();
 
                 entity.Property(e => e.BookingId).HasColumnName("booking_id");
 

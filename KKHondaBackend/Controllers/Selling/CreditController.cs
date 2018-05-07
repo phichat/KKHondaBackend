@@ -43,6 +43,7 @@ namespace KKHondaBackend.Controllers.Selling
             }
 
             try {
+                credit.CreditId = -1;
                 credit.CreateDate = DateTime.Now;
 
                 ctx.Add(credit);
@@ -50,8 +51,8 @@ namespace KKHondaBackend.Controllers.Selling
 
                 return Ok();
                 
-            } catch(Exception){
-                return StatusCode(500);
+            } catch(Exception ex){
+                return StatusCode(500, ex.Message);
             }
         }
 
