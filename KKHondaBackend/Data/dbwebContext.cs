@@ -64,19 +64,6 @@ namespace KKHondaBackend.Data
         public virtual DbSet<WarehouseLocation> WarehouseLocation { get; set; }
         public virtual DbSet<Zone> Zone { get; set; }
 
-        // Unable to generate entity type for table 'dbo.sale_type'. Please see the warning messages.
-        // Unable to generate entity type for table 'dbo.contract_d'. Please see the warning messages.
-        // Unable to generate entity type for table 'dbo.purchase_d'. Please see the warning messages.
-        // Unable to generate entity type for table 'dbo.receipt_d'. Please see the warning messages.
-        // Unable to generate entity type for table 'dbo._warehouse_location_item'. Please see the warning messages.
-        // Unable to generate entity type for table 'dbo.m_prename'. Please see the warning messages.
-        // Unable to generate entity type for table 'dbo.m_parameter'. Please see the warning messages.
-        // Unable to generate entity type for table 'dbo.m_login_grant'. Please see the warning messages.
-        // Unable to generate entity type for table 'dbo.freeze_h'. Please see the warning messages.
-        // Unable to generate entity type for table 'dbo.freeze_d'. Please see the warning messages.
-        // Unable to generate entity type for table 'dbo.sale_activity'. Please see the warning messages.
-
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Booking>(entity =>
@@ -707,13 +694,11 @@ namespace KKHondaBackend.Data
 
             modelBuilder.Entity<Credit>(entity =>
             {
-
                 entity.HasKey(e => e.CreditId);
-                      
+
                 entity.ToTable("credit");
 
                 entity.Property(e => e.CreditId).HasColumnName("credit_id");
-                    //.ValueGeneratedNever();
 
                 entity.Property(e => e.BookingId).HasColumnName("booking_id");
 
@@ -4003,6 +3988,5 @@ namespace KKHondaBackend.Data
                     .HasMaxLength(250);
             });
         }
-
     }
 }
