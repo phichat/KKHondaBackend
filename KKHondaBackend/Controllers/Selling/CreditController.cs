@@ -45,7 +45,7 @@ namespace KKHondaBackend.Controllers.Selling
             try {
                 credit.CreateDate = DateTime.Now;
 
-                ctx.Credit.Add(credit);
+                //ctx.Credit.Add(credit);
                 ctx.SaveChanges();
 
                 return StatusCode(200);
