@@ -65,6 +65,19 @@ namespace KKHondaBackend.Data
         public virtual DbSet<WarehouseLocation> WarehouseLocation { get; set; }
         public virtual DbSet<Zone> Zone { get; set; }
 
+        // Unable to generate entity type for table 'dbo.sale_type'. Please see the warning messages.
+        // Unable to generate entity type for table 'dbo.contract_d'. Please see the warning messages.
+        // Unable to generate entity type for table 'dbo.purchase_d'. Please see the warning messages.
+        // Unable to generate entity type for table 'dbo.receipt_d'. Please see the warning messages.
+        // Unable to generate entity type for table 'dbo._warehouse_location_item'. Please see the warning messages.
+        // Unable to generate entity type for table 'dbo.m_prename'. Please see the warning messages.
+        // Unable to generate entity type for table 'dbo.m_parameter'. Please see the warning messages.
+        // Unable to generate entity type for table 'dbo.m_login_grant'. Please see the warning messages.
+        // Unable to generate entity type for table 'dbo.credit_contract_item'. Please see the warning messages.
+        // Unable to generate entity type for table 'dbo.freeze_h'. Please see the warning messages.
+        // Unable to generate entity type for table 'dbo.freeze_d'. Please see the warning messages.
+        // Unable to generate entity type for table 'dbo.sale_activity'. Please see the warning messages.
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Booking>(entity =>
@@ -756,10 +769,6 @@ namespace KKHondaBackend.Data
 
                 entity.Property(e => e.SellType).HasColumnName("sell_type");
 
-                entity.Property(e => e.Status)
-                    .HasColumnName("status")
-                    .HasDefaultValueSql("((0))");
-
                 entity.Property(e => e.UpdateBy).HasColumnName("update_by");
 
                 entity.Property(e => e.UpdateDate)
@@ -775,7 +784,7 @@ namespace KKHondaBackend.Data
 
                 entity.Property(e => e.ContractId).HasColumnName("contract_id");
 
-                entity.Property(e => e.ApproveBy).HasColumnName("approve_by");
+                entity.Property(e => e.ApprovedBy).HasColumnName("approved_by");
 
                 entity.Property(e => e.AreaPayment).HasColumnName("area_payment");
 
@@ -783,7 +792,7 @@ namespace KKHondaBackend.Data
 
                 entity.Property(e => e.CalculateId).HasColumnName("calculate_id");
 
-                entity.Property(e => e.CheckerBy).HasColumnName("checker_by");
+                entity.Property(e => e.CheckedBy).HasColumnName("checked_by");
 
                 entity.Property(e => e.ContractDate)
                     .HasColumnName("contract_date")
@@ -798,7 +807,6 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.ContractHire).HasColumnName("contract_hire");
 
                 entity.Property(e => e.ContractNo)
-                    .IsRequired()
                     .HasColumnName("contract_no")
                     .HasMaxLength(50);
 
@@ -807,7 +815,6 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.ContractStatus).HasColumnName("contract_status");
 
                 entity.Property(e => e.ContractType)
-                    .IsRequired()
                     .HasColumnName("contract_type")
                     .HasMaxLength(50);
 
@@ -818,6 +825,8 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.CreateDate)
                     .HasColumnName("create_date")
                     .HasColumnType("datetime");
+
+                entity.Property(e => e.CreatedBy).HasColumnName("created_by");
 
                 entity.Property(e => e.KeeperBy).HasColumnName("keeper_by");
 

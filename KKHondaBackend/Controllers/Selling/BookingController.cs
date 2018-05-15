@@ -22,9 +22,44 @@ namespace KKHondaBackend.Controllers.Selling
 
         // GET: api/values
         [HttpGet]
-        public IEnumerable<string> Get()
+        public IActionResult Get()
         {
-            return new string[] { "value1", "value2" };
+            var list = (from book in ctx.Booking
+
+                        join item in ctx.BookingItem on book.BookingId equals item.BookingId into a1
+                        from bookItem in a1.DefaultIfEmpty()
+
+                        join mod in ctx.ProductModel on bookItem.ModelId equals mod.ModelId into a2
+                        from model in a2.DefaultIfEmpty()
+
+                        join col in ctx.ProductColor on bookItem.ColorId equals col.ColorId into a3
+                        from color in a3.DefaultIfEmpty()
+
+                        where book.BookingStatus.Equals(1) && bookItem.ItemDetailType.Equals(1)
+                        select new
+                        {
+                            bookingNo = book.BookingNo,
+                            status = book.BookingStatus,
+                            paymentType = book.BookingPaymentType,
+                            depositType = book.BookingDepositType,
+                            bookingDate = book.BookingDate,
+                            receiveDate = book.BookReceiveDate,
+                            custFullName = book.BookTitleName + " " + book.BookFName + " " + book.BookSName,
+                            idCard = book.BookIdCard,
+                            contractNo = book.BookContactNo,
+                            email = book.BookEmail,
+                            address = book.BookAddress,
+                            modelCode = model.ModelCode,
+                            modelName = model.ModelName,
+                            colorName = color.ColorName,
+                            netPrice = book.BookNetPrice,
+                            deposit = book.BookDeposit,
+                            outStandingPrice = book.BookOutstandingPrice,
+                            createDate = book.CreateDate,
+                            createBy = book.CreateBy
+                        });
+
+            return Ok(list);
         }
 
         // GET api/values/5

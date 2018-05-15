@@ -8,7 +8,7 @@ using KKHondaBackend.Models;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
-namespace KKHondaBackend.Controllers.Selling
+namespace KKHondaBackend.Controllers.SellActivity
 {
     [Route("api/Selling/[controller]")]
     public class SellActivityController : Controller
