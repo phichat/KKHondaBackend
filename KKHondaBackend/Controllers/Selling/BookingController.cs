@@ -26,6 +26,9 @@ namespace KKHondaBackend.Controllers.Selling
         {
             var list = (from book in ctx.Booking
 
+                        join u in ctx.User on book.CreateBy equals u.Id into a
+                        from user in a.DefaultIfEmpty()
+
                         join item in ctx.BookingItem on book.BookingId equals item.BookingId into a1
                         from bookItem in a1.DefaultIfEmpty()
 
@@ -38,10 +41,11 @@ namespace KKHondaBackend.Controllers.Selling
                         where book.BookingStatus.Equals(1) && bookItem.ItemDetailType.Equals(1)
                         select new
                         {
+                            bookingId = book.BookingId,
                             bookingNo = book.BookingNo,
-                            status = book.BookingStatus,
-                            paymentType = book.BookingPaymentType,
-                            depositType = book.BookingDepositType,
+                            status = "จอง",
+                            paymentType = book.BookingPaymentType == 1 ? "เงินสด" : "สินเชื่อ",
+                            depositType = CheckDepositType(book.BookingDepositType),
                             bookingDate = book.BookingDate,
                             receiveDate = book.BookReceiveDate,
                             custFullName = book.BookTitleName + " " + book.BookFName + " " + book.BookSName,
@@ -56,10 +60,33 @@ namespace KKHondaBackend.Controllers.Selling
                             deposit = book.BookDeposit,
                             outStandingPrice = book.BookOutstandingPrice,
                             createDate = book.CreateDate,
-                            createBy = book.CreateBy
+                            createBy = user.Fullname
                         });
 
             return Ok(list);
+        }
+
+        private static string CheckDepositType(int? d)
+        {
+            var val = "";
+
+            if (d == 1)
+            {
+                val = "เงินสด";
+            }
+            else if (d == 2)
+            {
+                val = "โอน";
+            }
+            else if (d == 3)
+            {
+                val = "เช็ค";
+            }
+            else if (d == 4)
+            {
+                val = "บัตรเคดิต";
+            }
+            return val;
         }
 
         // GET api/values/5
