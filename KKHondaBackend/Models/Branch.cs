@@ -9,6 +9,7 @@ namespace KKHondaBackend.Models
         public string BranchCode { get; set; }
         public int? BranchCompanyId { get; set; }
         public string BranchName { get; set; }
+        public string BranchRd { get; set; }
         public string BranchAddress { get; set; }
         public string BranchDistrict { get; set; }
         public string BranchProvince { get; set; }

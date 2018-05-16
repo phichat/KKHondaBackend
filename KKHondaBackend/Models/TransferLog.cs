@@ -12,6 +12,7 @@ namespace KKHondaBackend.Models
         public int? SenderId { get; set; }
         public int? ReceiverId { get; set; }
         public int? LogItemType { get; set; }
+        public int? LogSecondhand { get; set; }
         public int? ItemId { get; set; }
         public int? ModelId { get; set; }
         public int? ColorId { get; set; }
