@@ -17,6 +17,7 @@ namespace KKHondaBackend.Data
         public virtual DbSet<ContractH> ContractH { get; set; }
         public virtual DbSet<CreditCalculate> CreditCalculate { get; set; }
         public virtual DbSet<CreditContract> CreditContract { get; set; }
+        public virtual DbSet<Cyclecount> Cyclecount { get; set; }
         public virtual DbSet<LogAdmin> LogAdmin { get; set; }
         public virtual DbSet<MAmphor> MAmphor { get; set; }
         public virtual DbSet<MBranch> MBranch { get; set; }
@@ -64,19 +65,6 @@ namespace KKHondaBackend.Data
         public virtual DbSet<Warehouse> Warehouse { get; set; }
         public virtual DbSet<WarehouseLocation> WarehouseLocation { get; set; }
         public virtual DbSet<Zone> Zone { get; set; }
-
-        // Unable to generate entity type for table 'dbo.sale_type'. Please see the warning messages.
-        // Unable to generate entity type for table 'dbo.contract_d'. Please see the warning messages.
-        // Unable to generate entity type for table 'dbo.purchase_d'. Please see the warning messages.
-        // Unable to generate entity type for table 'dbo.receipt_d'. Please see the warning messages.
-        // Unable to generate entity type for table 'dbo._warehouse_location_item'. Please see the warning messages.
-        // Unable to generate entity type for table 'dbo.m_prename'. Please see the warning messages.
-        // Unable to generate entity type for table 'dbo.m_parameter'. Please see the warning messages.
-        // Unable to generate entity type for table 'dbo.m_login_grant'. Please see the warning messages.
-        // Unable to generate entity type for table 'dbo.credit_contract_item'. Please see the warning messages.
-        // Unable to generate entity type for table 'dbo.freeze_h'. Please see the warning messages.
-        // Unable to generate entity type for table 'dbo.freeze_d'. Please see the warning messages.
-        // Unable to generate entity type for table 'dbo.sale_activity'. Please see the warning messages.
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -454,6 +442,8 @@ namespace KKHondaBackend.Data
                     .HasColumnName("branch_province")
                     .HasMaxLength(250);
 
+                entity.Property(e => e.BranchRd).HasColumnName("branch_rd");
+
                 entity.Property(e => e.BranchRegisterNo)
                     .HasColumnName("branch_register_no")
                     .HasMaxLength(250);
@@ -767,7 +757,7 @@ namespace KKHondaBackend.Data
 
                 entity.Property(e => e.SellAcitvityId).HasColumnName("sell_acitvityId");
 
-                entity.Property(e => e.SellType).HasColumnName("sell_type");
+                entity.Property(e => e.SellTypeId).HasColumnName("sell_typeId");
 
                 entity.Property(e => e.UpdateBy).HasColumnName("update_by");
 
@@ -829,6 +819,45 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.CreatedBy).HasColumnName("created_by");
 
                 entity.Property(e => e.KeeperBy).HasColumnName("keeper_by");
+
+                entity.Property(e => e.UpdateBy).HasColumnName("update_by");
+
+                entity.Property(e => e.UpdateDate)
+                    .HasColumnName("update_date")
+                    .HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<Cyclecount>(entity =>
+            {
+                entity.ToTable("_cyclecount");
+
+                entity.HasIndex(e => e.BranchId)
+                    .HasName("I_branch_id");
+
+                entity.HasIndex(e => e.CreateBy)
+                    .HasName("I_create_by");
+
+                entity.HasIndex(e => e.UpdateBy)
+                    .HasName("I_update_by");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.BranchId).HasColumnName("branch_id");
+
+                entity.Property(e => e.CreateBy).HasColumnName("create_by");
+
+                entity.Property(e => e.CreateDate)
+                    .HasColumnName("create_date")
+                    .HasColumnType("datetime");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasColumnName("name")
+                    .HasMaxLength(250);
+
+                entity.Property(e => e.Status).HasColumnName("status");
+
+                entity.Property(e => e.Type).HasColumnName("type");
 
                 entity.Property(e => e.UpdateBy).HasColumnName("update_by");
 
@@ -3825,6 +3854,8 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.LogRef)
                     .HasColumnName("log_ref")
                     .HasMaxLength(250);
+
+                entity.Property(e => e.LogSecondhand).HasColumnName("log_secondhand");
 
                 entity.Property(e => e.LogStatus).HasColumnName("log_status");
 

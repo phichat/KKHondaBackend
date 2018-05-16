@@ -9,7 +9,7 @@ namespace KKHondaBackend.Models
         public int BookingId { get; set; }
         public decimal OutStandingPrice { get; set; }
         public decimal NetPrice { get; set; }
-        public int SellType { get; set; }
+        public int SellTypeId { get; set; }
         public int SellAcitvityId { get; set; }
         public decimal Deposit { get; set; }
         public decimal DepositPrice { get; set; }
