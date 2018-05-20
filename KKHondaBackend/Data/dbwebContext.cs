@@ -17,7 +17,9 @@ namespace KKHondaBackend.Data
         public virtual DbSet<ContractH> ContractH { get; set; }
         public virtual DbSet<CreditCalculate> CreditCalculate { get; set; }
         public virtual DbSet<CreditContract> CreditContract { get; set; }
+        public virtual DbSet<CreditContractItem> CreditContractItem { get; set; }
         public virtual DbSet<Cyclecount> Cyclecount { get; set; }
+        public virtual DbSet<CyclecountLocationItem> CyclecountLocationItem { get; set; }
         public virtual DbSet<LogAdmin> LogAdmin { get; set; }
         public virtual DbSet<MAmphor> MAmphor { get; set; }
         public virtual DbSet<MBranch> MBranch { get; set; }
@@ -65,6 +67,7 @@ namespace KKHondaBackend.Data
         public virtual DbSet<Warehouse> Warehouse { get; set; }
         public virtual DbSet<WarehouseLocation> WarehouseLocation { get; set; }
         public virtual DbSet<Zone> Zone { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -827,6 +830,118 @@ namespace KKHondaBackend.Data
                     .HasColumnType("datetime");
             });
 
+            modelBuilder.Entity<CreditContractItem>(entity =>
+            {
+                entity.HasKey(e => e.ContractItemId);
+
+                entity.ToTable("credit_contract_item");
+
+                entity.Property(e => e.ContractItemId).HasColumnName("contract_item_id");
+
+                entity.Property(e => e.Balance)
+                    .HasColumnName("balance")
+                    .HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.BalanceNetPrice)
+                    .HasColumnName("balance_net_price")
+                    .HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.BalanceVatPrice)
+                    .HasColumnName("balance_vat_price")
+                    .HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.ContractBranchId).HasColumnName("contract_branch_id");
+
+                entity.Property(e => e.ContractId).HasColumnName("contract_id");
+
+                entity.Property(e => e.CreateBy).HasColumnName("create_by");
+
+                entity.Property(e => e.CreateDate)
+                    .HasColumnName("create_date")
+                    .HasColumnType("datetime");
+
+                entity.Property(e => e.DelayDueDate).HasColumnName("delay_due_date");
+
+                entity.Property(e => e.DiscountPrice)
+                    .HasColumnName("discount_price")
+                    .HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.DiscountRate)
+                    .HasColumnName("discount_rate")
+                    .HasColumnType("decimal(8, 4)");
+
+                entity.Property(e => e.DueDate).HasColumnName("due_date");
+
+                entity.Property(e => e.FineSum)
+                    .HasColumnName("fine_sum")
+                    .HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.GoodsPriceRemain)
+                    .HasColumnName("goods_price_remain")
+                    .HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.InstalmentNo).HasColumnName("instalment_no");
+
+                entity.Property(e => e.InstalmentPrice)
+                    .HasColumnName("instalment_price")
+                    .HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.InterestInstalment)
+                    .HasColumnName("interest_instalment")
+                    .HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.InterestRemainAccount)
+                    .HasColumnName("interest_remain_account")
+                    .HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.NetInvoice)
+                    .HasColumnName("net_invoice")
+                    .HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.PayNetPrice)
+                    .HasColumnName("pay_net_price")
+                    .HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.PayPrice)
+                    .HasColumnName("pay_price")
+                    .HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.PayVatPrice)
+                    .HasColumnName("pay_vat_price")
+                    .HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.Remain)
+                    .HasColumnName("remain")
+                    .HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.RemainNetPrice)
+                    .HasColumnName("remain_net_price")
+                    .HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.RemainVatPrice)
+                    .HasColumnName("remain_vat_price")
+                    .HasColumnType("decimal(8, 4)");
+
+                entity.Property(e => e.Status).HasColumnName("status");
+
+                entity.Property(e => e.TaxInvoiceBranchId).HasColumnName("tax_invoice_branch_id");
+
+                entity.Property(e => e.TaxInvoiceNo)
+                    .HasColumnName("tax_invoice_no")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.UpdateBy).HasColumnName("update_by");
+
+                entity.Property(e => e.UpdateDate)
+                    .HasColumnName("update_date")
+                    .HasColumnType("datetime");
+
+                entity.Property(e => e.VatRate)
+                    .HasColumnName("vat_rate")
+                    .HasColumnType("decimal(18, 4)");
+            });
+
             modelBuilder.Entity<Cyclecount>(entity =>
             {
                 entity.ToTable("_cyclecount");
@@ -855,7 +970,9 @@ namespace KKHondaBackend.Data
                     .HasColumnName("name")
                     .HasMaxLength(250);
 
-                entity.Property(e => e.Status).HasColumnName("status");
+                entity.Property(e => e.Status)
+                    .HasColumnName("status")
+                    .HasDefaultValueSql("((0))");
 
                 entity.Property(e => e.Type).HasColumnName("type");
 
@@ -864,6 +981,32 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.UpdateDate)
                     .HasColumnName("update_date")
                     .HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<CyclecountLocationItem>(entity =>
+            {
+                entity.HasKey(e => e.Runid);
+
+                entity.ToTable("_cyclecount_location_item");
+
+                entity.HasIndex(e => e.CId)
+                    .HasName("i_c_id");
+
+                entity.HasIndex(e => e.ItemId)
+                    .HasName("i_item_id");
+
+                entity.HasIndex(e => e.WhlId)
+                    .HasName("i_whl_id");
+
+                entity.Property(e => e.Runid).HasColumnName("runid");
+
+                entity.Property(e => e.CId).HasColumnName("c_id");
+
+                entity.Property(e => e.CQty).HasColumnName("c_qty");
+
+                entity.Property(e => e.ItemId).HasColumnName("item_id");
+
+                entity.Property(e => e.WhlId).HasColumnName("whl_id");
             });
 
             modelBuilder.Entity<LogAdmin>(entity =>

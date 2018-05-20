@@ -48,7 +48,7 @@ namespace KKHondaBackend.Controllers.Selling
                             depositType = CheckDepositType(book.BookingDepositType),
                             bookingDate = book.BookingDate,
                             receiveDate = book.BookReceiveDate,
-                            custFullName = book.BookTitleName + " " + book.BookFName + " " + book.BookSName,
+                            custFullName = ValueOrEmpty(book.BookTitleName) + " " + ValueOrEmpty(book.BookFName) + " " + ValueOrEmpty(book.BookSName),
                             idCard = book.BookIdCard,
                             contractNo = book.BookContactNo,
                             email = book.BookEmail,
@@ -87,6 +87,11 @@ namespace KKHondaBackend.Controllers.Selling
                 val = "บัตรเคดิต";
             }
             return val;
+        }
+
+        private static string ValueOrEmpty(string str)
+        {
+            return str == null ? "" : str;
         }
 
         // GET api/values/5
@@ -169,7 +174,7 @@ namespace KKHondaBackend.Controllers.Selling
                                distcountPPrice = book.BookDiscountPPrice,
                                email = book.BookEmail,
                                custCode = book.CustomerCode,
-                               custFullName = book.BookTitleName + " " + book.BookFName + " " + book.BookSName,
+                               custFullName = ValueOrEmpty(book.BookTitleName) + " " + ValueOrEmpty(book.BookFName) + " " + ValueOrEmpty(book.BookSName),
                                genderCode = book.BookGender,
                                genderName = (book.BookGender == 1) ? "ชาย" : "หญิง",
                                idCard = book.BookIdCard,
