@@ -11,7 +11,7 @@ using KKHondaBackend.Models;
 namespace KKHondaBackend.Controllers.Credits
 {
     [Produces("application/json")]
-    [Route("api/CreditCalculates")]
+    [Route("api/Credit/Calculates")]
     public class CreditCalculatesController : Controller
     {
         private readonly dbwebContext _context;
@@ -84,17 +84,46 @@ namespace KKHondaBackend.Controllers.Credits
 
         // POST: api/CreditCalculates
         [HttpPost]
-        public async Task<IActionResult> PostCreditCalculate([FromBody] CreditCalculate creditCalculate)
+        public IActionResult PostCreditCalculate([FromBody] Credit credits)
         {
-            if (!ModelState.IsValid)
+            //if (!ModelState.IsValid)
+            //{
+            //    return BadRequest(ModelState);
+            //}
+
+            try
             {
-                return BadRequest(ModelState);
+                var calculate = credits.creditCalculate;
+                var contractItem = credits.creditContactItem;
+            
+                //var dateNow = DateTime.Now;
+                //creditCalculate.CreateDate = dateNow;
+                //_context.CreditCalculate.Add(creditCalculate);
+
+                //CreditContract contract = new CreditContract();
+                //contract.BookingId = creditCalculate.BookingId;
+                //contract.CalculateId = creditCalculate.CalculateId;
+                //contract.CreateBy = creditCalculate.CreateBy;
+                //contract.CreateDate = dateNow;
+                //_context.CreditContract.Add(contract);
+
+
+                //creditContactItem.ContractId = contract.ContractId;
+                //creditContactItem.CreateDate = dateNow;
+                //_context.CreditContractItem.Add(creditContactItem);
+
+
+                //await _context.SaveChangesAsync();
+
+                return Ok();
+
+            } catch(Exception ex) 
+            {
+                return StatusCode(500, ex.Message);
             }
 
-            _context.CreditCalculate.Add(creditCalculate);
-            await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetCreditCalculate", new { id = creditCalculate.CalculateId }, creditCalculate);
+            //return CreatedAtAction("GetCreditCalculate", new { id = creditCalculate.CalculateId }, creditCalculate);
         }
 
         private bool CreditCalculateExists(int id)
