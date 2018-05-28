@@ -23,7 +23,7 @@ namespace KKHondaBackend.Models
         public int? TaxInvoiceBranchId { get; set; }
         public string TaxInvoiceNo { get; set; }
         public decimal? NetInvoice { get; set; }
-        public int? Status { get; set; }
+        public string Status { get; set; }
         public decimal? InterestInstalment { get; set; }
         public decimal? InterestRemainAccount { get; set; }
         public decimal? GoodsPriceRemain { get; set; }

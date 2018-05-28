@@ -5,8 +5,8 @@ namespace KKHondaBackend.Models
 {
     public partial class Credit
     {
-        public CreditCalculate creditCalculate { get; set; }
-        public CreditContractItem creditContactItem { get; set; }
+        //public CreditCalculate creditCalculate { get; set; }
+        public CreditContractItem[] CreditContactItem { get; set; }
         //public int CreditId { get; set; }
         //public int BookingId { get; set; }
         //public decimal NetPrice { get; set; }
