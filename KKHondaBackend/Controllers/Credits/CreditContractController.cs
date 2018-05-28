@@ -9,7 +9,7 @@ using KKHondaBackend.Data;
 
 namespace KKHondaBackend.Controllers.Credits
 {
-    [Route("api/[controller]")]
+    [Route("api/Credit/Contract")]
     public class CreditContractController : Controller
     {
         

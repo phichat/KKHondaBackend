@@ -870,7 +870,9 @@ namespace KKHondaBackend.Data
                     .HasColumnName("discount_rate")
                     .HasColumnType("decimal(8, 4)");
 
-                entity.Property(e => e.DueDate).HasColumnName("due_date");
+                entity.Property(e => e.DueDate)
+                    .HasColumnName("due_date")
+                    .HasColumnType("datetime");
 
                 entity.Property(e => e.FineSum)
                     .HasColumnName("fine_sum")

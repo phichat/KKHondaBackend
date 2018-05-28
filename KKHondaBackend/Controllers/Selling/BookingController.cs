@@ -198,7 +198,7 @@ namespace KKHondaBackend.Controllers.Selling
                                freeTag = book.FreeTag,
                                freeWarranty = book.FreeWarranty,
                                bookingItem = items
-                           });
+                           }).FirstOrDefault();
 
 
             return Ok(booking);

@@ -9,7 +9,7 @@ namespace KKHondaBackend.Models
         public int ContractId { get; set; }
         public int ContractBranchId { get; set; }
         public int InstalmentNo { get; set; }
-        public int? DueDate { get; set; }
+        public DateTime DueDate { get; set; }
         public decimal? VatRate { get; set; }
         public decimal? Balance { get; set; }
         public decimal? BalanceVatPrice { get; set; }
@@ -23,7 +23,7 @@ namespace KKHondaBackend.Models
         public int? TaxInvoiceBranchId { get; set; }
         public string TaxInvoiceNo { get; set; }
         public decimal? NetInvoice { get; set; }
-        public string Status { get; set; }
+        public int? Status { get; set; }
         public decimal? InterestInstalment { get; set; }
         public decimal? InterestRemainAccount { get; set; }
         public decimal? GoodsPriceRemain { get; set; }
