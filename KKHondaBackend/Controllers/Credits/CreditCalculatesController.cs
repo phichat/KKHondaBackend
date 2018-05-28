@@ -84,7 +84,7 @@ namespace KKHondaBackend.Controllers.Credits
 
         // POST: api/CreditCalculates
         [HttpPost]
-        public IActionResult PostCreditCalculate([FromBody] Credit credits)
+        public IActionResult PostCreditCalculate(Credit credits)
         {
             //if (!ModelState.IsValid)
             //{
@@ -93,8 +93,10 @@ namespace KKHondaBackend.Controllers.Credits
 
             try
             {
-                var calculate = credits.creditCalculate;
-                var contractItem = credits.creditContactItem;
+                var calculate = credits.C1;
+
+                //var contractItem = credits;
+
             
                 //var dateNow = DateTime.Now;
                 //creditCalculate.CreateDate = dateNow;
@@ -115,7 +117,7 @@ namespace KKHondaBackend.Controllers.Credits
 
                 //await _context.SaveChangesAsync();
 
-                return Ok();
+                return Ok(calculate);
 
             } catch(Exception ex) 
             {

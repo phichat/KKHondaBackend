@@ -3,10 +3,10 @@ using System.Collections.Generic;
 
 namespace KKHondaBackend.Models
 {
-    public partial class Credit
+    public class Credit
     {
-        public CreditCalculate creditCalculate { get; set; }
-        public CreditContractItem creditContactItem { get; set; }
+        public CreditCalculate C1 { get; set; }
+        public CreditContractItem C2 { get; set; }
         //public int CreditId { get; set; }
         //public int BookingId { get; set; }
         //public decimal NetPrice { get; set; }
