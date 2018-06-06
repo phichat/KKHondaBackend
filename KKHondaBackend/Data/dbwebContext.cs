@@ -754,6 +754,10 @@ namespace KKHondaBackend.Data
 
                 entity.Property(e => e.PromotionalPrice).HasColumnName("promotional_price");
 
+                entity.Property(e => e.Irr)
+                      .HasColumnName("irr")
+                      .HasColumnType("decimal(18, 4)");
+
                 entity.Property(e => e.Remain)
                     .HasColumnName("remain")
                     .HasColumnType("decimal(18, 4)");

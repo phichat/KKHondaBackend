@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using KKHondaBackend.Data;
+using KKHondaBackend.Services;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -12,37 +13,41 @@ namespace KKHondaBackend.Controllers.Credits
     [Route("api/Credit/Contract")]
     public class CreditContractController : Controller
     {
-        
-        private readonly dbwebContext ctx;
 
-        public CreditContractController(dbwebContext context)
+        private readonly dbwebContext ctx;
+        private readonly IBookingServices iBookService;
+        private readonly IUserServices iUserService;
+        private readonly ICustomerServices iCustService;
+
+        public CreditContractController(
+            dbwebContext context, 
+            IBookingServices ibookService,
+            IUserServices iuserService,
+            ICustomerServices icustService
+        )
         {
             ctx = context;
-        }
-
-        // GET: api/values
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
+            iBookService = ibookService;
+            iUserService = iuserService;
+            iCustService = icustService;
         }
 
         // GET api/values/5
-        [HttpGet("{id}")]
+        [HttpGet("GetById")]
         public IActionResult Get(int id)
         {
-           
+
             var cont = ctx.CreditContract.Where(prop => prop.ContractId == id).SingleOrDefault();
+
+            var contItem = ctx.CreditContractItem.Where(p => p.ContractId == id).ToList();
 
             var calcu = ctx.CreditCalculate.Where(p => p.CalculateId == cont.CalculateId).SingleOrDefault();
 
-            var booking = ctx.Booking.Where(p => p.BookingId == cont.BookingId).SingleOrDefault();
+            var booking = iBookService.GetBookingById(cont.BookingId);
 
-            var cust = ctx.MCustomer.Where(p => p.CustomerCode == booking.CustomerCode).SingleOrDefault();
+            var userDropdown = iUserService.GetAllUserDropdowns();
 
-            var bookingItem = ctx.BookingItem.Where(prop => prop.BookingId == cont.BookingId).ToList();
-
-            var contItem = ctx.CreditContractItem.Where(p => p.ContractId == id).ToList();
+            var customerDropdown = iCustService.GetCustomerTop100Dropdowns();
 
             var obj = new Dictionary<string, object>
             {
@@ -50,10 +55,9 @@ namespace KKHondaBackend.Controllers.Credits
                 {"creditContractItem", contItem},
                 {"creditCalculate", calcu},
                 {"booking", booking},
-                {"bookingItem", bookingItem},
-                {"customer", cust}
+                {"userDropdown", userDropdown},
+                {"customerDropdown", customerDropdown}
             };
-
 
             return Ok(obj);
         }

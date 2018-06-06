@@ -7,6 +7,8 @@
   <ItemGroup>
     <Folder Include="wwwroot\" />
     <Folder Include="Controllers\Customers\" />
+    <Folder Include="Controllers\Users\" />
+    <Folder Include="Services\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -14,10 +16,15 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.0.3" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.4" />
     <PackageReference Include="Swashbuckle" Version="5.6.0" />
+    <PackageReference Include="Microsoft.Office.Interop.Excel" Version="15.0.4795.1000" />
   </ItemGroup>
 
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="Controllers\Users\usersController.cs" />
+    <Compile Remove="Services\EmptyInterface.cs" />
+  </ItemGroup>
 </Project>
