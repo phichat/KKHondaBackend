@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using KKHondaBackend.Data;
 using KKHondaBackend.Models;
+using KKHondaBackend.Services;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -14,10 +15,12 @@ namespace KKHondaBackend.Controllers.Customers
     public class CustomerController : Controller
     {
         private readonly dbwebContext ctx;
+        private ICustomerServices iCust;
 
-        public CustomerController(dbwebContext context)
+        public CustomerController(dbwebContext context, ICustomerServices iCustService)
         {
             ctx = context;
+            iCust = iCustService;
         }
 
         // GET: api/values
@@ -29,7 +32,7 @@ namespace KKHondaBackend.Controllers.Customers
                             from b in a.DefaultIfEmpty()
                             join ad in ctx.MCustomerAddress on h.CustomerCode equals ad.CustomerCode into a1
                             from b1 in a1.DefaultIfEmpty()
-                            //where h.TypePersonal.Equals("Y")
+                                //where h.TypePersonal.Equals("Y")
                             select new
                             {
                                 cardId = b.CardId,
@@ -44,11 +47,30 @@ namespace KKHondaBackend.Controllers.Customers
             return Ok(customer);
         }
 
-        // GET api/values/5
-        [HttpGet("FilterByKey")]
-        public string Get(int id)
+        // GET
+        [HttpGet("GetByKey")]
+        public IActionResult GetByKey(string term)
         {
-            return "value";
+            if (term == null)
+                return NoContent();
+            
+            return Ok(iCust.GetDropdownByKey(term));
         }
+
+        //public CustomerDropdown GetAllCustomerDropdown(){
+        //    var customer = (from db in ctx.MCustomer
+        //                    select new CustomerDropdown
+        //                    {
+        //                        CustomerCode = db.CustomerCode,
+        //                        CustomerFullName = db.CustomerPrename + " " + db.CustomerName + " " + db.CustomerSurname
+        //                    }).ToList();
+        //    return Json(customer);
+        //}
+
+        //public class CustomerDropdown {
+        //    public string CustomerCode { get; set; }
+        //    public string CustomerFullName { get; set; }
+        //}
+            
     }
 }
