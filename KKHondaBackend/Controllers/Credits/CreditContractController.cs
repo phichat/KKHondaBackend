@@ -143,7 +143,9 @@ namespace KKHondaBackend.Controllers.Credits
                                     .Select(o => o.StatusDesc)
                                     .SingleOrDefault();
 
-                var contItem = ctx.CreditContractItem.Where(p => p.ContractId == id).OrderBy(o => o.InstalmentNo).ToList();
+                var contItem = ctx.CreditContractItem
+                    .Where(p => p.ContractId == id && p.RefNo == cont.RefNo)
+                    .OrderBy(o => o.InstalmentNo).ToList();
 
                 var calcu = ctx.CreditCalculate.Where(p => p.CalculateId == cont.CalculateId).SingleOrDefault();
 

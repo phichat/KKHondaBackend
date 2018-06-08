@@ -46,7 +46,7 @@ namespace KKHondaBackend.Controllers.Credits
                                .SingleOrDefault();
 
             var contItem = _context.CreditContractItem
-                                   .Where(p => p.ContractId == cont.ContractId)
+                                   .Where(p => p.ContractId == cont.ContractId && p.RefNo == cont.RefNo)
                                    .OrderBy(o => o.InstalmentNo)
                                    .ToList();
 
