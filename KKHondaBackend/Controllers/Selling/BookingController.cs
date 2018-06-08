@@ -38,7 +38,7 @@ namespace KKHondaBackend.Controllers.Selling
                         join col in ctx.ProductColor on bookItem.ColorId equals col.ColorId into a3
                         from color in a3.DefaultIfEmpty()
 
-                        where book.BookingStatus.Equals(1) && bookItem.ItemDetailType.Equals(1)
+                        where book.BookingStatus == 1 && bookItem.ItemDetailType == 1
                         select new
                         {
                             bookingId = book.BookingId,
@@ -62,6 +62,9 @@ namespace KKHondaBackend.Controllers.Selling
                             createDate = book.CreateDate,
                             createBy = user.Fullname
                         });
+
+            if (list == null)
+                return NoContent();
 
             return Ok(list);
         }
@@ -200,6 +203,8 @@ namespace KKHondaBackend.Controllers.Selling
                                bookingItem = items
                            });
 
+            if (booking == null)
+                return NotFound();
 
             return Ok(booking);
 
