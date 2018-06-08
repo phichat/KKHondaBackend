@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualBasic;
 using KKHondaBackend.Data;
 using KKHondaBackend.Models;
+using KKHondaBackend.Services;
 
 namespace KKHondaBackend.Controllers.Credits
 {
@@ -16,10 +17,12 @@ namespace KKHondaBackend.Controllers.Credits
     public class CreditCalculatesController : Controller
     {
         private readonly dbwebContext _context;
+        private readonly IBookingServices iBookService;
 
-        public CreditCalculatesController(dbwebContext context)
+        public CreditCalculatesController(dbwebContext context, IBookingServices iBookingService)
         {
             _context = context;
+            iBookService = iBookingService;
         }
 
         // GET: api/CreditCalculates
@@ -29,30 +32,35 @@ namespace KKHondaBackend.Controllers.Credits
             return _context.CreditCalculate;
         }
 
-        [HttpGet("IRR")]
-        public static double GetIRR(double a1, double a2, double a3)
-        {
-            
-            return a1;
-        }
-
         // GET: api/CreditCalculates/5
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetCreditCalculate([FromRoute] int id)
+        [HttpGet("GetById")]
+        public IActionResult GetCreditCalculate(int calculateId)
         {
-            if (!ModelState.IsValid)
+
+            var calc = _context.CreditCalculate
+                               .Where(p => p.CalculateId == calculateId)
+                               .SingleOrDefault();
+
+            var cont = _context.CreditContract
+                               .Where(p => p.CalculateId == calculateId)
+                               .SingleOrDefault();
+
+            var contItem = _context.CreditContractItem
+                                   .Where(p => p.ContractId == cont.ContractId)
+                                   .OrderBy(o => o.InstalmentNo)
+                                   .ToList();
+
+            var book = iBookService.GetBookingById(calc.BookingId);
+
+            var obj = new Dictionary<string, object>
             {
-                return BadRequest(ModelState);
-            }
+                {"creditCalculate", calc},
+                {"creditContract", cont},
+                {"creditContractItem", contItem},
+                {"booking", book}
+            };
 
-            var creditCalculate = await _context.CreditCalculate.SingleOrDefaultAsync(m => m.CalculateId == id);
-
-            if (creditCalculate == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(creditCalculate);
+            return Ok(obj);
         }
 
         // PUT: api/CreditCalculates/5
@@ -90,64 +98,57 @@ namespace KKHondaBackend.Controllers.Credits
             return NoContent();
         }
 
-        // POST: api/CreditCalculates
-        [HttpPost]
-        public IActionResult PostCreditCalculate([FromBody] Credit credit)
+        [HttpPost("Create")] 
+        public IActionResult Create([FromBody] Credit credit)
         {
-            //if (!ModelState.IsValid)
-            //{
-            //    return BadRequest(ModelState);
-            //}
-
-
-            CreditCalculate calculate = credit.creditCalculate;
-            CreditContractItem[] contractItem = credit.creditContactItem;
-
-            if (CreditCalculateExists(calculate.CalculateId)) {
-                // update
-                return Update(credit);
-
-            } else {
-                // insert
-                return Insert(credit);
-            }
+            return Created(credit);
         }
 
-        private IActionResult Insert(Credit credit){
+        [HttpPost("Edit")]
+        public IActionResult Edit([FromBody] Credit credit)
+        {
+            return Edited(credit);
+        }
+
+        [HttpPost("Revice")]
+        public IActionResult Revice([FromBody] Credit credit)
+        {
+            return Reviced(credit);
+        }
+
+        private IActionResult Created(Credit credit){
 
             using (var transaction = _context.Database.BeginTransaction())
             {
+                CreditCalculate calculate = new CreditCalculate();
+                CreditContract contract = new CreditContract();
+                List<CreditContractItem> contractItems = new List<CreditContractItem>();
 
                 try{
-                    CreditCalculate calculate = credit.creditCalculate;
-                    List<CreditContractItem> contractItems = credit.creditContactItem.ToList();
+                    calculate = credit.creditCalculate;
+                    contract = credit.creditContract;
+                    contractItems = credit.creditContactItem.ToList();
 
-                    var createDate = DateTime.Now;
-                    var createBy = calculate.CreateBy;
-
-                    calculate.CreateDate = createDate;
+                    // Calculate
+                    calculate.CreateDate = DateTime.Now;
                     _context.CreditCalculate.Add(calculate);
                     _context.SaveChanges();
 
-                    var contractItem = credit.creditContactItem.FirstOrDefault();
-                    var contractNo = GenerateContractCode(contractItem.ContractBranchId);
-
-                    CreditContract contract = new CreditContract();
-                    contract.BookingId = calculate.BookingId;
+                    // Contract
                     contract.CalculateId = calculate.CalculateId;
-                    contract.ContractNo = contractNo;
-                    contract.CreateBy = createBy;
-                    contract.CreateDate = createDate;
+                    contract.RefNo = GenerateReferenceContract(null);
+                    contract.ContractNo = GenerateContractCode(contract.BranchId);
+                    contract.CreateDate = DateTime.Now;
                     _context.CreditContract.Add(contract);
                     _context.SaveChanges();
 
-
+                    // ContractItem
                     foreach (var item in contractItems)
                     {
                         item.ContractId = contract.ContractId;
-                        item.CreateBy = createBy;
-                        item.CreateDate = createDate;
-
+                        item.RefNo = contract.RefNo;
+                        item.CreateBy = contract.CreateBy;
+                        item.CreateDate = DateTime.Now;
                     }
 
                     _context.CreditContractItem.AddRange(contractItems);
@@ -172,18 +173,128 @@ namespace KKHondaBackend.Controllers.Credits
             }
          }
 
-        private IActionResult Update(Credit credit) {
-            
-            CreditCalculate calculate = credit.creditCalculate;
-            CreditContractItem[] contractItem = credit.creditContactItem;
+        private IActionResult Reviced(Credit credit)
+        {
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                CreditCalculate calculate = new CreditCalculate();
+                CreditContract contract = new CreditContract();
+                List<CreditContractItem> contractItems = new List<CreditContractItem>();
 
-            return Ok(credit);
+                try 
+                {
+                  
+                    calculate = credit.creditCalculate;
+                    contract = credit.creditContract;
+                    contractItems = credit.creditContactItem.ToList();
+
+                    // Calculate
+                    calculate.UpdateDate = DateTime.Now;
+                    _context.Update(calculate);
+                    _context.SaveChanges();
+
+                    // Contract
+                    contract.UpdateDate = DateTime.Now;
+                    contract.RefNo = GenerateReferenceContract(contract.ContractId);
+                    _context.Update(contract);
+                    _context.SaveChanges();
+
+                    // ContractItem
+                    foreach (var item in contractItems)
+                    {
+                        item.ContractId = contract.ContractId;
+                        item.RefNo = contract.RefNo;
+                        item.CreateBy = contract.CreateBy;
+                        item.CreateDate = DateTime.Now;
+                        item.UpdateBy = contract.UpdateBy;
+                        item.UpdateDate = DateTime.Now;
+                    }
+
+                    _context.CreditContractItem.AddRange(contractItems);
+                    _context.SaveChanges();
+
+
+                    transaction.Commit();
+
+                    var obj = new Dictionary<string, object>
+                    {
+                        {"contractId", contract.ContractId}
+                    };
+
+                    return Ok(obj);
+
+                } catch(Exception ex) {
+                    transaction.Rollback();
+                    return StatusCode(500, ex.Message);
+                }
+            }
+        }
+
+        private IActionResult Edited(Credit credit) {
+
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                CreditCalculate calculate = new CreditCalculate();
+                CreditContract contract = new CreditContract();
+                List<CreditContractItem> contractItems = new List<CreditContractItem>();
+
+                try
+                {
+                    calculate = credit.creditCalculate;
+                    contract = credit.creditContract;
+                    contractItems = credit.creditContactItem.ToList();
+
+                    // Calculate
+                    calculate.UpdateDate = DateTime.Now;
+                    _context.Update(calculate);
+                    _context.SaveChanges();
+
+                    // Contract
+                    contract.UpdateDate = DateTime.Now;
+                    _context.Update(contract);
+                    _context.SaveChanges();
+
+                    // ContractItem
+                    var contItem = _context.CreditContractItem.Where(o => o.ContractId == contract.ContractId).ToList();
+                    _context.RemoveRange(contItem);
+                    _context.SaveChanges();
+
+                    foreach (var item in contractItems)
+                    {
+                        item.ContractId = contract.ContractId;
+                        item.RefNo = contract.RefNo;
+                        item.CreateBy = contract.CreateBy;
+                        item.CreateDate = DateTime.Now;
+                        item.UpdateBy = contract.UpdateBy;
+                        item.UpdateDate = DateTime.Now;
+                    }
+
+                    _context.CreditContractItem.AddRange(contractItems);
+                    _context.SaveChanges();
+
+
+                    transaction.Commit();
+
+                    var obj = new Dictionary<string, object>
+                    {
+                        {"contractId", contract.ContractId}
+                    };
+
+                    return Ok(obj);
+                    
+                } catch (Exception ex){
+                    transaction.Rollback();
+                    return StatusCode(500, ex.Message);
+                }
+            }
+
         }
 
         private string GenerateContractCode(int branchId){
 
             var contractNo = (from db in _context.CreditContract
                               orderby db.ContractNo descending
+                              where db.BranchId == branchId
                               select db.ContractNo
                              ).FirstOrDefault();
             
@@ -193,11 +304,30 @@ namespace KKHondaBackend.Controllers.Credits
             if (contractNo == null) {
                 contractNo = "CO" + branchId.ToString("00") + year + month + "/" + "0001";
             } else {
-                int runNumber = int.Parse(contractNo.Split("/")[1]);
+                
+                string preMonth = contractNo.Substring(6, 2);
+                int runNumber = (preMonth == month) ? int.Parse(contractNo.Split("/")[1]) + 1 : 1;
+
                 contractNo = "CO" + branchId.ToString("00") + year + month + "/" + runNumber.ToString("0000");
             }
             
             return contractNo;
+        }
+
+        private string GenerateReferenceContract(int? contractId)
+        {
+            if (contractId != null)
+            {
+                var rev = (from db in _context.CreditContract
+                           where db.ContractId == contractId
+                           select db.RefNo
+                               ).FirstOrDefault();
+                int runNumber = int.Parse(rev.Split(".")[1]) + 1;
+                return rev = "REV." + runNumber.ToString("00");
+
+            } else {
+                return "REV.01";
+            }
         }
 
         private bool CreditCalculateExists(int id)

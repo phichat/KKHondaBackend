@@ -33,6 +33,11 @@ namespace KKHondaBackend
             services.AddTransient<ICustomerServices, CustomerServices>();
             services.AddTransient<IBookingServices, BookingServices>();
             services.AddTransient<IUserServices, UserServices>();
+            services.AddTransient<IBranchService, BranchService>();
+            services.AddTransient<IContractGroupService, ContractGroupService>();
+            services.AddTransient<IContractTypeService, ContractTypeService>();
+            services.AddTransient<IRelationService, RelationService>();
+            services.AddTransient<IZoneService, ZoneService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

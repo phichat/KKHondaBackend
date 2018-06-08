@@ -1,10 +1,9 @@
 ﻿using System;
 namespace KKHondaBackend.Services
 {
-    public interface ICustomerServices
+    public interface IContractTypeService
     {
-        Dropdown[] GetDropdownByKey(string term);
-
         Dropdown[] GetDropdowns();
     }
+
 }

@@ -24,6 +24,8 @@ namespace KKHondaBackend.Data
         public virtual DbSet<MAmphor> MAmphor { get; set; }
         public virtual DbSet<MBranch> MBranch { get; set; }
         public virtual DbSet<MBranchCompany> MBranchCompany { get; set; }
+        public virtual DbSet<MContractType> MContractTypes { get; set; }
+        public virtual DbSet<MContractGroup> MContractGroups { get; set; }
         public virtual DbSet<MCustomer> MCustomer { get; set; }
         public virtual DbSet<MCustomerAddress> MCustomerAddress { get; set; }
         public virtual DbSet<MCustomerCard> MCustomerCard { get; set; }
@@ -39,6 +41,8 @@ namespace KKHondaBackend.Data
         public virtual DbSet<MLogin> MLogin { get; set; }
         public virtual DbSet<MPosition> MPosition { get; set; }
         public virtual DbSet<MProvince> MProvince { get; set; }
+        public virtual DbSet<MStatus> MStatuses { get; set; }
+        public virtual DbSet<MRelation> MRelations { get; set; }
         public virtual DbSet<MWorkgroup> MWorkgroup { get; set; }
         public virtual DbSet<Product> Product { get; set; }
         public virtual DbSet<ProductBrand> ProductBrand { get; set; }
@@ -735,6 +739,10 @@ namespace KKHondaBackend.Data
                     .HasColumnName("instalment_price")
                     .HasColumnType("decimal(18, 4)");
 
+                entity.Property(e => e.InstalmentRemain)
+                      .HasColumnName("instalment_remain")
+                      .HasColumnType("decimal(18, 4)");
+
                 entity.Property(e => e.Interest)
                     .HasColumnName("interest")
                     .HasColumnType("decimal(18, 4)");
@@ -781,6 +789,8 @@ namespace KKHondaBackend.Data
 
                 entity.Property(e => e.ContractId).HasColumnName("contract_id");
 
+                entity.Property(e => e.BranchId).HasColumnName("branch_id");
+
                 entity.Property(e => e.ApprovedBy).HasColumnName("approved_by");
 
                 entity.Property(e => e.AreaPayment).HasColumnName("area_payment");
@@ -797,31 +807,35 @@ namespace KKHondaBackend.Data
 
                 entity.Property(e => e.ContractGroup).HasColumnName("contract_group");
 
-                entity.Property(e => e.ContractGurantor1).HasColumnName("contract_gurantor1");
+                entity.Property(e => e.ContractGurantor1).HasColumnName("contract_gurantor1").HasMaxLength(50);
 
-                entity.Property(e => e.ContractGurantor2).HasColumnName("contract_gurantor2");
+                entity.Property(e => e.GurantorRelation1).HasColumnName("gurantor_relation1");
 
-                entity.Property(e => e.ContractHire).HasColumnName("contract_hire");
+                entity.Property(e => e.ContractGurantor2).HasColumnName("contract_gurantor2").HasMaxLength(50);
 
-                entity.Property(e => e.ContractNo)
-                    .HasColumnName("contract_no")
-                    .HasMaxLength(50);
+                entity.Property(e => e.GurantorRelation2).HasColumnName("gurantor_relation2");
+
+                entity.Property(e => e.ContractHire).HasColumnName("contract_hire").HasMaxLength(50);
+
+                entity.Property(e => e.ContractMate).HasColumnName("contract_mate").HasMaxLength(50);
+
+                entity.Property(e => e.ContractNo).HasColumnName("contract_no").HasMaxLength(50);
 
                 entity.Property(e => e.ContractPoint).HasColumnName("contract_point");
 
                 entity.Property(e => e.ContractStatus).HasColumnName("contract_status");
 
-                entity.Property(e => e.ContractType)
-                    .HasColumnName("contract_type")
-                    .HasMaxLength(50);
+                entity.Property(e => e.ContractType).HasColumnName("contract_type");
 
-                entity.Property(e => e.ContractUser).HasColumnName("contract_user");
+                entity.Property(e => e.ContractUser).HasColumnName("contract_user").HasMaxLength(50);
 
                 entity.Property(e => e.CreateBy).HasColumnName("create_by");
 
                 entity.Property(e => e.CreateDate)
                     .HasColumnName("create_date")
                     .HasColumnType("datetime");
+                
+                entity.Property(e => e.RefNo).HasColumnName("ref_no").HasMaxLength(10);
 
                 entity.Property(e => e.CreatedBy).HasColumnName("created_by");
 
@@ -841,6 +855,8 @@ namespace KKHondaBackend.Data
                 entity.ToTable("credit_contract_item");
 
                 entity.Property(e => e.ContractItemId).HasColumnName("contract_item_id");
+
+                entity.Property(e => e.RefNo).HasColumnName("ref_no").HasMaxLength(10);
 
                 entity.Property(e => e.Balance)
                     .HasColumnName("balance")
@@ -882,6 +898,10 @@ namespace KKHondaBackend.Data
                     .HasColumnName("fine_sum")
                     .HasColumnType("decimal(18, 4)");
 
+                entity.Property(e => e.GoodsPrice)
+                    .HasColumnName("goods_price")
+                    .HasColumnType("decimal(18, 4)");
+                
                 entity.Property(e => e.GoodsPriceRemain)
                     .HasColumnName("goods_price_remain")
                     .HasColumnType("decimal(18, 4)");
@@ -1164,6 +1184,71 @@ namespace KKHondaBackend.Data
                     .HasForeignKey(d => d.BranchCode)
                     .HasConstraintName("FK_m_branch_company_m_branch");
             });
+
+            modelBuilder.Entity<MContractType>(entity => 
+            {
+                entity.HasKey(e => e.Id);
+
+                entity.ToTable("m_contract_type");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.TypeCode).HasColumnName("type_code").HasMaxLength(10);
+
+                entity.Property(e => e.TypeDesc).HasColumnName("type_desc").HasMaxLength(50);
+
+                entity.Property(e => e.Status).HasColumnName("status").HasColumnType("bit");
+
+            });
+
+            modelBuilder.Entity<MContractGroup>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+
+                entity.ToTable("m_contract_group");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.GroupCode).HasColumnName("group_code").HasMaxLength(10);
+
+                entity.Property(e => e.GroupDesc).HasColumnName("group_desc").HasMaxLength(50);
+
+                entity.Property(e => e.Status).HasColumnName("status").HasColumnType("bit");
+
+            });
+
+            modelBuilder.Entity<MStatus>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+
+                entity.ToTable("m_status");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.StatusCode).HasColumnName("status_code").HasMaxLength(10);
+
+                entity.Property(e => e.StatusDesc).HasColumnName("status_desc").HasMaxLength(50);
+
+                entity.Property(e => e.Status).HasColumnName("status").HasColumnType("bit");
+
+            });
+
+            modelBuilder.Entity<MRelation>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+
+                entity.ToTable("m_relation");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.RelationCode).HasColumnName("relation_code").HasMaxLength(10);
+
+                entity.Property(e => e.RelationDesc).HasColumnName("relation_desc").HasMaxLength(50);
+
+                entity.Property(e => e.Status).HasColumnName("status").HasColumnType("bit");
+
+            });
+
 
             modelBuilder.Entity<MCustomer>(entity =>
             {

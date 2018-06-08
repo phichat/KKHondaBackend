@@ -18,19 +18,19 @@ namespace KKHondaBackend.Services
             ctx = context;
         }
 
-        public UserDropdown[] GetAllUserDropdowns()
+        public Dropdown[] GetDropdowns()
         {
-            UserDropdown[] userDropdowns = new UserDropdown[] { };
+            Dropdown[] userDropdowns = new Dropdown[] { };
 
             userDropdowns = (from db in ctx.User
                         where db.Enable == 1
-                        select new UserDropdown
+                             select new Dropdown
                         {
-                            Id = db.Id,
-                            FullName = db.Fullname
+                            Value = db.Id.ToString(),
+                            Text = db.Fullname
                         }).ToArray();
 
-            return userDropdowns;
+            return userDropdowns.ToArray();
         }
 
     }

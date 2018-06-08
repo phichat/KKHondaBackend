@@ -54,7 +54,7 @@ namespace KKHondaBackend.Controllers.Customers
             if (term == null)
                 return NoContent();
             
-            return Ok(iCust.GetCustomerDropdownByKey(term));
+            return Ok(iCust.GetDropdownByKey(term));
         }
 
         //public CustomerDropdown GetAllCustomerDropdown(){

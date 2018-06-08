@@ -19,31 +19,31 @@ namespace KKHondaBackend.Services
             ctx = context;
         }
 
-        public CustomerDropdown[] GetCustomerDropdownByKey(string term)
+        public Dropdown[] GetDropdownByKey(string term)
         {
-            List<CustomerDropdown> customerDropdowns = new List<CustomerDropdown>();
+            List<Dropdown> customerDropdowns = new List<Dropdown>();
 
             customerDropdowns = ctx.MCustomer
                                    .Where(o => o.CustomerCode.Contains(term) || o.CustomerName.Contains(term) ||
                                           o.CustomerSurname.Contains(term) || o.CustomerPrename.Contains(term))
-                                   .Select(o => new CustomerDropdown
-                                     {
-                                         CustomerCode = o.CustomerCode,
-                                         CustomerFullName = o.CustomerPrename + " " + o.CustomerName + " " + o.CustomerSurname
-                                     }).Take(100).ToList();
+                                   .Select(o => new Dropdown
+                                   {
+                                       Value = o.CustomerCode,
+                                       Text = o.CustomerPrename + " " + o.CustomerName + " " + o.CustomerSurname
+                                   }).Take(50).ToList();
 
             return customerDropdowns.ToArray();
         }
 
-        public CustomerDropdown[] GetCustomerTop100Dropdowns() {
-            List<CustomerDropdown> customerDropdowns = new List<CustomerDropdown>();
+        public Dropdown[] GetDropdowns() {
+            List<Dropdown> customerDropdowns = new List<Dropdown>();
 
             customerDropdowns = ctx.MCustomer
-                                   .Select(o => new CustomerDropdown
+                                   .Select(o => new Dropdown
                                    {
-                                       CustomerCode = o.CustomerCode,
-                                       CustomerFullName = o.CustomerPrename + " " + o.CustomerName + " " + o.CustomerSurname
-                                   }).Take(100).ToList();
+                                       Value = o.CustomerCode,
+                                       Text = o.CustomerPrename + " " + o.CustomerName + " " + o.CustomerSurname
+                                   }).Take(50).ToList();
 
             return customerDropdowns.ToArray();
         }

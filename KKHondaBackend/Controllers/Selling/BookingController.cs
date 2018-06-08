@@ -45,6 +45,7 @@ namespace KKHondaBackend.Controllers.Selling
         {
             try
             {
+                
                 return Ok(iBooking.GetBookingById(bookingId));
 
             } catch(Exception ex)

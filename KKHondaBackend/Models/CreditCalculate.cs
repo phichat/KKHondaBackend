@@ -15,6 +15,7 @@ namespace KKHondaBackend.Models
         public decimal DepositPrice { get; set; }
         public int InstalmentEnd { get; set; }
         public decimal InstalmentPrice { get; set; }
+        public decimal InstalmentRemain { get; set; }
         public decimal Interest { get; set; }
         public decimal Remain { get; set; }
         public DateTime FirstPayment { get; set; }
