@@ -26,5 +26,9 @@ namespace KKHondaBackend.Models
         public int? UpdateBy { get; set; }
         public DateTime? UpdateDate { get; set; }
         public int BQty { get; set; }
+        public string TaxNo { get; set; }
+        public decimal? InvAmt { get; set; }
+        public decimal? VatAmt { get; set; }
+        public string DeliveryDate { get; set; }
     }
 }

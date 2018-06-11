@@ -19,7 +19,7 @@ namespace KKHondaBackend.Services
         {
             List<Dropdown> relations = new List<Dropdown>();
 
-            relations = (from db in ctx.MRelations
+            relations = (from db in ctx.MRelation
                          where db.Status == true
                          select new Dropdown
                          {

@@ -7,13 +7,13 @@ namespace KKHondaBackend.Models
     {
         public int ContractId { get; set; }
         public int BookingId { get; set; }
+        public int? BranchId { get; set; }
         public int CalculateId { get; set; }
-        public int BranchId { get; set; }
         public string ContractNo { get; set; }
-        public int? ContractType { get; set; }
         public DateTime? ContractDate { get; set; }
         public int? AreaPayment { get; set; }
         public int? ContractPoint { get; set; }
+        public int? ContractType { get; set; }
         public int? ContractGroup { get; set; }
         public string ContractHire { get; set; }
         public string ContractMate { get; set; }

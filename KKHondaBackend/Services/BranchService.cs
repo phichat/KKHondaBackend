@@ -26,5 +26,19 @@ namespace KKHondaBackend.Services
                            }).ToList();
             return dropdowns.ToArray();
         }
+
+        public Dropdown GetDropdownById(int id)
+        {
+            Dropdown dropdowns = new Dropdown();
+
+            dropdowns = ctx.Branch
+                           .Where(o => o.BranchId == id)
+                           .Select(o => new Dropdown
+                           {
+                               Value = o.BranchId.ToString(),
+                               Text = o.BranchName
+                           }).SingleOrDefault();
+            return dropdowns;
+        }
     }
 }

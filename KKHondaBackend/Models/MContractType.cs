@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+
 namespace KKHondaBackend.Models
 {
-    public class MContractType
+    public partial class MContractType
     {
         public int Id { get; set; }
         public string TypeCode { get; set; }

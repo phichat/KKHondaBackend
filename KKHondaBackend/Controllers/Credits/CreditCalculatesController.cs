@@ -137,7 +137,7 @@ namespace KKHondaBackend.Controllers.Credits
                     // Contract
                     contract.CalculateId = calculate.CalculateId;
                     contract.RefNo = GenerateReferenceContract(null);
-                    contract.ContractNo = GenerateContractCode(contract.BranchId);
+                    contract.ContractNo = GenerateContractCode((int)contract.BranchId);
                     contract.CreateDate = DateTime.Now;
                     _context.CreditContract.Add(contract);
                     _context.SaveChanges();

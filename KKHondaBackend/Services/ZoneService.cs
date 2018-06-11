@@ -27,5 +27,18 @@ namespace KKHondaBackend.Services
             return zoneDropdowns.ToArray();
         }
 
+        public Dropdown GetDropdownById(int id)
+        {
+            Dropdown dropdown = new Dropdown();
+            dropdown = ctx.Zone
+                .Where(z => z.ZoneId == id)
+                .Select(z => new Dropdown
+                {
+                    Value = z.ZoneId.ToString(),
+                    Text = z.ZoneName
+                }).SingleOrDefault();
+            return dropdown;
+        }
+
     }
 }

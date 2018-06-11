@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+
 namespace KKHondaBackend.Models
 {
-    public class MRelation
+    public partial class MRelation
     {
         public int Id { get; set; }
         public string RelationCode { get; set; }

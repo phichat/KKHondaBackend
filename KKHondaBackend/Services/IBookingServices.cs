@@ -43,6 +43,8 @@ namespace KKHondaBackend.Services
         public int? FreeAct {get; set; }
         public int? FreeTag {get; set; }
         public int? FreeWarranty {get; set; }
+        public int? BranchId { get; set; }
+        public int? CreateBy { get; set; }
         public BookingItem[] BookingItem { get; set; }
     }
 

@@ -3,12 +3,14 @@ using System.Collections.Generic;
 
 namespace KKHondaBackend.Models
 {
-    public partial class CyclecountLocationItem
+    public partial class CyclecountScan
     {
-        public int Runid { get; set; }
+        public int ScanId { get; set; }
         public int? CId { get; set; }
         public int? WhlId { get; set; }
         public int? RefId { get; set; }
-        public int? CQty { get; set; }
+        public int? SQty { get; set; }
+        public int? CreateBy { get; set; }
+        public DateTime? CreateDate { get; set; }
     }
 }

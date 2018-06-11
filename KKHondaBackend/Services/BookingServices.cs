@@ -127,6 +127,8 @@ namespace KKHondaBackend.Services
                                FreeAct = book.FreeAct,
                                FreeTag = book.FreeTag,
                                FreeWarranty = book.FreeWarranty,
+                               CreateBy = book.CreateBy,
+                               BranchId = book.BranchId,
                                BookingItem = bookingItems
                            }).SingleOrDefault();
 

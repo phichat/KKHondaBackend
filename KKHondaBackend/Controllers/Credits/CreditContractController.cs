@@ -56,49 +56,18 @@ namespace KKHondaBackend.Controllers.Credits
                             join _branch in ctx.Branch on db.BranchId equals _branch.BranchId into a1
                             from branch in a1.DefaultIfEmpty()
 
-                            join _contractType in ctx.MContractTypes on db.ContractType equals _contractType.Id into a2
+                            join _contractType in ctx.MContractType on db.ContractType equals _contractType.Id into a2
                             from contractType in a2.DefaultIfEmpty()
 
                             join _zone in ctx.Zone on db.AreaPayment equals _zone.ZoneId into a3
                             from zone in a3.DefaultIfEmpty()
 
-                            join _contractGroup in ctx.MContractGroups on db.ContractGroup equals _contractGroup.Id into a4
+                            join _contractGroup in ctx.MContractGroup on db.ContractGroup equals _contractGroup.Id into a4
                             from contractGroup in a4.DefaultIfEmpty()
 
-                            //join _custHire in ctx.MCustomer on db.ContractHire equals _custHire.CustomerCode into a5
-                            //from custHire in a5.DefaultIfEmpty()
-
-                            //join _custUser in ctx.MCustomer on db.ContractUser equals _custUser.CustomerCode into a6
-                            //from custUser in a6.DefaultIfEmpty()
-
-                            //join _custGura1 in ctx.MCustomer on db.ContractGurantor1 equals _custGura1.CustomerCode into a7
-                            //from custGura1 in a7.DefaultIfEmpty()
-
-                            //join _custGura2 in ctx.MCustomer on db.ContractGurantor2 equals _custGura2.CustomerCode into a8
-                            //from custGura2 in a8.DefaultIfEmpty()
-
-                            //join _userCreate in ctx.User on db.CreatedBy equals _userCreate.Id into a9
-                            //from userCreate in a9.DefaultIfEmpty()
-
-                            //join _userCheck in ctx.User on db.CheckedBy equals _userCheck.Id into a10
-                            //from userCheck in a10.DefaultIfEmpty()
-
-                            //join _userApprove in ctx.User on db.ApprovedBy equals _userApprove.Id into a11
-                            //from userApprove in a11.DefaultIfEmpty()
-
-                            //join _userKeeper in ctx.User on db.KeeperBy equals _userKeeper.Id into a12
-                            //from userKeeper in a12.DefaultIfEmpty()
-
-                            join _status in ctx.MStatuses on db.ContractStatus equals _status.Id into a13
+                            join _status in ctx.MStatus on db.ContractStatus equals _status.Id into a13
                             from status in a13.DefaultIfEmpty()
-
-                            //join _userCreateBy in ctx.User on db.CreateBy equals _userCreateBy.Id into a14
-                            //from userCreateBy in a14.DefaultIfEmpty()
-
-                            //join _userUpdate in ctx.User on db.UpdateBy equals _userUpdate.Id into a15
-                            //from userUpdate in a15.DefaultIfEmpty()
-
-
+                            
                             select new CreditContractList
                             {
                                 ContractId = db.ContractId,
@@ -110,21 +79,9 @@ namespace KKHondaBackend.Controllers.Credits
                                 AreaPayment = zone.ZoneName,
                                 ContractPoint = branch.BranchName,
                                 ContractGroup = contractGroup.GroupDesc,
-                                //ContractHire =  custHire.CustomerPrename + custHire.CustomerName + " " + custHire.CustomerSurname,
-                                //ContractUser =  custUser.CustomerPrename + custUser.CustomerName + " " + custUser.CustomerSurname,
-                                //ContractGurantor1 =  custGura1.CustomerPrename + custGura1.CustomerName + " " + custGura1.CustomerSurname,
-                                //ContractGurantor2 =  custGura2.CustomerPrename + custGura2.CustomerName + " " + custGura2.CustomerSurname,
-                                //CreatedBy = userCreate.Fullname,
-                                //CheckedBy = userCheck.Fullname,
-                                //ApprovedBy = userApprove.Fullname,
-                                //KeeperBy = userKeeper.Fullname,
                                 Status = db.ContractStatus,
                                 ContractStatus = status.StatusDesc,
                                 RefNo = db.RefNo,
-                                //CreateBy = userCreateBy.Fullname,
-                                //CreateDate = db.CreateDate,
-                                //UpdateBy = userUpdate.Fullname,
-                                //UpdateDate = db.UpdateDate,
                             }).ToList();
 
             return Ok(contract);
@@ -138,7 +95,7 @@ namespace KKHondaBackend.Controllers.Credits
             try
             {
                 var cont = ctx.CreditContract.Where(prop => prop.ContractId == id).SingleOrDefault();
-                var statusText = ctx.MStatuses
+                var statusText = ctx.MStatus
                                     .Where(o => o.Id == cont.ContractStatus)
                                     .Select(o => o.StatusDesc)
                                     .SingleOrDefault();
@@ -150,6 +107,20 @@ namespace KKHondaBackend.Controllers.Credits
                 var calcu = ctx.CreditCalculate.Where(p => p.CalculateId == cont.CalculateId).SingleOrDefault();
 
                 var booking = iBookService.GetBookingById(cont.BookingId);
+
+                var zoneId = ctx.Branch
+                    .Where(b => b.BranchId == booking.BranchId)
+                    .Select(b => b.ZoneId)
+                    .SingleOrDefault();
+
+                cont.BranchId = cont.BranchId == null ? booking.BranchId : cont.BranchId;
+                cont.AreaPayment = cont.AreaPayment == null ? booking.BranchId : cont.AreaPayment;
+                cont.ContractPoint = cont.ContractPoint == null ? zoneId : cont.ContractPoint;
+
+                cont.CreatedBy = cont.CreatedBy == null ? booking.CreateBy : cont.CreatedBy;
+                cont.CheckedBy = cont.CheckedBy == null ? booking.CreateBy : cont.CheckedBy;
+                cont.KeeperBy = cont.KeeperBy == null ? booking.CreateBy : cont.KeeperBy;
+                cont.ApprovedBy = cont.ApprovedBy == null ? booking.CreateBy : cont.ApprovedBy;
 
                 var userDropdown = iUserService.GetDropdowns();
 
@@ -209,14 +180,11 @@ namespace KKHondaBackend.Controllers.Credits
             {
                 return StatusCode(500, ex.Message);
             }
-
-
         }
 
         [HttpPost("Edit")]
         public IActionResult Edit([FromBody] CreditContract creditContract) 
         { 
-
             try
             {
                 // Contract
@@ -229,8 +197,6 @@ namespace KKHondaBackend.Controllers.Credits
             }catch (Exception ex) {
                 return StatusCode(500, ex.Message);
             }
-
-
         }
 
 

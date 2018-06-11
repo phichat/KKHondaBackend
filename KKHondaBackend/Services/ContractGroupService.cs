@@ -18,7 +18,7 @@ namespace KKHondaBackend.Services
         {
             List<Dropdown> contractGroupDropdowns = new List<Dropdown>();
 
-            contractGroupDropdowns = ctx.MContractGroups
+            contractGroupDropdowns = ctx.MContractGroup
                                         .Where(o => o.Status == true)
                                         .Select(o => new Dropdown
                                         {

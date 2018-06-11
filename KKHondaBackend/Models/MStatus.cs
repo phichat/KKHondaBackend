@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+
 namespace KKHondaBackend.Models
 {
-    public class MStatus
+    public partial class MStatus
     {
         public int Id { get; set; }
         public string StatusCode { get; set; }

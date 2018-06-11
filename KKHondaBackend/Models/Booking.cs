@@ -41,5 +41,32 @@ namespace KKHondaBackend.Models
         public DateTime? CreateDate { get; set; }
         public int? UpdateBy { get; set; }
         public DateTime? UpdateDate { get; set; }
+        public int? DiscountType { get; set; }
+        public int? BranchId { get; set; }
+        public string CancelRemark { get; set; }
+        public int? ReturnDepostit { get; set; }
+        public decimal? ReturnDepositPrice { get; set; }
+        public DateTime? CancelDate { get; set; }
+        public int? CancelBy { get; set; }
+        public string BookBirthDate { get; set; }
+        public decimal? PaymentPrice { get; set; }
+        public int? PaymentType { get; set; }
+        public string CusSellName { get; set; }
+        public string CusTaxNo { get; set; }
+        public string CusTaxBranch { get; set; }
+        public string SellRemark { get; set; }
+        public DateTime? SellDate { get; set; }
+        public int? SellBy { get; set; }
+        public string LStartDate { get; set; }
+        public int? LPayDay { get; set; }
+        public int? LTerm { get; set; }
+        public int? FiId { get; set; }
+        public decimal? LInterest { get; set; }
+        public decimal? LComPrice { get; set; }
+        public string SellNo { get; set; }
+        public decimal? LPriceTerm { get; set; }
+        public string VatNo { get; set; }
+        public DateTime? VatDate { get; set; }
+        public int? VatBy { get; set; }
     }
 }

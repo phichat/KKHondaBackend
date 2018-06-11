@@ -10,7 +10,7 @@ namespace KKHondaBackend.Models
         public int ContractBranchId { get; set; }
         public int InstalmentNo { get; set; }
         public string RefNo { get; set; }
-        public DateTime DueDate { get; set; }
+        public DateTime? DueDate { get; set; }
         public decimal? VatRate { get; set; }
         public decimal? Balance { get; set; }
         public decimal? BalanceVatPrice { get; set; }
@@ -40,4 +40,3 @@ namespace KKHondaBackend.Models
         public DateTime? UpdateDate { get; set; }
     }
 }
-
