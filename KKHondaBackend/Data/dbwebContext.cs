@@ -825,6 +825,8 @@ namespace KKHondaBackend.Data
 
                 entity.Property(e => e.DueDate).HasColumnName("due_date");
 
+                entity.Property(e => e.TypePayment).HasColumnName("type_payment");
+
                 entity.Property(e => e.FirstPayment)
                     .HasColumnName("first_payment")
                     .HasColumnType("date");
@@ -947,9 +949,9 @@ namespace KKHondaBackend.Data
 
                 entity.Property(e => e.KeeperBy).HasColumnName("keeper_by");
 
-                entity.Property(e => e.RefNo)
-                    .HasColumnName("ref_no")
-                    .HasMaxLength(10);
+                entity.Property(e => e.RefNo).HasColumnName("ref_no").HasMaxLength(10);
+
+                entity.Property(e => e.Remark).HasColumnName("remark").HasMaxLength(255);
 
                 entity.Property(e => e.UpdateBy).HasColumnName("update_by");
 

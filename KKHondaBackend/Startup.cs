@@ -38,6 +38,8 @@ namespace KKHondaBackend
             services.AddTransient<IContractTypeService, ContractTypeService>();
             services.AddTransient<IRelationService, RelationService>();
             services.AddTransient<IZoneService, ZoneService>();
+            services.AddTransient<ISysParameterService, SysParameterService>();
+            services.AddTransient<IStatusService, StatusService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

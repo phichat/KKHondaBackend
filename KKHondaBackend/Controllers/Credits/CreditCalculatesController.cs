@@ -18,11 +18,17 @@ namespace KKHondaBackend.Controllers.Credits
     {
         private readonly dbwebContext _context;
         private readonly IBookingServices iBookService;
+        private readonly ISysParameterService iSysParamService;
 
-        public CreditCalculatesController(dbwebContext context, IBookingServices iBookingService)
+        public CreditCalculatesController(
+            dbwebContext context, 
+            IBookingServices iBookingService,
+            ISysParameterService isysParamService
+        )
         {
             _context = context;
             iBookService = iBookingService;
+            iSysParamService = isysParamService;
         }
 
         // GET: api/CreditCalculates
@@ -137,7 +143,7 @@ namespace KKHondaBackend.Controllers.Credits
                     // Contract
                     contract.CalculateId = calculate.CalculateId;
                     contract.RefNo = GenerateReferenceContract(null);
-                    contract.ContractNo = GenerateContractCode((int)contract.BranchId);
+                    contract.ContractNo = iSysParamService.GenerateContractNo((int)contract.BranchId);
                     contract.CreateDate = DateTime.Now;
                     _context.CreditContract.Add(contract);
                     _context.SaveChanges();
@@ -180,13 +186,14 @@ namespace KKHondaBackend.Controllers.Credits
                 CreditCalculate calculate = new CreditCalculate();
                 CreditContract contract = new CreditContract();
                 List<CreditContractItem> contractItems = new List<CreditContractItem>();
+                Models.Booking booking = new Models.Booking();
 
                 try 
                 {
-                  
                     calculate = credit.creditCalculate;
                     contract = credit.creditContract;
                     contractItems = credit.creditContactItem.ToList();
+                    booking = _context.Booking.SingleOrDefault(b => b.BookingId == contract.BookingId);
 
                     // Calculate
                     calculate.UpdateDate = DateTime.Now;
@@ -213,6 +220,19 @@ namespace KKHondaBackend.Controllers.Credits
                     _context.CreditContractItem.AddRange(contractItems);
                     _context.SaveChanges();
 
+                    // Booking
+                    if (booking.SellDate == null) 
+                        booking.SellDate = DateTime.Now;
+                    
+                    booking.BookingStatus = 2; // สถานะขาย
+                    booking.SellBy = contract.CreateBy;
+                    booking.LStartDate = calculate.FirstPayment.ToString();
+                    booking.LPayDay = calculate.DueDate;
+                    booking.LTerm = calculate.InstalmentEnd;
+                    booking.LInterest = calculate.Interest;
+                    booking.LPriceTerm = calculate.InstalmentPrice;
+                    _context.Update(booking);
+                    _context.SaveChanges();
 
                     transaction.Commit();
 
@@ -290,29 +310,29 @@ namespace KKHondaBackend.Controllers.Credits
 
         }
 
-        private string GenerateContractCode(int branchId){
+        //private string GenerateContractCode(int branchId){
 
-            var contractNo = (from db in _context.CreditContract
-                              orderby db.ContractNo descending
-                              where db.BranchId == branchId
-                              select db.ContractNo
-                             ).FirstOrDefault();
+        //    var contractNo = (from db in _context.CreditContract
+        //                      orderby db.ContractNo descending
+        //                      where db.BranchId == branchId
+        //                      select db.ContractNo
+        //                     ).FirstOrDefault();
             
-            string year = (DateTime.Now.Year + 543).ToString().Substring(2,2);
-            string month = (DateTime.Now.Month).ToString("00");
+        //    string year = (DateTime.Now.Year + 543).ToString().Substring(2,2);
+        //    string month = (DateTime.Now.Month).ToString("00");
 
-            if (contractNo == null) {
-                contractNo = "CO" + branchId.ToString("00") + year + month + "/" + "0001";
-            } else {
+        //    if (contractNo == null) {
+        //        contractNo = "CO" + branchId.ToString("00") + year + month + "/" + "0001";
+        //    } else {
                 
-                string preMonth = contractNo.Substring(6, 2);
-                int runNumber = (preMonth == month) ? int.Parse(contractNo.Split("/")[1]) + 1 : 1;
+        //        string preMonth = contractNo.Substring(6, 2);
+        //        int runNumber = (preMonth == month) ? int.Parse(contractNo.Split("/")[1]) + 1 : 1;
 
-                contractNo = "CO" + branchId.ToString("00") + year + month + "/" + runNumber.ToString("0000");
-            }
+        //        contractNo = "CO" + branchId.ToString("00") + year + month + "/" + runNumber.ToString("0000");
+        //    }
             
-            return contractNo;
-        }
+        //    return contractNo;
+        //}
 
         private string GenerateReferenceContract(int? contractId)
         {

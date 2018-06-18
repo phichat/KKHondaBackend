@@ -24,6 +24,8 @@ namespace KKHondaBackend.Controllers.Credits
         private readonly IContractTypeService iContTypeService;
         private readonly IZoneService iZoneService;
         private readonly IBranchService iBranchService;
+        private readonly ISysParameterService iSysParamService;
+        private readonly IStatusService iStatusService;
 
         public CreditContractController(
             dbwebContext context,
@@ -34,7 +36,9 @@ namespace KKHondaBackend.Controllers.Credits
             IContractGroupService icontGroupService,
             IContractTypeService iconTypeService,
             IZoneService izoneService,
-            IBranchService ibranchService
+            IBranchService ibranchService,
+            ISysParameterService isysParamService,
+            IStatusService istatusService
         )
         {
             ctx = context;
@@ -46,10 +50,26 @@ namespace KKHondaBackend.Controllers.Credits
             iContTypeService = iconTypeService;
             iZoneService = izoneService;
             iBranchService = ibranchService;
+            iSysParamService = isysParamService;
+            iStatusService = istatusService;
         }
 
-        [HttpGet]
-        public IActionResult GetAction()
+        [HttpGet("Canceled")]
+        public IActionResult Canceled(){
+            List<CreditContractList> creditContractLists = GetListContracts();
+            creditContractLists = creditContractLists.Where(o => o.ContractStatus == 0).ToList();
+            return Ok(creditContractLists);
+        }
+
+        [HttpGet("Active")]
+        public IActionResult Active(){
+            List<CreditContractList> creditContractLists = GetListContracts();
+            creditContractLists = creditContractLists.Where(o => o.ContractStatus != 0).ToList();
+            return Ok(creditContractLists);
+        }
+
+
+        public List<CreditContractList> GetListContracts()
         {
             var contract = (from db in ctx.CreditContract
 
@@ -67,7 +87,10 @@ namespace KKHondaBackend.Controllers.Credits
 
                             join _status in ctx.MStatus on db.ContractStatus equals _status.Id into a13
                             from status in a13.DefaultIfEmpty()
-                            
+
+                            join _contractPoint in ctx.Branch on db.ContractPoint equals _contractPoint.BranchId into a6
+                            from contractPoint in a6.DefaultIfEmpty()
+
                             select new CreditContractList
                             {
                                 ContractId = db.ContractId,
@@ -77,14 +100,14 @@ namespace KKHondaBackend.Controllers.Credits
                                 ContractType = contractType.TypeDesc,
                                 ContractDate = db.ContractDate,
                                 AreaPayment = zone.ZoneName,
-                                ContractPoint = branch.BranchName,
+                                ContractPoint = contractPoint.BranchName,
                                 ContractGroup = contractGroup.GroupDesc,
-                                Status = db.ContractStatus,
-                                ContractStatus = status.StatusDesc,
+                                StatusDesc = status.StatusDesc,
+                                ContractStatus = db.ContractStatus,
                                 RefNo = db.RefNo,
                             }).ToList();
 
-            return Ok(contract);
+            return contract;
 
         }
 
@@ -94,11 +117,12 @@ namespace KKHondaBackend.Controllers.Credits
         {
             try
             {
-                var cont = ctx.CreditContract.Where(prop => prop.ContractId == id).SingleOrDefault();
-                var statusText = ctx.MStatus
-                                    .Where(o => o.Id == cont.ContractStatus)
-                                    .Select(o => o.StatusDesc)
-                                    .SingleOrDefault();
+                var cont = ctx.CreditContract.Where(p => p.ContractId == id).SingleOrDefault();
+
+                //var statusDesc = ctx.MStatus
+                                    //.Where(o => o.Id == cont.ContractStatus)
+                                    //.Select(o => o.StatusDesc)
+                                    //.SingleOrDefault();
 
                 var contItem = ctx.CreditContractItem
                     .Where(p => p.ContractId == id && p.RefNo == cont.RefNo)
@@ -113,6 +137,7 @@ namespace KKHondaBackend.Controllers.Credits
                     .Select(b => b.ZoneId)
                     .SingleOrDefault();
 
+               
                 cont.BranchId = cont.BranchId == null ? booking.BranchId : cont.BranchId;
                 cont.AreaPayment = cont.AreaPayment == null ? booking.BranchId : cont.AreaPayment;
                 cont.ContractPoint = cont.ContractPoint == null ? zoneId : cont.ContractPoint;
@@ -126,6 +151,32 @@ namespace KKHondaBackend.Controllers.Credits
 
                 var customerDropdown = iCustService.GetDropdowns();
 
+                var contractMateDropdown = customerDropdown;
+                if (cont.ContractMate != null)
+                {
+                    var mateDd = iCustService.GetDropdownByKey(cont.ContractMate);
+                    contractMateDropdown = contractMateDropdown.Concat(mateDd).ToArray();
+                }
+
+                var contractUserDropdown = customerDropdown;
+                if (cont.ContractUser != null) {
+                    var userDd = iCustService.GetDropdownByKey(cont.ContractUser);
+                    contractUserDropdown = contractUserDropdown.Concat(userDd).ToArray();
+                }
+
+                var contractGurantor1Dropdown = customerDropdown;
+                if(cont.ContractGurantor1 != null) {
+                    var gurantorDd = iCustService.GetDropdownByKey(cont.ContractGurantor1);
+                    contractGurantor1Dropdown = contractGurantor1Dropdown.Concat(gurantorDd).ToArray();
+                }
+
+                var contractGurantor2Dropdown = customerDropdown;
+                if (cont.ContractGurantor2 != null)
+                {
+                    var gurantorDd = iCustService.GetDropdownByKey(cont.ContractGurantor2);
+                    contractGurantor2Dropdown = contractGurantor2Dropdown.Concat(gurantorDd).ToArray();
+                }
+
                 var relationDropdown = iRelaService.GetDropdowns();
 
                 var contractGroupDropdown = iContGroupService.GetDropdowns();
@@ -136,15 +187,20 @@ namespace KKHondaBackend.Controllers.Credits
 
                 var branchDropdown = iBranchService.GetDropdowns();
 
+                var statusDropdown = iStatusService.GetDropdown();
+
                 var obj = new Dictionary<string, object>
                 {
-                    {"statusText", statusText},
+                    {"statusDropdown", statusDropdown},
                     {"creditContract", cont},
                     {"creditContractItem", contItem},
                     {"creditCalculate", calcu},
                     {"booking", booking},
                     {"userDropdown", userDropdown},
-                    {"customerDropdown", customerDropdown},
+                    {"contractMateDropdown", contractMateDropdown},
+                    {"contractUserDropdown", contractUserDropdown},
+                    {"contractGurantor1Dropdown", contractGurantor1Dropdown},
+                    {"contractGurantor2Dropdown", contractGurantor2Dropdown},
                     {"relationDropdown", relationDropdown},
                     {"contractGroupDropdown", contractGroupDropdown},
                     {"contractTypeDropdown", contractTypeDropdown},
@@ -161,44 +217,213 @@ namespace KKHondaBackend.Controllers.Credits
 
         }
 
+        [HttpGet("Detail")]
+        public IActionResult Detail(int contractId)
+        {
+            try
+            {
+                    
+                var detail = (from db in ctx.CreditContract
+
+                              join _branch in ctx.Branch on db.BranchId equals _branch.BranchId into a1
+                              from branch in a1.DefaultIfEmpty()
+
+                              join _contractType in ctx.MContractType on db.ContractType equals _contractType.Id into a2
+                              from contractType in a2.DefaultIfEmpty()
+
+                              join _zone in ctx.Zone on db.AreaPayment equals _zone.ZoneId into a3
+                              from zone in a3.DefaultIfEmpty()
+
+                              join _contractGroup in ctx.MContractGroup on db.ContractGroup equals _contractGroup.Id into a4
+                              from contractGroup in a4.DefaultIfEmpty()
+
+                              join _status in ctx.MStatus on db.ContractStatus equals _status.Id into a5
+                              from status in a5.DefaultIfEmpty()
+
+                              join _contractPoint in ctx.Branch on db.ContractPoint equals _contractPoint.BranchId into a6
+                              from contractPoint in a6.DefaultIfEmpty()
+
+                              join _contrachHire in ctx.MCustomer on db.ContractHire equals _contrachHire.CustomerCode into a7
+                              from contrachHire in a7.DefaultIfEmpty()
+
+                              join _contractMate in ctx.MCustomer on db.ContractMate equals _contractMate.CustomerCode into a8
+                              from contractMate in a8.DefaultIfEmpty()
+
+                              join _contractUser in ctx.MCustomer on db.ContractUser equals _contractUser.CustomerCode into a9
+                              from contractUser in a9.DefaultIfEmpty()
+
+                              join _gurantor1 in ctx.MCustomer on db.ContractGurantor1 equals _gurantor1.CustomerCode into a10
+                              from gurantor1 in a10.DefaultIfEmpty()
+
+                              join _gurantor2 in ctx.MCustomer on db.ContractGurantor2 equals _gurantor2.CustomerCode into a11
+                              from gurantor2 in a11.DefaultIfEmpty()
+
+                              join _relation1 in ctx.MRelation on db.GurantorRelation1 equals _relation1.Id into a12
+                              from relation1 in a12.DefaultIfEmpty()
+
+                              join _relation2 in ctx.MRelation on db.GurantorRelation2 equals _relation2.Id into a13
+                              from relation2 in a13.DefaultIfEmpty()
+
+                              join _created in ctx.User on db.CreatedBy equals _created.Id into a14
+                              from created in a14.DefaultIfEmpty()
+
+                              join _checked in ctx.User on db.CreatedBy equals _checked.Id into a15
+                              from checkedBy in a15.DefaultIfEmpty()
+
+                              join _approve in ctx.User on db.ApprovedBy equals _approve.Id into a16
+                              from approve in a16.DefaultIfEmpty()
+
+                              join _keeper in ctx.User on db.KeeperBy equals _keeper.Id into a17
+                              from keeper in a17.DefaultIfEmpty()
+
+                              where db.ContractId == contractId
+
+                              select new CreditContractDetail
+                              {
+                                  ContractId = contractId,
+                                  ContractNo = db.ContractNo,
+                                  ContractType = contractType.TypeDesc,
+                                  ContractDate = db.ContractDate,
+                                  AreaPayment = zone.ZoneName,
+                                  ContractPoint = contractPoint.BranchName,
+                                  ContractGroup = contractGroup.GroupDesc,
+                                  ContractHire = contrachHire.CustomerPrename + contrachHire.CustomerName + " " + contrachHire.CustomerSurname,
+                                  ContractMate = contractMate.CustomerPrename + contractMate.CustomerName + " " + contractMate.CustomerSurname,
+                                  ContractUser = contractUser.CustomerPrename + contractUser.CustomerName + " " + contractUser.CustomerSurname,
+                                  ContractGurantor1 = gurantor1.CustomerPrename + gurantor1.CustomerName + " " + gurantor1.CustomerSurname,
+                                  GurantorRelation1 = relation1.RelationDesc,
+                                  ContractGurantor2 = gurantor2.CustomerPrename + gurantor2.CustomerName + " " + gurantor2.CustomerSurname,
+                                  GurantorRelation2 = relation2.RelationDesc,
+                                  CreatedBy = created.Fullname,
+                                  CheckedBy = checkedBy.Fullname,
+                                  ApprovedBy = approve.Fullname,
+                                  KeeperBy = keeper.Fullname,
+                                  StatusDesc = status.StatusDesc,
+                                  Remark = db.Remark
+
+                              }).SingleOrDefault();
+
+                CreditContract contract = ctx.CreditContract.Where(o => o.ContractId == contractId).SingleOrDefault();
+
+                var booking = iBookService.GetBookingById(contract.BookingId);
+
+                var obj = new Dictionary<string, object>
+                {
+                    {"creditContractDetail", detail},
+                    {"booking", booking}
+                };
+
+                return Ok(obj);
+
+            } catch(Exception)
+            {
+                return NotFound();
+            }
+        }
+
         [HttpPost("Create")]
         public IActionResult Create([FromBody] CreditContract creditContract)
         {
-
-            try
+            using (var transaction = ctx.Database.BeginTransaction())
             {
-                // Contract
-                creditContract.UpdateDate = DateTime.Now;
-                creditContract.ContractStatus = 31; // อยู่ระหว่างผ่อนชำระ
-                ctx.Update(creditContract);
-                ctx.SaveChanges();
+                try
+                {
+                    // Contract
+                    creditContract.UpdateDate = DateTime.Now;
+                    creditContract.ContractStatus = 31; // อยู่ระหว่างผ่อนชำระ
+                    ctx.Update(creditContract);
+                    ctx.SaveChanges();
 
-                return Ok(creditContract);
+                    // Calculate
+                    CreditCalculate calculate = new CreditCalculate();
+                    calculate = ctx.CreditCalculate.SingleOrDefault(o => o.CalculateId == creditContract.CalculateId);
 
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
+                    // Booking
+                    Models.Booking booking = new Models.Booking();
+                    booking = ctx.Booking.SingleOrDefault(b => b.BookingId == creditContract.BookingId);
+
+                    booking.BookingStatus = 2; // สถานะขาย
+                    booking.SellDate = DateTime.Now;
+                    booking.SellBy = creditContract.CreateBy;
+                    booking.LStartDate = calculate.FirstPayment.ToString();
+                    booking.LPayDay = calculate.DueDate;
+                    booking.LTerm = calculate.InstalmentEnd;
+                    booking.LInterest = calculate.Interest;
+                    booking.SellNo = iSysParamService.GenerateSellNo((int)creditContract.BranchId);
+                    booking.LPriceTerm = calculate.InstalmentPrice;
+                    booking.VatNo = iSysParamService.GenerateVatNo((int)creditContract.BranchId);
+                    booking.VatDate = DateTime.Now;
+                    booking.VatBy = creditContract.CreateBy;
+                    ctx.Update(booking);
+                    ctx.SaveChanges();
+
+                    transaction.Commit();
+
+                    return Ok(creditContract);
+
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    return StatusCode(500, ex.Message);
+                }
             }
         }
 
         [HttpPost("Edit")]
         public IActionResult Edit([FromBody] CreditContract creditContract) 
-        { 
-            try
+        {
+            using (var transaction = ctx.Database.BeginTransaction())
             {
-                // Contract
-                creditContract.UpdateDate = DateTime.Now;
-                ctx.Update(creditContract);
-                ctx.SaveChanges();
+                try
+                {
+                    // Contract
+                    creditContract.UpdateDate = DateTime.Now;
+                    ctx.Update(creditContract);
+                    ctx.SaveChanges();
 
-                return Ok(creditContract);
+                    // Calculate
+                    CreditCalculate calculate = new CreditCalculate();
+                    calculate = ctx.CreditCalculate.SingleOrDefault(o => o.CalculateId == creditContract.CalculateId);
 
-            }catch (Exception ex) {
-                return StatusCode(500, ex.Message);
+                    // Booking
+                    Models.Booking booking = new Models.Booking();
+                    booking = ctx.Booking.SingleOrDefault(b => b.BookingId == creditContract.BookingId);
+
+                    if (booking.SellDate == null)
+                        booking.SellDate = DateTime.Now;
+
+                    booking.BookingStatus = 2; // สถานะขาย
+                    booking.SellBy = creditContract.CreateBy;
+                    booking.LStartDate = calculate.FirstPayment.ToString();
+                    booking.LPayDay = calculate.DueDate;
+                    booking.LTerm = calculate.InstalmentEnd;
+                    booking.LInterest = calculate.Interest;
+                    booking.LPriceTerm = calculate.InstalmentPrice;
+
+                    if (booking.SellNo == null)
+                        booking.SellNo = iSysParamService.GenerateSellNo((int)creditContract.BranchId);
+
+                    if (booking.VatNo == null)
+                        booking.VatNo = iSysParamService.GenerateVatNo((int)creditContract.BranchId);
+                            
+                    booking.VatDate = DateTime.Now;
+                    booking.VatBy = creditContract.CreateBy;
+                    ctx.Update(booking);
+                    ctx.SaveChanges();
+
+                    transaction.Commit();
+
+                    return Ok(creditContract);
+
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    return StatusCode(500, ex.Message);
+                }
             }
         }
-
 
         public class CreditContractList
         {
@@ -219,13 +444,37 @@ namespace KKHondaBackend.Controllers.Credits
             public string CheckedBy { get; set; }
             public string ApprovedBy { get; set; }
             public string KeeperBy { get; set; }
-            public int? Status { get; set; }
-            public string ContractStatus { get; set; }
+            public string StatusDesc { get; set; }
+            public int? ContractStatus { get; set; }
             public string RefNo { get; set; }
             public string CreateBy { get; set; }
             public DateTime CreateDate { get; set; }
             public string UpdateBy { get; set; }
             public DateTime? UpdateDate { get; set; }
+        }
+
+        public class CreditContractDetail
+        {
+            public int ContractId { get; set; }
+            public string ContractNo { get; set; }
+            public string ContractType { get; set; }
+            public DateTime? ContractDate { get; set; }
+            public string AreaPayment { get; set; }
+            public string ContractPoint { get; set; }
+            public string ContractGroup { get; set; }
+            public string ContractHire { get; set; }
+            public string ContractMate { get; set; }
+            public string ContractUser { get; set; }
+            public string ContractGurantor1 { get; set; }
+            public string GurantorRelation1 { get; set; }
+            public string ContractGurantor2 { get; set; }
+            public string GurantorRelation2 { get; set; }
+            public string CreatedBy { get; set; }
+            public string CheckedBy { get; set; }
+            public string ApprovedBy { get; set; }
+            public string KeeperBy { get; set; }
+            public string StatusDesc { get; set; }
+            public string Remark { get; set; }
         }
     }
 }
