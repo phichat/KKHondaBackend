@@ -68,7 +68,6 @@ namespace KKHondaBackend.Controllers.Credits
             return Ok(creditContractLists);
         }
 
-
         public List<CreditContractList> GetListContracts()
         {
             var contract = (from db in ctx.CreditContract
@@ -79,8 +78,8 @@ namespace KKHondaBackend.Controllers.Credits
                             join _contractType in ctx.MContractType on db.ContractType equals _contractType.Id into a2
                             from contractType in a2.DefaultIfEmpty()
 
-                            join _zone in ctx.Zone on db.AreaPayment equals _zone.ZoneId into a3
-                            from zone in a3.DefaultIfEmpty()
+                            join _areaPayment in ctx.Branch on db.AreaPayment equals _areaPayment.BranchId into a3
+                            from areaPayment in a3.DefaultIfEmpty()
 
                             join _contractGroup in ctx.MContractGroup on db.ContractGroup equals _contractGroup.Id into a4
                             from contractGroup in a4.DefaultIfEmpty()
@@ -88,7 +87,7 @@ namespace KKHondaBackend.Controllers.Credits
                             join _status in ctx.MStatus on db.ContractStatus equals _status.Id into a13
                             from status in a13.DefaultIfEmpty()
 
-                            join _contractPoint in ctx.Branch on db.ContractPoint equals _contractPoint.BranchId into a6
+                            join _contractPoint in ctx.Zone on db.ContractPoint equals _contractPoint.ZoneId into a6
                             from contractPoint in a6.DefaultIfEmpty()
 
                             select new CreditContractList
@@ -99,8 +98,8 @@ namespace KKHondaBackend.Controllers.Credits
                                 ContractNo = db.ContractNo,
                                 ContractType = contractType.TypeDesc,
                                 ContractDate = db.ContractDate,
-                                AreaPayment = zone.ZoneName,
-                                ContractPoint = contractPoint.BranchName,
+                                AreaPayment = areaPayment.BranchName,
+                                ContractPoint = contractPoint.ZoneName,
                                 ContractGroup = contractGroup.GroupDesc,
                                 StatusDesc = status.StatusDesc,
                                 ContractStatus = db.ContractStatus,
@@ -231,8 +230,8 @@ namespace KKHondaBackend.Controllers.Credits
                               join _contractType in ctx.MContractType on db.ContractType equals _contractType.Id into a2
                               from contractType in a2.DefaultIfEmpty()
 
-                              join _zone in ctx.Zone on db.AreaPayment equals _zone.ZoneId into a3
-                              from zone in a3.DefaultIfEmpty()
+                              join _areaPayment in ctx.Branch on db.AreaPayment equals _areaPayment.BranchId into a3
+                              from areaPayment in a3.DefaultIfEmpty()
 
                               join _contractGroup in ctx.MContractGroup on db.ContractGroup equals _contractGroup.Id into a4
                               from contractGroup in a4.DefaultIfEmpty()
@@ -240,7 +239,7 @@ namespace KKHondaBackend.Controllers.Credits
                               join _status in ctx.MStatus on db.ContractStatus equals _status.Id into a5
                               from status in a5.DefaultIfEmpty()
 
-                              join _contractPoint in ctx.Branch on db.ContractPoint equals _contractPoint.BranchId into a6
+                              join _contractPoint in ctx.Zone on db.ContractPoint equals _contractPoint.ZoneId into a6
                               from contractPoint in a6.DefaultIfEmpty()
 
                               join _contrachHire in ctx.MCustomer on db.ContractHire equals _contrachHire.CustomerCode into a7
@@ -284,8 +283,8 @@ namespace KKHondaBackend.Controllers.Credits
                                   ContractNo = db.ContractNo,
                                   ContractType = contractType.TypeDesc,
                                   ContractDate = db.ContractDate,
-                                  AreaPayment = zone.ZoneName,
-                                  ContractPoint = contractPoint.BranchName,
+                                  AreaPayment = areaPayment.BranchName,
+                                  ContractPoint = contractPoint.ZoneName,
                                   ContractGroup = contractGroup.GroupDesc,
                                   ContractHire = contrachHire.CustomerPrename + contrachHire.CustomerName + " " + contrachHire.CustomerSurname,
                                   ContractMate = contractMate.CustomerPrename + contractMate.CustomerName + " " + contractMate.CustomerSurname,
