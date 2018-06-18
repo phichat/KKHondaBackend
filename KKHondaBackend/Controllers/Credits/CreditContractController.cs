@@ -306,8 +306,16 @@ namespace KKHondaBackend.Controllers.Credits
 
                 var booking = iBookService.GetBookingById(contract.BookingId);
 
+                var calculate = ctx.CreditCalculate.Where(p => p.CalculateId == contract.CalculateId).SingleOrDefault();
+
+                var contItem = ctx.CreditContractItem
+                   .Where(p => p.ContractId == contract.ContractId && p.RefNo == contract.RefNo)
+                   .OrderBy(o => o.InstalmentNo).ToList();
+
                 var obj = new Dictionary<string, object>
                 {
+                    {"creditCalculate", calculate},
+                    {"creditContractItem", contItem},
                     {"creditContractDetail", detail},
                     {"booking", booking}
                 };
@@ -341,8 +349,17 @@ namespace KKHondaBackend.Controllers.Credits
                     Models.Booking booking = new Models.Booking();
                     booking = ctx.Booking.SingleOrDefault(b => b.BookingId == creditContract.BookingId);
 
-                    booking.BookingStatus = 2; // สถานะขาย
+                    // ค้นหาชื่อเช่าซื้อด้วยรหัส
+                    var customer = iCustService.GetCustomerByCode(creditContract.ContractHire);
+                    
                     booking.SellDate = DateTime.Now;
+                    booking.BookingStatus = 2; // สถานะขาย
+
+                    booking.PaymentPrice = calculate.DepositPrice;
+                    booking.PaymentType = booking.BookingDepositType;
+                    booking.CusSellName = customer.CustomerFullName;
+                    booking.CusTaxNo = customer.IdCard;
+                    
                     booking.SellBy = creditContract.CreateBy;
                     booking.LStartDate = calculate.FirstPayment.ToString();
                     booking.LPayDay = calculate.DueDate;
@@ -389,10 +406,18 @@ namespace KKHondaBackend.Controllers.Credits
                     Models.Booking booking = new Models.Booking();
                     booking = ctx.Booking.SingleOrDefault(b => b.BookingId == creditContract.BookingId);
 
+                    // ค้นหาชื่อเช่าซื้อด้วยรหัส
+                    var customer = iCustService.GetCustomerByCode(creditContract.ContractHire);
+
                     if (booking.SellDate == null)
                         booking.SellDate = DateTime.Now;
 
                     booking.BookingStatus = 2; // สถานะขาย
+                    booking.PaymentPrice = calculate.DepositPrice;
+                    booking.PaymentType = booking.BookingDepositType;
+                    booking.CusSellName = customer.CustomerFullName;
+                    booking.CusTaxNo = customer.IdCard;
+
                     booking.SellBy = creditContract.CreateBy;
                     booking.LStartDate = calculate.FirstPayment.ToString();
                     booking.LPayDay = calculate.DueDate;

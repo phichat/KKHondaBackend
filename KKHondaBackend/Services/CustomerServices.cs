@@ -19,6 +19,28 @@ namespace KKHondaBackend.Services
             ctx = context;
         }
 
+        public Customer GetCustomerByCode(string custCode)
+        {
+            Customer customer = new Customer();
+
+            customer = (from db in ctx.MCustomer
+
+                        join _card in ctx.MCustomerCard on db.CustomerCode equals _card.CustomerCode into a1
+                        from card in a1.DefaultIfEmpty()
+
+                        where db.CustomerCode == custCode
+                        select new Customer
+                        {
+                            CustomerCode = custCode,
+                            CustomerFullName = db.CustomerPrename + " " + db.CustomerName + " " + db.CustomerSurname,
+                            CustomerNickName = db.CustomerNickname,
+                            CustomerSex = db.CustomerSex,
+                            CardType = card.CardType,
+                            IdCard = card.CardId
+                        }).SingleOrDefault();
+            return customer;
+        }
+
         public Dropdown[] GetDropdownByKey(string term)
         {
             List<Dropdown> customerDropdowns = new List<Dropdown>();
@@ -47,6 +69,7 @@ namespace KKHondaBackend.Services
 
             return customerDropdowns.ToArray();
         }
+        
     }
 
 }

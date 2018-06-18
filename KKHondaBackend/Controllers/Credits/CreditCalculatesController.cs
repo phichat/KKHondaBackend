@@ -19,16 +19,19 @@ namespace KKHondaBackend.Controllers.Credits
         private readonly dbwebContext _context;
         private readonly IBookingServices iBookService;
         private readonly ISysParameterService iSysParamService;
+        private readonly ICustomerServices iCustomerService;
 
         public CreditCalculatesController(
             dbwebContext context, 
             IBookingServices iBookingService,
-            ISysParameterService isysParamService
+            ISysParameterService isysParamService,
+            ICustomerServices icustService
         )
         {
             _context = context;
             iBookService = iBookingService;
             iSysParamService = isysParamService;
+            iCustomerService = icustService;
         }
 
         // GET: api/CreditCalculates
@@ -220,13 +223,21 @@ namespace KKHondaBackend.Controllers.Credits
                     _context.CreditContractItem.AddRange(contractItems);
                     _context.SaveChanges();
 
+                    // ค้นหาชื่อเช่าซื้อด้วยรหัส
+                    var customer = iCustomerService.GetCustomerByCode(contract.ContractHire);
+
                     // Booking
                     if (booking.SellDate == null) 
                         booking.SellDate = DateTime.Now;
                     
                     booking.BookingStatus = 2; // สถานะขาย
+                    booking.PaymentPrice = calculate.DepositPrice;
+                    booking.PaymentType = booking.BookingDepositType;
+                    booking.CusSellName = customer.CustomerFullName;
+                    booking.CusTaxNo = customer.IdCard;
+
                     booking.SellBy = contract.CreateBy;
-                    booking.LStartDate = calculate.FirstPayment.ToString();
+                    booking.LStartDate = calculate.FirstPayment.ToString("yyyy-MM-dd");
                     booking.LPayDay = calculate.DueDate;
                     booking.LTerm = calculate.InstalmentEnd;
                     booking.LInterest = calculate.Interest;
