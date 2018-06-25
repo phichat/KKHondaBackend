@@ -845,6 +845,10 @@ namespace KKHondaBackend.Data
                     .HasColumnName("interest")
                     .HasColumnType("decimal(18, 4)");
 
+                entity.Property(e => e.InterestPrice)
+                    .HasColumnName("interest_price")
+                    .HasColumnType("decimal(18, 4)");
+
                 entity.Property(e => e.Irr)
                     .HasColumnName("irr")
                     .HasColumnType("decimal(8, 4)");
