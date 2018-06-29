@@ -21,10 +21,10 @@ namespace KKHondaReport.Contracts
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            
             var contractId = int.Parse(Request.QueryString["contractId"]);
             if (Boolean.Parse(Request.QueryString["formContract"]) == true)
             {
-
             }
 
             if (Boolean.Parse(Request.QueryString["formInstalmentTerm"]) == true)
@@ -34,7 +34,6 @@ namespace KKHondaReport.Contracts
 
             if (Boolean.Parse(Request.QueryString["formTransfer"]) == true)
             {
-
             }
         }
 
@@ -63,7 +62,7 @@ namespace KKHondaReport.Contracts
                 rptDoc.Load(Server.MapPath(file));
                 rptDoc.SetDataSource(dt);
                 rptDoc.SetParameterValue("@ContractId", contractId);
-                StreamPdfReport(rptDoc);
+                //StreamPdfReport(rptDoc);
             }
             catch (Exception ex)
             {
@@ -91,6 +90,7 @@ namespace KKHondaReport.Contracts
                
                 var file = "./formInstalmentTerm.rpt";
                 rptDoc.Load(Server.MapPath(file));
+                rptDoc.Refresh();
 
                 TableLogOnInfo L1 = rptDoc.Subreports["section1"].Database.Tables[0].LogOnInfo;
                 GetLoginfo(L1, server);
@@ -109,7 +109,7 @@ namespace KKHondaReport.Contracts
                 rptDoc.SetParameterValue("@ContractId", contractId, "section3(customer)");
                 rptDoc.Subreports["section3(customer)"].Database.Tables[0].ApplyLogOnInfo(L3);
 
-                StreamPdfReport(rptDoc);
+                StreamPdfReport(rptDoc, "instalment-card");
             }
             catch (Exception ex)
             {
@@ -143,7 +143,7 @@ namespace KKHondaReport.Contracts
                 rptDoc.Load(Server.MapPath(file));
                 rptDoc.SetDataSource(dt);
                 rptDoc.SetParameterValue("@ContractId", contractId);
-                StreamPdfReport(rptDoc);
+                //StreamPdfReport(rptDoc);
             }
             catch (Exception ex)
             {
@@ -155,7 +155,7 @@ namespace KKHondaReport.Contracts
             }
         }
 
-        private void StreamPdfReport(ReportDocument rptDoc)
+        private void StreamPdfReport(ReportDocument rptDoc, string fileName)
         {
             using (MemoryStream oStream = new MemoryStream())
             {
@@ -177,6 +177,6 @@ namespace KKHondaReport.Contracts
             Log.ConnectionInfo.Password = "sql@2012";
             Log.ConnectionInfo.DatabaseName = "";
         }
-
+        
     }
 }
