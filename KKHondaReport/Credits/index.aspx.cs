@@ -85,30 +85,35 @@ namespace KKHondaReport.Contracts
 
             try
             {
-                conn.Open();
+                SqlConnectionStringBuilder connection = new SqlConnectionStringBuilder(conStr);
+                var server = connection.DataSource;
 
-                cmd.CommandText = "dbo.sp_RptFormInstalmentTerm";
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@ContractId", contractId);
-                cmd.Connection = conn;
-                cmd.CommandTimeout = 120;
-
-                da.SelectCommand = cmd;
-                da.Fill(dt);
-                
+               
                 var file = "./formInstalmentTerm.rpt";
                 rptDoc.Load(Server.MapPath(file));
-                rptDoc.SetDataSource(dt);
-                rptDoc.SetParameterValue("@ContractId", contractId);
+
+                TableLogOnInfo L1 = rptDoc.Subreports["section1"].Database.Tables[0].LogOnInfo;
+                GetLoginfo(L1, server);
+                rptDoc.SetParameterValue("@ContractId", contractId, "section1");
+                rptDoc.SetParameterValue("@section_group", 1, "section1");
+                rptDoc.Subreports["section1"].Database.Tables[0].ApplyLogOnInfo(L1);
+
+                TableLogOnInfo L2 = rptDoc.Subreports["section1"].Database.Tables[0].LogOnInfo;
+                GetLoginfo(L2, server);
+                rptDoc.SetParameterValue("@ContractId", contractId, "section2");
+                rptDoc.SetParameterValue("@section_group", 2, "section2");
+                rptDoc.Subreports["section2"].Database.Tables[0].ApplyLogOnInfo(L2);
+
+                TableLogOnInfo L3 = rptDoc.Subreports["section1"].Database.Tables[0].LogOnInfo;
+                GetLoginfo(L3, server);
+                rptDoc.SetParameterValue("@ContractId", contractId, "section3(customer)");
+                rptDoc.Subreports["section3(customer)"].Database.Tables[0].ApplyLogOnInfo(L3);
+
                 StreamPdfReport(rptDoc);
             }
             catch (Exception ex)
             {
                 Response.Write(ex.Message);
-            }
-            finally
-            {
-                conn.Close();
             }
         }
 
@@ -164,5 +169,14 @@ namespace KKHondaReport.Contracts
                 rptDoc.Dispose();
             }
         }
+
+        private void GetLoginfo(TableLogOnInfo Log, string server)
+        {
+            Log.ConnectionInfo.ServerName = server;
+            Log.ConnectionInfo.UserID = "sa";
+            Log.ConnectionInfo.Password = "sql@2012";
+            Log.ConnectionInfo.DatabaseName = "";
+        }
+
     }
 }

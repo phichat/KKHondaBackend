@@ -78,66 +78,66 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Contracts\index.aspx" />
+    <Content Include="Credits\index.aspx" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Contracts\formContract.cs">
+    <Compile Include="Credits\formContract.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>formContract.rpt</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Contracts\sumContractDetail.cs">
+    <Compile Include="Credits\sumContractDetail.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>sumContractDetail.rpt</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Contracts\index.aspx.cs">
+    <Compile Include="Credits\index.aspx.cs">
       <DependentUpon>index.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Contracts\index.aspx.designer.cs">
+    <Compile Include="Credits\index.aspx.designer.cs">
       <DependentUpon>index.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Contracts\formInstalmentTerm.cs">
+    <Compile Include="Credits\formInstalmentTerm.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>formInstalmentTerm.rpt</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Contracts\formTransfer1.cs">
+    <Compile Include="Credits\formTransfer1.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>formTransfer.rpt</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Contracts\sumCutOffCash.cs">
+    <Compile Include="Credits\sumCutOffCash.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>sumCutOffCash.rpt</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Contracts\sumDiscountByTerm.cs">
+    <Compile Include="Credits\sumDiscountByTerm.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>sumDiscountByTerm.rpt</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Contracts\sumInterestDelay.cs">
+    <Compile Include="Credits\sumInterestDelay.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>sumInterestDelay.rpt</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Contracts\sumOutstanding.cs">
+    <Compile Include="Credits\sumOutstanding.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>sumOutstanding.rpt</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Contracts\sumPaymentHistory.cs">
+    <Compile Include="Credits\sumPaymentHistory.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>sumPaymentHistory.rpt</DependentUpon>
@@ -146,39 +146,39 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Contracts\formContract.rpt">
+    <EmbeddedResource Include="Credits\formContract.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>formContract.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Contracts\sumContractDetail.rpt">
+    <EmbeddedResource Include="Credits\sumContractDetail.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>sumContractDetail.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Contracts\formInstalmentTerm.rpt">
+    <EmbeddedResource Include="Credits\formInstalmentTerm.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>formInstalmentTerm.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Contracts\formTransfer.rpt">
+    <EmbeddedResource Include="Credits\formTransfer.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>formTransfer1.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Contracts\sumCutOffCash.rpt">
+    <EmbeddedResource Include="Credits\sumCutOffCash.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>sumCutOffCash.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Contracts\sumDiscountByTerm.rpt">
+    <EmbeddedResource Include="Credits\sumDiscountByTerm.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>sumDiscountByTerm.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Contracts\sumInterestDelay.rpt">
+    <EmbeddedResource Include="Credits\sumInterestDelay.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>sumInterestDelay.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Contracts\sumOutstanding.rpt">
+    <EmbeddedResource Include="Credits\sumOutstanding.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>sumOutstanding.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Contracts\sumPaymentHistory.rpt">
+    <EmbeddedResource Include="Credits\sumPaymentHistory.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>sumPaymentHistory.cs</LastGenOutput>
     </EmbeddedResource>

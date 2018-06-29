@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace KKHondaReport.Contracts {
+namespace KKHondaReport.Credits {
     using System;
     using System.ComponentModel;
     using CrystalDecisions.Shared;
@@ -16,14 +16,14 @@ namespace KKHondaReport.Contracts {
     using CrystalDecisions.CrystalReports.Engine;
     
     
-    public class formInstalmentTerm : ReportClass {
+    public class formContract : ReportClass {
         
-        public formInstalmentTerm() {
+        public formContract() {
         }
         
         public override string ResourceName {
             get {
-                return "formInstalmentTerm.rpt";
+                return "formContract.rpt";
             }
             set {
                 // Do nothing
@@ -41,7 +41,7 @@ namespace KKHondaReport.Contracts {
         
         public override string FullResourceName {
             get {
-                return "KKHondaReport.Contracts.formInstalmentTerm.rpt";
+                return "KKHondaReport.Credits.formContract.rpt";
             }
             set {
                 // Do nothing
@@ -66,7 +66,7 @@ namespace KKHondaReport.Contracts {
         
         [Browsable(false)]
         [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.CrystalReports.Engine.Section DetailSection1 {
+        public CrystalDecisions.CrystalReports.Engine.Section Section3 {
             get {
                 return this.ReportDefinition.Sections[2];
             }
@@ -87,52 +87,12 @@ namespace KKHondaReport.Contracts {
                 return this.ReportDefinition.Sections[4];
             }
         }
-        
-        [Browsable(false)]
-        [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.Shared.IParameterField Parameter_section1_ContractId {
-            get {
-                return this.DataDefinition.ParameterFields[0];
-            }
-        }
-        
-        [Browsable(false)]
-        [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.Shared.IParameterField Parameter_section1_section_group {
-            get {
-                return this.DataDefinition.ParameterFields[1];
-            }
-        }
-        
-        [Browsable(false)]
-        [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.Shared.IParameterField Parameter_section2_ContractId {
-            get {
-                return this.DataDefinition.ParameterFields[2];
-            }
-        }
-        
-        [Browsable(false)]
-        [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.Shared.IParameterField Parameter_section2_section_group {
-            get {
-                return this.DataDefinition.ParameterFields[3];
-            }
-        }
-        
-        [Browsable(false)]
-        [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.Shared.IParameterField Parameter_section3customer_ContractId {
-            get {
-                return this.DataDefinition.ParameterFields[4];
-            }
-        }
     }
     
     [System.Drawing.ToolboxBitmapAttribute(typeof(CrystalDecisions.Shared.ExportOptions), "report.bmp")]
-    public class CachedformInstalmentTerm : Component, ICachedReport {
+    public class CachedformContract : Component, ICachedReport {
         
-        public CachedformInstalmentTerm() {
+        public CachedformContract() {
         }
         
         [Browsable(false)]
@@ -169,7 +129,7 @@ namespace KKHondaReport.Contracts {
         }
         
         public virtual CrystalDecisions.CrystalReports.Engine.ReportDocument CreateReport() {
-            formInstalmentTerm rpt = new formInstalmentTerm();
+            formContract rpt = new formContract();
             rpt.Site = this.Site;
             return rpt;
         }

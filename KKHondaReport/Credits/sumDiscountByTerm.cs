@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace KKHondaReport.Contracts {
+namespace KKHondaReport.Credits {
     using System;
     using System.ComponentModel;
     using CrystalDecisions.Shared;
@@ -16,14 +16,14 @@ namespace KKHondaReport.Contracts {
     using CrystalDecisions.CrystalReports.Engine;
     
     
-    public class sumInterestDelay : ReportClass {
+    public class sumDiscountByTerm : ReportClass {
         
-        public sumInterestDelay() {
+        public sumDiscountByTerm() {
         }
         
         public override string ResourceName {
             get {
-                return "sumInterestDelay.rpt";
+                return "sumDiscountByTerm.rpt";
             }
             set {
                 // Do nothing
@@ -41,7 +41,7 @@ namespace KKHondaReport.Contracts {
         
         public override string FullResourceName {
             get {
-                return "KKHondaReport.Contracts.sumInterestDelay.rpt";
+                return "KKHondaReport.Credits.sumDiscountByTerm.rpt";
             }
             set {
                 // Do nothing
@@ -90,9 +90,9 @@ namespace KKHondaReport.Contracts {
     }
     
     [System.Drawing.ToolboxBitmapAttribute(typeof(CrystalDecisions.Shared.ExportOptions), "report.bmp")]
-    public class CachedsumInterestDelay : Component, ICachedReport {
+    public class CachedsumDiscountByTerm : Component, ICachedReport {
         
-        public CachedsumInterestDelay() {
+        public CachedsumDiscountByTerm() {
         }
         
         [Browsable(false)]
@@ -129,7 +129,7 @@ namespace KKHondaReport.Contracts {
         }
         
         public virtual CrystalDecisions.CrystalReports.Engine.ReportDocument CreateReport() {
-            sumInterestDelay rpt = new sumInterestDelay();
+            sumDiscountByTerm rpt = new sumDiscountByTerm();
             rpt.Site = this.Site;
             return rpt;
         }

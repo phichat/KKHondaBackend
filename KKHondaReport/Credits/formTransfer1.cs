@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace KKHondaReport.Contracts {
+namespace KKHondaReport.Credits {
     using System;
     using System.ComponentModel;
     using CrystalDecisions.Shared;
@@ -16,14 +16,14 @@ namespace KKHondaReport.Contracts {
     using CrystalDecisions.CrystalReports.Engine;
     
     
-    public class sumContractDetail : ReportClass {
+    public class formTransfer : ReportClass {
         
-        public sumContractDetail() {
+        public formTransfer() {
         }
         
         public override string ResourceName {
             get {
-                return "sumContractDetail.rpt";
+                return "formTransfer.rpt";
             }
             set {
                 // Do nothing
@@ -41,7 +41,7 @@ namespace KKHondaReport.Contracts {
         
         public override string FullResourceName {
             get {
-                return "KKHondaReport.Contracts.sumContractDetail.rpt";
+                return "KKHondaReport.Credits.formTransfer.rpt";
             }
             set {
                 // Do nothing
@@ -90,9 +90,9 @@ namespace KKHondaReport.Contracts {
     }
     
     [System.Drawing.ToolboxBitmapAttribute(typeof(CrystalDecisions.Shared.ExportOptions), "report.bmp")]
-    public class CachedsumContractDetail : Component, ICachedReport {
+    public class CachedformTransfer : Component, ICachedReport {
         
-        public CachedsumContractDetail() {
+        public CachedformTransfer() {
         }
         
         [Browsable(false)]
@@ -129,7 +129,7 @@ namespace KKHondaReport.Contracts {
         }
         
         public virtual CrystalDecisions.CrystalReports.Engine.ReportDocument CreateReport() {
-            sumContractDetail rpt = new sumContractDetail();
+            formTransfer rpt = new formTransfer();
             rpt.Site = this.Site;
             return rpt;
         }
