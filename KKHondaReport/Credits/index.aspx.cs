@@ -53,7 +53,6 @@ namespace KKHondaReport.Contracts
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@ContractId", contractId);
                 cmd.Connection = conn;
-                cmd.CommandTimeout = 120;
 
                 da.SelectCommand = cmd;
                 da.Fill(dt);
@@ -62,7 +61,8 @@ namespace KKHondaReport.Contracts
                 rptDoc.Load(Server.MapPath(file));
                 rptDoc.SetDataSource(dt);
                 rptDoc.SetParameterValue("@ContractId", contractId);
-                //StreamPdfReport(rptDoc);
+
+                StreamPdfReport(rptDoc, "contract-doc");
             }
             catch (Exception ex)
             {
