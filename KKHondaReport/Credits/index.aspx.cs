@@ -20,11 +20,11 @@ namespace KKHondaReport.Contracts
         private ReportDocument rptDoc;
 
         protected void Page_Load(object sender, EventArgs e)
-        {
-            
+        {            
             var contractId = int.Parse(Request.QueryString["contractId"]);
             if (Boolean.Parse(Request.QueryString["formContract"]) == true)
             {
+                ExportFormatContract(contractId);
             }
 
             if (Boolean.Parse(Request.QueryString["formInstalmentTerm"]) == true)
@@ -34,6 +34,7 @@ namespace KKHondaReport.Contracts
 
             if (Boolean.Parse(Request.QueryString["formTransfer"]) == true)
             {
+                ExportFormTransfer(contractId);
             }
         }
 
