@@ -1012,6 +1012,9 @@ namespace KKHondaBackend.Data
                     .HasColumnName("fine_sum")
                     .HasColumnType("decimal(18, 4)");
 
+                entity.Property(e => e.FineSumStatus)
+                   .HasColumnName("fine_sum_status");
+
                 entity.Property(e => e.GoodsPrice)
                     .HasColumnName("goods_price")
                     .HasColumnType("decimal(18, 4)");

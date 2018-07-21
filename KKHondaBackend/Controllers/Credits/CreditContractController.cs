@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using KKHondaBackend.Data;
 using KKHondaBackend.Models;
 using KKHondaBackend.Services;
+using Microsoft.EntityFrameworkCore;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -55,14 +56,16 @@ namespace KKHondaBackend.Controllers.Credits
         }
 
         [HttpGet("Canceled")]
-        public IActionResult Canceled(){
+        public IActionResult Canceled()
+        {
             List<CreditContractList> creditContractLists = GetListContracts();
             creditContractLists = creditContractLists.Where(o => o.ContractStatus == 0).ToList();
             return Ok(creditContractLists);
         }
 
         [HttpGet("Active")]
-        public IActionResult Active(){
+        public IActionResult Active()
+        {
             List<CreditContractList> creditContractLists = GetListContracts();
             creditContractLists = creditContractLists.Where(o => o.ContractStatus != 0).ToList();
             return Ok(creditContractLists);
@@ -119,9 +122,9 @@ namespace KKHondaBackend.Controllers.Credits
                 var cont = ctx.CreditContract.Where(p => p.ContractId == id).SingleOrDefault();
 
                 //var statusDesc = ctx.MStatus
-                                    //.Where(o => o.Id == cont.ContractStatus)
-                                    //.Select(o => o.StatusDesc)
-                                    //.SingleOrDefault();
+                //.Where(o => o.Id == cont.ContractStatus)
+                //.Select(o => o.StatusDesc)
+                //.SingleOrDefault();
 
                 var contItem = ctx.CreditContractItem
                     .Where(p => p.ContractId == id && p.RefNo == cont.RefNo)
@@ -136,7 +139,7 @@ namespace KKHondaBackend.Controllers.Credits
                     .Select(b => b.ZoneId)
                     .SingleOrDefault();
 
-               
+
                 cont.BranchId = cont.BranchId == null ? booking.BranchId : cont.BranchId;
                 cont.AreaPayment = cont.AreaPayment == null ? booking.BranchId : cont.AreaPayment;
                 cont.ContractPoint = cont.ContractPoint == null ? zoneId : cont.ContractPoint;
@@ -158,13 +161,15 @@ namespace KKHondaBackend.Controllers.Credits
                 }
 
                 var contractUserDropdown = customerDropdown;
-                if (cont.ContractUser != null) {
+                if (cont.ContractUser != null)
+                {
                     var userDd = iCustService.GetDropdownByKey(cont.ContractUser);
                     contractUserDropdown = contractUserDropdown.Concat(userDd).ToArray();
                 }
 
                 var contractGurantor1Dropdown = customerDropdown;
-                if(cont.ContractGurantor1 != null) {
+                if (cont.ContractGurantor1 != null)
+                {
                     var gurantorDd = iCustService.GetDropdownByKey(cont.ContractGurantor1);
                     contractGurantor1Dropdown = contractGurantor1Dropdown.Concat(gurantorDd).ToArray();
                 }
@@ -209,7 +214,8 @@ namespace KKHondaBackend.Controllers.Credits
 
                 return Ok(obj);
 
-            } catch (Exception ex) 
+            }
+            catch (Exception ex)
             {
                 return StatusCode(500, ex.Message);
             }
@@ -221,7 +227,7 @@ namespace KKHondaBackend.Controllers.Credits
         {
             try
             {
-                    
+
                 var detail = (from db in ctx.CreditContract
 
                               join _branch in ctx.Branch on db.BranchId equals _branch.BranchId into a1
@@ -312,21 +318,109 @@ namespace KKHondaBackend.Controllers.Credits
                    .Where(p => p.ContractId == contract.ContractId && p.RefNo == contract.RefNo)
                    .OrderBy(o => o.InstalmentNo).ToList();
 
+               var outstanding = SetOutstanding(contractId);
+
                 var obj = new Dictionary<string, object>
                 {
                     {"creditCalculate", calculate},
                     {"creditContractItem", contItem},
                     {"creditContractDetail", detail},
-                    {"booking", booking}
+                    {"booking", booking},
+                    {"outstanding", outstanding }
                 };
 
                 return Ok(obj);
 
-            } catch(Exception)
+            }
+            catch (Exception ex)
             {
                 return NotFound();
             }
         }
+
+        private Outstanding SetOutstanding(int contractId)
+        {
+            var cc = ctx.CreditContract.Where(item => item.ContractId == contractId).FirstOrDefault();
+            var contractItem = ctx.CreditContractItem.Where(item => item.ContractId == contractId && item.RefNo == cc.RefNo).ToList();
+            // ดอกเบี้ยค้างชำระ
+            var fineSumeOut = (from db in contractItem
+                               where (db.FineSumStatus == 0 || db.FineSumStatus == null)
+                               group db by new
+                               {
+                                   db.ContractId
+                               } into a1
+                               select new Outstanding
+                               {
+                                   FineSume = (int)a1.Sum(x => x.FineSum == null ? 0 : x.FineSum)
+                               }).FirstOrDefault();
+
+            // เงินดาวน์ค้างชำระ
+            var depositOut = contractItem
+                .Where(item => item.PayNetPrice == null && item.InstalmentNo == 0)
+                .Select(item => new Outstanding { Deposit = (decimal)item.BalanceNetPrice })
+                .FirstOrDefault();
+
+            var dateNow = DateTime.Now.Date;
+
+            var balanceOut = (from db in contractItem
+                              where db.PayNetPrice == null && db.InstalmentNo > 0 && DateTime.Parse(db.DueDate.ToString()).Date <= dateNow
+                              group db by new
+                              {
+                                  db.ContractId
+                              } into a1
+                              select new Outstanding
+                              {
+                                  Balance = (decimal)a1.Sum(x => x.BalanceNetPrice),
+                                  StartInstalment = a1.Min(x => x.InstalmentNo),
+                                  EndInstalment = a1.Max(x => x.InstalmentNo)
+                              }).FirstOrDefault();
+
+            // งวดต่อไปที่ต้องชำระ
+            var nextInstalment = (from db in contractItem
+                                  where db.InstalmentNo > 0 && DateTime.Parse(db.DueDate.ToString()).Date > dateNow
+                                  group db by new
+                                  {
+                                      db.ContractId,
+                                      db.BalanceNetPrice
+                                  } into g
+                                  select new Outstanding
+                                  {
+                                      NextInstalment = g.Min(x => x.InstalmentNo),
+                                      NextDueDate = (DateTime)g.Min(x => x.DueDate),
+                                      NextInstalmentBalance = (decimal)g.Key.BalanceNetPrice
+                                  }).FirstOrDefault();
+
+            // ค่างวดที่ยังไม่ถึงกำหนด
+            var futureInstalment = (from db in contractItem
+                                    where db.InstalmentNo > 0 && DateTime.Parse(db.DueDate.ToString()).Date > dateNow
+                                    group db by new
+                                    {
+                                        db.ContractId
+                                    } into g
+                                    select new Outstanding
+                                    {
+                                        FutureInstalment = g.Count(),
+                                        FutureInstalmentBalance = (decimal)g.Sum(x => x.BalanceNetPrice)
+                                    }).FirstOrDefault();
+           
+
+            var obj = new Outstanding
+            {
+                FineSume = fineSumeOut.FineSume,
+                Deposit = depositOut.Deposit,
+                Balance = balanceOut.Balance,
+                StartInstalment = balanceOut.StartInstalment,
+                EndInstalment = balanceOut.EndInstalment,
+                NextInstalment = nextInstalment.NextInstalment,
+                NextInstalmentBalance = nextInstalment.NextInstalmentBalance,
+                NextDueDate = nextInstalment.NextDueDate,
+                FutureInstalment = futureInstalment.FutureInstalment,
+                FutureInstalmentBalance = futureInstalment.FutureInstalmentBalance,
+            };
+            return obj;
+
+        }
+
 
         [HttpPost("Create")]
         public IActionResult Create([FromBody] CreditContract creditContract)
@@ -351,7 +445,7 @@ namespace KKHondaBackend.Controllers.Credits
 
                     // ค้นหาชื่อเช่าซื้อด้วยรหัส
                     var customer = iCustService.GetCustomerByCode(creditContract.ContractHire);
-                    
+
                     booking.SellDate = DateTime.Now;
                     booking.BookingStatus = 2; // สถานะขาย
 
@@ -359,7 +453,7 @@ namespace KKHondaBackend.Controllers.Credits
                     booking.PaymentType = booking.BookingDepositType;
                     booking.CusSellName = customer.CustomerFullName;
                     booking.CusTaxNo = customer.IdCard;
-                    
+
                     booking.SellBy = creditContract.CreateBy;
                     booking.LStartDate = calculate.FirstPayment.ToString();
                     booking.LPayDay = calculate.DueDate;
@@ -387,7 +481,7 @@ namespace KKHondaBackend.Controllers.Credits
         }
 
         [HttpPost("Edit")]
-        public IActionResult Edit([FromBody] CreditContract creditContract) 
+        public IActionResult Edit([FromBody] CreditContract creditContract)
         {
             using (var transaction = ctx.Database.BeginTransaction())
             {
@@ -430,7 +524,7 @@ namespace KKHondaBackend.Controllers.Credits
 
                     if (booking.VatNo == null)
                         booking.VatNo = iSysParamService.GenerateVatNo((int)creditContract.BranchId);
-                            
+
                     booking.VatDate = DateTime.Now;
                     booking.VatBy = creditContract.CreateBy;
                     ctx.Update(booking);
@@ -447,6 +541,20 @@ namespace KKHondaBackend.Controllers.Credits
                     return StatusCode(500, ex.Message);
                 }
             }
+        }
+
+        private class Outstanding
+        {
+            public decimal FineSume { get; set; }
+            public decimal Deposit { get; set; }
+            public decimal Balance { get; set; }
+            public Int64 StartInstalment { get; set; }
+            public Int64 EndInstalment { get; set; }
+            public Int64 NextInstalment { get; set; }
+            public decimal NextInstalmentBalance { get; set; }
+            public DateTime NextDueDate { get; set; }
+            public Int64 FutureInstalment { get; set; }
+            public decimal FutureInstalmentBalance { get; set; }
         }
 
         public class CreditContractList

@@ -21,6 +21,7 @@ namespace KKHondaBackend.Models
         public decimal? DiscountRate { get; set; }
         public decimal? DiscountPrice { get; set; }
         public decimal? FineSum { get; set; }
+        public int? FineSumStatus { get; set; }
         public int? TaxInvoiceBranchId { get; set; }
         public string TaxInvoiceNo { get; set; }
         public decimal? NetInvoice { get; set; }
