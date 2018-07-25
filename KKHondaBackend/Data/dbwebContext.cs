@@ -1004,6 +1004,20 @@ namespace KKHondaBackend.Data
                     .HasColumnName("discount_rate")
                     .HasColumnType("decimal(8, 4)");
 
+                entity.Property(e => e.UseDiscount)
+                    .HasColumnName("use_discount");
+
+                entity.Property(e => e.DistCutOffSaleRate)
+                    .HasColumnName("dist_cut_off_sale_rate")
+                    .HasColumnType("decimal(8, 4)");
+
+                entity.Property(e => e.DistCutOffSalePrice)
+                    .HasColumnName("dist_cut_off_sale_price")
+                    .HasColumnType("decimal(8, 4)");
+
+                entity.Property(e => e.UseDistCutOffSale)
+                    .HasColumnName("use_dist_cut_off_sale");
+
                 entity.Property(e => e.DueDate)
                     .HasColumnName("due_date")
                     .HasColumnType("datetime");
@@ -1049,6 +1063,10 @@ namespace KKHondaBackend.Data
                     .HasColumnName("pay_price")
                     .HasColumnType("decimal(18, 4)");
 
+                entity.Property(e => e.PayDate)
+                    .HasColumnName("pay_date")
+                    .HasColumnType("datetime");
+
                 entity.Property(e => e.PayVatPrice)
                     .HasColumnName("pay_vat_price")
                     .HasColumnType("decimal(18, 4)");
@@ -1087,6 +1105,10 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.VatRate)
                     .HasColumnName("vat_rate")
                     .HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.Remark)
+                    .HasColumnName("remark")
+                    .HasMaxLength(255);
             });
 
             modelBuilder.Entity<CreditTermList>(entity =>

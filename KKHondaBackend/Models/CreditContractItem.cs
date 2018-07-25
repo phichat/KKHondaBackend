@@ -18,8 +18,13 @@ namespace KKHondaBackend.Models
         public decimal? PayPrice { get; set; }
         public decimal? PayVatPrice { get; set; }
         public decimal? PayNetPrice { get; set; }
+        public DateTime? PayDate { get; set; }
         public decimal? DiscountRate { get; set; }
         public decimal? DiscountPrice { get; set; }
+        public int? UseDiscount { get; set; }
+        public decimal? DistCutOffSaleRate { get; set; }
+        public decimal? DistCutOffSalePrice { get; set; }
+        public int? UseDistCutOffSale { get; set; }
         public decimal? FineSum { get; set; }
         public int? FineSumStatus { get; set; }
         public int? TaxInvoiceBranchId { get; set; }
@@ -39,5 +44,6 @@ namespace KKHondaBackend.Models
         public DateTime CreateDate { get; set; }
         public int? UpdateBy { get; set; }
         public DateTime? UpdateDate { get; set; }
+        public string Remark { get; set; }
     }
 }
