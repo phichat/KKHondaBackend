@@ -9,6 +9,12 @@ namespace KKHondaBackend.Data
     {
         public dbwebContext(DbContextOptions<dbwebContext> options) : base(options) { }
 
+        public virtual DbSet<Outstandings> Outstandings {get; set;}
+        public virtual DbSet<DelayedInterest> DelayedInterest { get; set; }
+        public virtual DbSet<Discounts> Discounts { get; set; }
+        public virtual DbSet<CutOffSale> CutOffSale { get; set; }
+        public virtual DbSet<HistoryPayment> HistoryPayment { get; set; }
+
         public virtual DbSet<Booking> Booking { get; set; }
         public virtual DbSet<BookingItem> BookingItem { get; set; }
         public virtual DbSet<Branch> Branch { get; set; }

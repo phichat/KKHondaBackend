@@ -7,6 +7,7 @@ using KKHondaBackend.Data;
 using KKHondaBackend.Models;
 using KKHondaBackend.Services;
 using Microsoft.EntityFrameworkCore;
+using System.Data.SqlClient;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -318,15 +319,15 @@ namespace KKHondaBackend.Controllers.Credits
                 //   .Where(p => p.ContractId == contract.ContractId && p.RefNo == contract.RefNo)
                 //   .OrderBy(o => o.InstalmentNo).ToList();
 
-                var outstanding = SetOutstanding(contractId, contract.RefNo);
+                var outstanding = SetOutstanding(contractId.ToString());
 
-                var delayedInterest = SetDelayedInterest(contractId, contract.RefNo);
+                var delayedInterest = SetDelayedInterest(contractId.ToString());
 
-                var discounts = SetDiscounts(contractId, contract.RefNo);
+                var discounts = SetDiscounts(contractId.ToString());
 
-                var cutOffSale = SetCutOffSale(contractId, contract.RefNo);
+                var cutOffSale = SetCutOffSale(contractId.ToString());
 
-                var historyPayment = SetHistoryPayment(contractId, calculate.CalculateId, contract.ContractNo, contract.RefNo);
+                var historyPayment = SetHistoryPayment(contractId.ToString());
 
                 var obj = new Dictionary<string, object>
                 {
@@ -350,248 +351,264 @@ namespace KKHondaBackend.Controllers.Credits
             }
         }
 
-        private Outstandings SetOutstanding(int contractId, string refNo)
+        private Outstandings SetOutstanding(string contractId)
         {
-            var contractItem = ctx.CreditContractItem.Where(item => item.ContractId == contractId && item.RefNo == refNo).ToList();
-            // ดอกเบี้ยค้างชำระ
-            var fineSumeOut = (from db in contractItem
-                               where (db.FineSumStatus == 0 || db.FineSumStatus == null)
-                               group db by db.ContractId into a1
-                               select new Outstandings
-                               {
-                                   FineSume = (int)a1.Sum(x => x.FineSum == null ? 0 : x.FineSum)
-                               }).FirstOrDefault();
+            // var contractItem = ctx.CreditContractItem.Where(item => item.ContractId == contractId && item.RefNo == refNo).ToList();
+            // // ดอกเบี้ยค้างชำระ
+            // var fineSumeOut = (from db in contractItem
+            //                    where (db.FineSumStatus == 0 || db.FineSumStatus == null)
+            //                    group db by db.ContractId into a1
+            //                    select new Outstandings
+            //                    {
+            //                        FineSum = (int)a1.Sum(x => x.FineSum == null ? 0 : x.FineSum)
+            //                    }).FirstOrDefault();
 
-            // เงินดาวน์ค้างชำระ
-            var depositOut = contractItem
-                .Where(item => (item.PayNetPrice == null || item.PayNetPrice == 0) && item.InstalmentNo == 0)
-                .Select(item => new Outstandings { Deposit = (decimal)item.BalanceNetPrice })
+            // // เงินดาวน์ค้างชำระ
+            // var depositOut = contractItem
+            //     .Where(item => (item.PayNetPrice == null || item.PayNetPrice == 0) && item.InstalmentNo == 0)
+            //     .Select(item => new Outstandings { Deposit = (decimal)item.BalanceNetPrice })
+            //     .FirstOrDefault();
+
+            // var dateNow = DateTime.Now.Date;
+
+            // // ค่างวดค้างชำระ
+            // var balanceOut = (from db in contractItem
+            //                   where (db.PayNetPrice == null || db.PayNetPrice == 0) &&
+            //                   db.InstalmentNo > 0 && DateTime.Parse(db.DueDate.ToString()).Date <= dateNow
+            //                   group db by db.ContractId into a1
+            //                   select new Outstandings
+            //                   {
+            //                       Balance = (decimal)a1.Sum(x => x.BalanceNetPrice),
+            //                       StartInstalment = a1.Min(x => x.InstalmentNo),
+            //                       EndInstalment = a1.Max(x => x.InstalmentNo)
+            //                   }).FirstOrDefault();
+
+            // // งวดต่อไปที่ต้องชำระ
+            // var nextInstalment = (from db in contractItem
+            //                       where db.InstalmentNo > 0 && DateTime.Parse(db.DueDate.ToString()).Date > dateNow
+            //                       group db by new
+            //                       {
+            //                           db.ContractId,
+            //                           db.BalanceNetPrice
+            //                       } into g
+            //                       select new Outstandings
+            //                       {
+            //                           NextInstalment = g.Min(x => x.InstalmentNo),
+            //                           NextDueDate = (DateTime)g.Min(x => x.DueDate),
+            //                           NextInstalmentBalance = (decimal)g.Key.BalanceNetPrice
+            //                       }).FirstOrDefault();
+
+            // // ค่างวดที่ยังไม่ถึงกำหนด
+            // var futureInstalment = (from db in contractItem
+            //                         where db.InstalmentNo > 0 && DateTime.Parse(db.DueDate.ToString()).Date > dateNow
+            //                         group db by db.ContractId into g
+            //                         select new Outstandings
+            //                         {
+            //                             FutureInstalment = g.Count(),
+            //                             FutureInstalmentBalance = (decimal)g.Sum(x => x.BalanceNetPrice)
+            //                         }).FirstOrDefault();
+
+            // // ยอดค้างชำระทั้งสิ้น
+            // var outstandingTotal = fineSumeOut.FineSum + depositOut.Deposit + balanceOut.Balance;
+
+            // // ยอดที่รับชำระแล้ว
+            // var payPriceTotal = (from db in contractItem
+            //                      group db by db.ContractId into g
+            //                      select new Outstandings
+            //                      {
+            //                          PayPriceTotal = (decimal)g.Sum(x => x.PayNetPrice)
+            //                      }).FirstOrDefault();
+
+            // // payPriceTotal = payPriceTotal == null ? 0.00 : payPriceTotal.PayPriceTotal;
+
+            // var obj = new Outstandings
+            // {
+            //     FineSum = fineSumeOut.FineSum,
+            //     Deposit = depositOut.Deposit,
+            //     Balance = balanceOut.Balance,
+            //     StartInstalment = balanceOut.StartInstalment,
+            //     EndInstalment = balanceOut.EndInstalment,
+            //     OutstandingTotal = outstandingTotal,
+            //     PayPriceTotal = payPriceTotal.PayPriceTotal,
+            //     NextInstalment = nextInstalment.NextInstalment,
+            //     NextInstalmentBalance = nextInstalment.NextInstalmentBalance,
+            //     NextDueDate = nextInstalment.NextDueDate,
+            //     FutureInstalment = futureInstalment.FutureInstalment,
+            //     FutureInstalmentBalance = futureInstalment.FutureInstalmentBalance,
+            // };
+            //var parameters = new List<SqlParameter>(){ new SqlParameter("@ContractId", contractId) };
+
+            var obj = ctx.Outstandings
+                .FromSql("sp_RptOutstanding @p0", parameters: new[] { contractId })
                 .FirstOrDefault();
-
-            var dateNow = DateTime.Now.Date;
-
-            // ค่างวดค้างชำระ
-            var balanceOut = (from db in contractItem
-                              where (db.PayNetPrice == null || db.PayNetPrice == 0) &&
-                              db.InstalmentNo > 0 && DateTime.Parse(db.DueDate.ToString()).Date <= dateNow
-                              group db by db.ContractId into a1
-                              select new Outstandings
-                              {
-                                  Balance = (decimal)a1.Sum(x => x.BalanceNetPrice),
-                                  StartInstalment = a1.Min(x => x.InstalmentNo),
-                                  EndInstalment = a1.Max(x => x.InstalmentNo)
-                              }).FirstOrDefault();
-
-            // งวดต่อไปที่ต้องชำระ
-            var nextInstalment = (from db in contractItem
-                                  where db.InstalmentNo > 0 && DateTime.Parse(db.DueDate.ToString()).Date > dateNow
-                                  group db by new
-                                  {
-                                      db.ContractId,
-                                      db.BalanceNetPrice
-                                  } into g
-                                  select new Outstandings
-                                  {
-                                      NextInstalment = g.Min(x => x.InstalmentNo),
-                                      NextDueDate = (DateTime)g.Min(x => x.DueDate),
-                                      NextInstalmentBalance = (decimal)g.Key.BalanceNetPrice
-                                  }).FirstOrDefault();
-
-            // ค่างวดที่ยังไม่ถึงกำหนด
-            var futureInstalment = (from db in contractItem
-                                    where db.InstalmentNo > 0 && DateTime.Parse(db.DueDate.ToString()).Date > dateNow
-                                    group db by db.ContractId into g
-                                    select new Outstandings
-                                    {
-                                        FutureInstalment = g.Count(),
-                                        FutureInstalmentBalance = (decimal)g.Sum(x => x.BalanceNetPrice)
-                                    }).FirstOrDefault();
-
-            // ยอดค้างชำระทั้งสิ้น
-            var outstandingTotal = fineSumeOut.FineSume + depositOut.Deposit + balanceOut.Balance;
-
-            // ยอดที่รับชำระแล้ว
-            var payPriceTotal = (from db in contractItem
-                                 where db.PayNetPrice != null || db.PayNetPrice > 0
-                                 group db by db.ContractId into g
-                                 select new
-                                 {
-                                     payPrice = g.Sum(x => x.PayNetPrice == null ? 0 : (decimal)x.PayNetPrice)
-                                 }).FirstOrDefault();
-
-            var obj = new Outstandings
-            {
-                FineSume = fineSumeOut.FineSume,
-                Deposit = depositOut.Deposit,
-                Balance = balanceOut.Balance,
-                StartInstalment = balanceOut.StartInstalment,
-                EndInstalment = balanceOut.EndInstalment,
-                OutstandingTotal = outstandingTotal,
-                PayPriceTotal = payPriceTotal.payPrice,
-                NextInstalment = nextInstalment.NextInstalment,
-                NextInstalmentBalance = nextInstalment.NextInstalmentBalance,
-                NextDueDate = nextInstalment.NextDueDate,
-                FutureInstalment = futureInstalment.FutureInstalment,
-                FutureInstalmentBalance = futureInstalment.FutureInstalmentBalance,
-            };
             return obj;
 
         }
 
-        private List<DelayedInterest> SetDelayedInterest(int contractId, string refNo)
+        private List<DelayedInterest> SetDelayedInterest(string contractId)
         {
-            var list = ctx.CreditContractItem
-                .Where(p => p.ContractId == contractId && p.RefNo == refNo && p.InstalmentNo > 0)
-                .Select(p => new DelayedInterest
-                {
-                    InstalmentNo = p.InstalmentNo,
-                    DueDate = (DateTime)p.DueDate,
-                    Balance = (decimal)p.BalanceNetPrice,
-                    FineSum = p.FineSum == null ? 0 : (decimal)p.FineSum,
-                    Outstanding = (decimal)p.BalanceNetPrice + p.FineSum == null ? 0 : (decimal)p.FineSum,
-                    DelayDueDate = p.DelayDueDate == null ? 0 : (int)p.DelayDueDate,
-                    Remark = p.Remark
-                }).ToList();
-
-            return list;
-        }
-
-        private List<Discounts> SetDiscounts(int contractId, string refNo)
-        {
-            var list = ctx.CreditContractItem
-                .Where(p => p.ContractId == contractId && p.RefNo == refNo && p.InstalmentNo > 0)
-                .Select(p => new Discounts
-                {                    
-                    InstalmentNo = p.InstalmentNo,
-                    DueDate = (DateTime)p.DueDate,
-                    Balance = (decimal)p.BalanceNetPrice,
-                    Outstanding = (decimal)p.BalanceNetPrice ,
-                    Discount = (decimal)p.DiscountPrice
-                }).ToList();
-
-            return list;
-        }
-
-        private CutOffSale SetCutOffSale(int contractId, string refNo)
-        {
-            var contractItem = ctx.CreditContractItem.Where(p => p.ContractId == contractId && p.RefNo == refNo).ToList();
-            var goodPrice = (from db in contractItem
-                             where db.PayNetPrice == null
-                             group db by db.ContractId into g
-                             select new
-                             {
-                                 InterestInstalment = g.Sum(x => (decimal)x.InterestInstalment),
-                                 GoodPrice = g.Sum(x => (decimal)x.GoodsPrice)
-                             }).FirstOrDefault();
-
-            // ค่างวดที่ต้องชำระ
-            var balance = (from db in contractItem
-                           where db.PayNetPrice == null
-                           group db by db.ContractId into g
-                           select new
-                           {
-                               Balance = g.Sum(x => (decimal)x.BalanceNetPrice)
-                           }).FirstOrDefault();
-
-            // เงินดาวน์
-            var deposit = contractItem
-                .Where(db => db.InstalmentNo == 0 && db.PayNetPrice == null)
-                .Select(p => new { Deposit = (decimal)p.BalanceNetPrice })
-                .FirstOrDefault();
-
-            // ดอกเบี้ยล่าช้า -- ที่ยังไม่จ่าย
-            var interest = (from db in contractItem
-                            where db.FineSumStatus == null || db.FineSumStatus == 0
-                            group db by db.ContractId into g
-                            select new
-                            {
-                                FineSum = g.Sum(x => x.FineSum == null ? 0 : (int)x.FineSum)
-                            }).FirstOrDefault();
-
-            // ส่วนลด -- ที่ยังไม่ได้ใช้
-            var discount = (from db in contractItem
-                            where db.UseDiscount == null || db.UseDiscount == 0
-                            group db by db.ContractId into g
-                            select new
-                            {
-                                Discount = g.Sum(x => x.DiscountPrice == null ? 0 : (decimal)x.DiscountPrice)
-                            }).FirstOrDefault();
-
-            // ส่วนลดตัดสด -- ที่ยังไม่ได้ใช้
-            var distCutOffSale = (from db in contractItem
-                                  where db.UseDistCutOffSale == null || db.UseDistCutOffSale == 0
-                                  group db by db.ContractId into g
-                                  select new
-                                  {
-                                      Discount = g.Sum(x => x.DistCutOffSalePrice == null ? 0 : (decimal)x.DistCutOffSalePrice)
-                                  }).FirstOrDefault();
-
-            var sumBalance = balance.Balance + deposit.Deposit + interest.FineSum;
-            var sumDiscount = discount.Discount + distCutOffSale.Discount;
-            var totalBalance = sumBalance - sumDiscount;
-
-            var obj = new CutOffSale
-            {
-                InterestInstalment = goodPrice.InterestInstalment,
-                GoodPrice = goodPrice.GoodPrice,
-                Balance = balance.Balance,
-                FineSum = interest.FineSum,
-                SumBalance = sumBalance,
-                Discount = discount.Discount,
-                DistCutOffSale = distCutOffSale.Discount,
-                SumDiscount = sumDiscount,
-                TotalBalance = totalBalance
-            };
-
-            return obj;
-        }
-
-        private HistoryPayment SetHistoryPayment(int contractId, int calculateId, string contractNo, string refNo)
-        {
-            var dateNow = DateTime.Parse(new DateTime().ToString()).Date;
-            var contractItem = ctx.CreditContractItem
-                .Where(p => p.ContractId == contractId && p.RefNo == refNo &&
-                DateTime.Parse(p.DueDate.ToString()).Date <= dateNow)
+            // var list = ctx.CreditContractItem
+            //     .Where(p => p.ContractId == contractId && p.RefNo == refNo && p.InstalmentNo > 0)
+            //     .Select(p => new DelayedInterest
+            //     {
+            //         InstalmentNo = p.InstalmentNo,
+            //         DueDate = (DateTime)p.DueDate,
+            //         Balance = (decimal)p.BalanceNetPrice,
+            //         FineSum = p.FineSum == null ? 0 : (decimal)p.FineSum,
+            //         Outstanding = p.FineSum == null ? 0 : (decimal)p.FineSum ,
+            //         DelayDueDate = p.DelayDueDate == null ? 0 : (int)p.DelayDueDate,
+            //         Remark = p.Remark
+            //     }).ToList();
+            var list = ctx.DelayedInterest
+                .FromSql("sp_RptDelayedInterest @p0", parameters: new[] { contractId })
                 .ToList();
-            var calculate = ctx.CreditCalculate
-                .Where(p => p.CalculateId == calculateId)
+            return list;
+        }
+
+        private IEnumerable<Discounts> SetDiscounts(string contractId)
+        {
+
+            //var list = ctx.CreditContractItem
+            //    .Where(p => p.ContractId == contractId && p.RefNo == refNo && p.InstalmentNo > 0)
+            //    .Select(p => new Discounts
+            //    {                    
+            //        InstalmentNo = p.InstalmentNo,
+            //        DueDate = (DateTime)p.DueDate,
+            //        Balance = (decimal)p.BalanceNetPrice,
+            //        Outstanding = (decimal)p.BalanceNetPrice - (p.PayPrice == null ? 0 : (decimal)p.PayPrice),
+            //        Discount = p.DiscountPrice == null ? 0 : (decimal)p.DiscountPrice
+            //    }).ToList();
+            var list = ctx.Discounts
+                .FromSql("sp_RptDiscounts @p0", parameters: new[] { contractId })
+                .ToList();
+            return list;
+        }
+
+        private CutOffSale SetCutOffSale(string contractId)
+        {
+            //var contractItem = ctx.CreditContractItem.Where(p => p.ContractId == contractId && p.RefNo == refNo).ToList();
+            //var goodPrice = (from db in contractItem
+            //                 where db.PayNetPrice == null
+            //                 group db by db.ContractId into g
+            //                 select new
+            //                 {
+            //                     InterestInstalment = g.Sum(x => (decimal)x.InterestInstalment),
+            //                     GoodPrice = g.Sum(x => (decimal)x.GoodsPrice)
+            //                 }).FirstOrDefault();
+
+            //// ค่างวดที่ต้องชำระ
+            //var balance = (from db in contractItem
+            //               where db.PayNetPrice == null && db.InstalmentNo > 0
+            //               group db by db.ContractId into g
+            //               select new
+            //               {
+            //                   Balance = g.Sum(x => (decimal)x.BalanceNetPrice)
+            //               }).FirstOrDefault();
+
+            //// เงินดาวน์
+            //var deposit = contractItem
+            //    .Where(db => db.InstalmentNo == 0 && db.PayNetPrice == null)
+            //    .Select(p => new { Deposit = (decimal)p.BalanceNetPrice })
+            //    .FirstOrDefault();
+
+            //// ดอกเบี้ยล่าช้า -- ที่ยังไม่จ่าย
+            //var interest = (from db in contractItem
+            //                where db.FineSumStatus == null || db.FineSumStatus == 0
+            //                group db by db.ContractId into g
+            //                select new
+            //                {
+            //                    FineSum = g.Sum(x => x.FineSum == null ? 0 : (int)x.FineSum)
+            //                }).FirstOrDefault();
+
+            //// ส่วนลด -- ที่ยังไม่ได้ใช้
+            //var discount = (from db in contractItem
+            //                where db.UseDiscount == null || db.UseDiscount == 0
+            //                group db by db.ContractId into g
+            //                select new
+            //                {
+            //                    Discount = g.Sum(x => x.DiscountPrice == null ? 0 : (decimal)x.DiscountPrice)
+            //                }).FirstOrDefault();
+
+            //// ส่วนลดตัดสด -- ที่ยังไม่ได้ใช้
+            //var distCutOffSale = (from db in contractItem
+            //                      where db.UseDistCutOffSale == null || db.UseDistCutOffSale == 0
+            //                      group db by db.ContractId into g
+            //                      select new
+            //                      {
+            //                          Discount = g.Sum(x => x.DistCutOffSalePrice == null ? 0 : (decimal)x.DistCutOffSalePrice)
+            //                      }).FirstOrDefault();
+
+            //var sumBalance = balance.Balance + deposit.Deposit + interest.FineSum;
+            //var sumDiscount = discount.Discount + distCutOffSale.Discount;
+            //var totalBalance = sumBalance - sumDiscount;
+
+            //var obj = new CutOffSale
+            //{
+            //    InterestInstalment = goodPrice.InterestInstalment,
+            //    GoodPrice = goodPrice.GoodPrice,
+            //    Balance = balance.Balance,
+            //    DepositPrice = deposit.Deposit,
+            //    FineSum = interest.FineSum,
+            //    SumBalance = sumBalance,
+            //    Discount = discount.Discount,
+            //    DistCutOffSale = distCutOffSale.Discount,
+            //    SumDiscount = sumDiscount,
+            //    TotalBalance = totalBalance
+            //};
+            var obj = ctx.CutOffSale
+                .FromSql("sp_RptCutOffSale @p0", parameters: new[] { contractId })
                 .FirstOrDefault();
+            return obj;
+        }
 
-            var payBefore = 0;
-            var payLate = 0;
-            var paymatch = 0;
-            foreach (var a in contractItem)
-            {                
-                var payday = a.PayDate == null ? dateNow : DateTime.Parse(a.PayDate.ToString()).Date;
-                var duedate = DateTime.Parse(a.DueDate.ToString()).Date;
-                if (payday > duedate)
-                {
-                    // จำนวนการชำละล่าช้า
-                    payLate += 1;
-                }
-                else if (payday <= duedate)
-                {
-                    // จำนวนการชำระก่อน
-                    payBefore += 1;
-                }
-                else if (payday == duedate)
-                {
-                    // จำนวนการชำระตรงกับวันที่กำหนด
-                    paymatch += 1;
-                }
-            }
+        private HistoryPayment SetHistoryPayment(string contractId)
+        {
+            //var dateNow = DateTime.Parse(new DateTime().ToString()).Date;
+            //var contractItem = ctx.CreditContractItem
+            //    .Where(p => p.ContractId == contractId && p.RefNo == refNo &&
+            //    DateTime.Parse(p.DueDate.ToString()).Date <= dateNow)
+            //    .ToList();
+            //var calculate = ctx.CreditCalculate
+            //    .Where(p => p.CalculateId == calculateId)
+            //    .FirstOrDefault();
 
-            var obj = new HistoryPayment
-            {
-                ContractNo = contractNo,
-                InstalmentEnd = calculate.InstalmentEnd,
-                PayBefore = payBefore,
-                PayMatch = paymatch,
-                PayLate = payLate,
-                RateLate = payLate * 100 / calculate.InstalmentEnd,
-                Grade = null
-            };
+            //var payBefore = 0;
+            //var payLate = 0;
+            //var paymatch = 0;
+            //foreach (var a in contractItem)
+            //{                
+            //    var payday = a.PayDate == null ? dateNow : DateTime.Parse(a.PayDate.ToString()).Date;
+            //    var duedate = DateTime.Parse(a.DueDate.ToString()).Date;
+            //    if (payday > duedate)
+            //    {
+            //        // จำนวนการชำละล่าช้า
+            //        payLate += 1;
+            //    }
+            //    else if (payday <= duedate)
+            //    {
+            //        // จำนวนการชำระก่อน
+            //        payBefore += 1;
+            //    }
+            //    else if (payday == duedate)
+            //    {
+            //        // จำนวนการชำระตรงกับวันที่กำหนด
+            //        paymatch += 1;
+            //    }
+            //}
 
+            //var obj = new HistoryPayment
+            //{
+            //    ContractNo = contractNo,
+            //    InstalmentEnd = calculate.InstalmentEnd,
+            //    PayBefore = payBefore,
+            //    PayMatch = paymatch,
+            //    PayLate = payLate,
+            //    RateLate = payLate * 100 / calculate.InstalmentEnd,
+            //    Grade = null
+            //};
+            var obj = ctx.HistoryPayment
+                .FromSql("sp_RptHistoryPayment @p0", parameters: new[] { contractId })
+                .FirstOrDefault();
             return obj;
         }
 
@@ -716,66 +733,67 @@ namespace KKHondaBackend.Controllers.Credits
             }
         }
 
-        private class Outstandings
-        {
-            public decimal FineSume { get; set; }
-            public decimal Deposit { get; set; }
-            public decimal Balance { get; set; }
-            public int StartInstalment { get; set; }
-            public int EndInstalment { get; set; }
-            public decimal OutstandingTotal { get; set; }
-            public decimal PayPriceTotal { get; set; }
-            public int NextInstalment { get; set; }
-            public decimal NextInstalmentBalance { get; set; }
-            public DateTime NextDueDate { get; set; }
-            public int FutureInstalment { get; set; }
-            public decimal FutureInstalmentBalance { get; set; }
-        }
+        // private class Outstandings
+        // {
+        //     public decimal FineSum { get; set; }
+        //     public decimal Deposit { get; set; }
+        //     public decimal Balance { get; set; }
+        //     public int StartInstalment { get; set; }
+        //     public int EndInstalment { get; set; }
+        //     public decimal OutstandingTotal { get; set; }
+        //     public decimal PayPriceTotal { get; set; }
+        //     public int NextInstalment { get; set; }
+        //     public decimal NextInstalmentBalance { get; set; }
+        //     public DateTime NextDueDate { get; set; }
+        //     public int FutureInstalment { get; set; }
+        //     public decimal FutureInstalmentBalance { get; set; }
+        // }
 
-        private class DelayedInterest
-        {
-            public int InstalmentNo { get; set; }
-            public DateTime DueDate { get; set; }
-            public decimal Balance { get; set; }
-            public decimal FineSum { get; set; }
-            public decimal Outstanding { get; set; }
-            public int DelayDueDate { get; set; }
-            public string Remark { get; set; }
-        }
+        // private class DelayedInterest
+        // {
+        //     public int InstalmentNo { get; set; }
+        //     public DateTime DueDate { get; set; }
+        //     public decimal Balance { get; set; }
+        //     public decimal FineSum { get; set; }
+        //     public decimal Outstanding { get; set; }
+        //     public int DelayDueDate { get; set; }
+        //     public string Remark { get; set; }
+        // }
 
-        private class Discounts
-        {
-            public int InstalmentNo { get; set; }
-            public DateTime DueDate { get; set; }
-            public decimal Balance { get; set; }
-            public decimal Outstanding { get; set; }
-            public decimal Discount { get; set; }
-        }
+        // private class Discounts
+        // {
+        //     public int InstalmentNo { get; set; }
+        //     public DateTime DueDate { get; set; }
+        //     public decimal Balance { get; set; }
+        //     public decimal Outstanding { get; set; }
+        //     public decimal Discount { get; set; }
+        // }
 
-        private class CutOffSale
-        {
-            public decimal InterestInstalment { get; set; }
-            public decimal GoodPrice { get; set; }
-            public decimal Balance { get; set; }
-            public decimal FineSum { get; set; }
-            public decimal SumBalance { get; set; }
-            public decimal Discount { get; set; }
-            public decimal DistCutOffSale { get; set; }
-            public decimal SumDiscount { get; set; }
-            public decimal TotalBalance { get; set; }
-        }
+        // private class CutOffSale
+        // {
+        //     public decimal InterestInstalment { get; set; }
+        //     public decimal GoodPrice { get; set; }
+        //     public decimal Balance { get; set; }
+        //     public decimal DepositPrice {get;set;}
+        //     public decimal FineSum { get; set; }
+        //     public decimal SumBalance { get; set; }
+        //     public decimal Discount { get; set; }
+        //     public decimal DistCutOffSale { get; set; }
+        //     public decimal SumDiscount { get; set; }
+        //     public decimal TotalBalance { get; set; }
+        // }
 
-        private class HistoryPayment
-        {
-            public string ContractNo { get; set; }
-            public DateTime ContractDate { get; set; }
-            public decimal InstalmentEnd { get; set; }
-            public int PayBefore { get; set; }
-            public int PayMatch { get; set; }
-            public int PayLate { get; set; }
-            public decimal RateLate { get; set; }
-            public string Grade { get; set; }
-        }
+        // private class HistoryPayment
+        // {
+        //     public string ContractNo { get; set; }
+        //     public DateTime ContractDate { get; set; }
+        //     public decimal InstalmentEnd { get; set; }
+        //     public int PayBefore { get; set; }
+        //     public int PayMatch { get; set; }
+        //     public int PayLate { get; set; }
+        //     public decimal RateLate { get; set; }
+        //     public string Grade { get; set; }
+        // }
 
         public class CreditContractList
         {

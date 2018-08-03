@@ -20,21 +20,31 @@ namespace KKHondaReport.Contracts
         private ReportDocument rptDoc;
 
         protected void Page_Load(object sender, EventArgs e)
-        {            
+        {
             var contractId = int.Parse(Request.QueryString["contractId"]);
-            if (Boolean.Parse(Request.QueryString["formContract"]) == true)
+            if (Request.QueryString["formContract"] != null)
             {
-                ExportFormatContract(contractId);
+                if (Boolean.Parse(Request.QueryString["formContract"]) == true)
+                    ExportFormatContract(contractId);
             }
 
-            if (Boolean.Parse(Request.QueryString["formInstalmentTerm"]) == true)
+            if (Request.QueryString["formInstalmentTerm"] != null)
             {
-                ExportFormInstalmentTerm(contractId);
+                if (Boolean.Parse(Request.QueryString["formInstalmentTerm"]) == true)
+                    ExportFormInstalmentTerm(contractId);
             }
 
-            if (Boolean.Parse(Request.QueryString["formTransfer"]) == true)
+            if (Request.QueryString["formTransfer"] != null)
             {
-                ExportFormTransfer(contractId);
+                if (Boolean.Parse(Request.QueryString["formTransfer"]) == true)
+                    ExportFormTransfer(contractId);
+            }
+
+            if (Request.QueryString["sumInterestDelay"] != null)
+            {
+                if (Boolean.Parse(Request.QueryString["sumInterestDelay"]) == true)
+                    ExportSumInterestDelay(contractId);
+
             }
         }
 
@@ -50,7 +60,7 @@ namespace KKHondaReport.Contracts
             {
                 conn.Open();
 
-                cmd.CommandText = "";
+                cmd.CommandText = "dbo.sp_RptFormContract";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@ContractId", contractId);
                 cmd.Connection = conn;
@@ -88,7 +98,7 @@ namespace KKHondaReport.Contracts
                 SqlConnectionStringBuilder connection = new SqlConnectionStringBuilder(conStr);
                 var server = connection.DataSource;
 
-               
+
                 var file = "./formInstalmentTerm.rpt";
                 rptDoc.Load(Server.MapPath(file));
                 rptDoc.Refresh();
@@ -117,7 +127,6 @@ namespace KKHondaReport.Contracts
                 Response.Write(ex.Message);
             }
         }
-
 
         private void ExportFormTransfer(int contractId)
         {
@@ -156,13 +165,52 @@ namespace KKHondaReport.Contracts
             }
         }
 
+        private void ExportSumInterestDelay(int contractId)
+        {
+            conn = new SqlConnection(conStr);
+            var cmd = new SqlCommand();
+            var dt = new DataTable();
+            var da = new SqlDataAdapter();
+            rptDoc = new ReportDocument();
+
+            try
+            {
+                conn.Open();
+
+                cmd.CommandText = "dbo.sp_RptDelayedInterest";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@ContractId", contractId);
+                cmd.Connection = conn;
+
+                da.SelectCommand = cmd;
+                da.Fill(dt);
+
+                var file = "./sumInterestDelay.rpt";
+                rptDoc.Load(Server.MapPath(file));
+                rptDoc.SetDataSource(dt);
+                rptDoc.SetParameterValue("@ContractId", contractId);
+
+                StreamPdfReport(rptDoc, "interest-delayed-doc");
+            }
+            catch (Exception ex)
+            {
+                Response.Write(ex.Message);
+            }
+            finally
+            {
+                conn.Close();
+            }
+        }
+
         private void StreamPdfReport(ReportDocument rptDoc, string fileName)
         {
             using (MemoryStream oStream = new MemoryStream())
             {
+
                 rptDoc.ExportToStream(ExportFormatType.PortableDocFormat).CopyTo(oStream);
                 Response.Clear();
                 Response.Buffer = true;
+                Response.AppendHeader("Content-Disposition", $"inline; filename={fileName}");
                 Response.ContentType = "application/pdf";
                 Response.BinaryWrite(oStream.ToArray());
                 Response.End();
@@ -178,6 +226,6 @@ namespace KKHondaReport.Contracts
             Log.ConnectionInfo.Password = "sql@2012";
             Log.ConnectionInfo.DatabaseName = "";
         }
-        
+
     }
 }
