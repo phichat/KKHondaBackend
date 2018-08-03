@@ -89,12 +89,6 @@
       <DependentUpon>formContract.rpt</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Credits\sumContractDetail.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>sumContractDetail.rpt</DependentUpon>
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="Credits\index.aspx.cs">
       <DependentUpon>index.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -150,10 +144,6 @@
     <EmbeddedResource Include="Credits\formContract.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>formContract.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Credits\sumContractDetail.rpt">
-      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
-      <LastGenOutput>sumContractDetail.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Credits\formInstalmentTerm.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>

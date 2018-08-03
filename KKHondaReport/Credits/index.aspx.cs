@@ -36,69 +36,77 @@ namespace KKHondaReport.Contracts
 
             if (Request.QueryString["formTransfer"] != null)
             {
-                if (Boolean.Parse(Request.QueryString["formTransfer"]) == true)
-                    ExportFormTransfer(contractId);
+                //if (Boolean.Parse(Request.QueryString["formTransfer"]) == true)
+                    //ExportFormTransfer(contractId);
+            }
+
+            // -------- Report Sum -------- //
+
+            if (Request.QueryString["sumCutOffCash"] != null)
+            {
+                if (Boolean.Parse(Request.QueryString["sumCutOffCash"]) == true)
+                    ExportSum(contractId, "./sumCutOffCash.rpt", "cut-off-sale-doc.pdf");
+            }
+
+            if (Request.QueryString["sumDiscountByTerm"] != null)
+            {
+                if (Boolean.Parse(Request.QueryString["sumDiscountByTerm"]) == true)
+                    ExportSum(contractId, "./sumDiscountByTerm.rpt", "cut-off-sale-doc.pdf");
             }
 
             if (Request.QueryString["sumInterestDelay"] != null)
             {
                 if (Boolean.Parse(Request.QueryString["sumInterestDelay"]) == true)
-                    ExportSumInterestDelay(contractId);
+                    ExportSum(contractId, "./sumInterestDelay.rpt", "interest-delayed-doc.pdf");
+            }
 
+            if (Request.QueryString["sumOutstanding"] != null)
+            {
+                if (Boolean.Parse(Request.QueryString["sumOutstanding"]) == true)
+                    ExportSum(contractId, "./sumOutstanding.rpt", "outstanding-doc.pdf");
+            }
+
+            if (Request.QueryString["sumPaymentHistory"] != null)
+            {
+                if (Boolean.Parse(Request.QueryString["sumPaymentHistory"]) == true)
+                    ExportSum(contractId, "./sumPaymentHistory.rpt", "history-payment-doc.pdf");
             }
         }
 
         private void ExportFormatContract(int contractId)
         {
-            conn = new SqlConnection(conStr);
-            var cmd = new SqlCommand();
-            var dt = new DataTable();
-            var da = new SqlDataAdapter();
-            rptDoc = new ReportDocument();
-
             try
             {
-                conn.Open();
-
-                cmd.CommandText = "dbo.sp_RptFormContract";
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@ContractId", contractId);
-                cmd.Connection = conn;
-
-                da.SelectCommand = cmd;
-                da.Fill(dt);
+                rptDoc = new ReportDocument();
+                SqlConnectionStringBuilder connection = new SqlConnectionStringBuilder(conStr);
+                var server = connection.DataSource;
 
                 var file = "./formContract.rpt";
                 rptDoc.Load(Server.MapPath(file));
-                rptDoc.SetDataSource(dt);
-                rptDoc.SetParameterValue("@ContractId", contractId);
+                rptDoc.Refresh();
 
-                StreamPdfReport(rptDoc, "contract-doc");
+                TableLogOnInfo L1 = rptDoc.Database.Tables[0].LogOnInfo;
+                GetLoginfo(L1, server);
+                rptDoc.SetParameterValue("@ContractId", contractId);
+                rptDoc.Database.Tables[0].ApplyLogOnInfo(L1);
+
+                StreamPdfReport(rptDoc, "contract-doc.pdf");
             }
             catch (Exception ex)
             {
                 Response.Write(ex.Message);
             }
-            finally
-            {
-                conn.Close();
-            }
         }
 
         private void ExportFormInstalmentTerm(int contractId)
         {
-            conn = new SqlConnection(conStr);
-            var cmd = new SqlCommand();
-            var dt = new DataTable();
-            var da = new SqlDataAdapter();
             rptDoc = new ReportDocument();
 
             try
             {
                 SqlConnectionStringBuilder connection = new SqlConnectionStringBuilder(conStr);
                 var server = connection.DataSource;
-
-
+                
                 var file = "./formInstalmentTerm.rpt";
                 rptDoc.Load(Server.MapPath(file));
                 rptDoc.Refresh();
@@ -120,7 +128,7 @@ namespace KKHondaReport.Contracts
                 rptDoc.SetParameterValue("@ContractId", contractId, "section3(customer)");
                 rptDoc.Subreports["section3(customer)"].Database.Tables[0].ApplyLogOnInfo(L3);
 
-                StreamPdfReport(rptDoc, "instalment-card");
+                StreamPdfReport(rptDoc, "instalment-card.pdf");
             }
             catch (Exception ex)
             {
@@ -165,40 +173,27 @@ namespace KKHondaReport.Contracts
             }
         }
 
-        private void ExportSumInterestDelay(int contractId)
+        private void ExportSum(int contractId, string file, string fileName)
         {
-            conn = new SqlConnection(conStr);
-            var cmd = new SqlCommand();
-            var dt = new DataTable();
-            var da = new SqlDataAdapter();
-            rptDoc = new ReportDocument();
-
             try
             {
-                conn.Open();
-
-                cmd.CommandText = "dbo.sp_RptDelayedInterest";
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@ContractId", contractId);
-                cmd.Connection = conn;
-
-                da.SelectCommand = cmd;
-                da.Fill(dt);
-
-                var file = "./sumInterestDelay.rpt";
+                rptDoc = new ReportDocument();
+                SqlConnectionStringBuilder connection = new SqlConnectionStringBuilder(conStr);
+                var server = connection.DataSource;
+                
                 rptDoc.Load(Server.MapPath(file));
-                rptDoc.SetDataSource(dt);
-                rptDoc.SetParameterValue("@ContractId", contractId);
+                rptDoc.Refresh();
 
-                StreamPdfReport(rptDoc, "interest-delayed-doc");
+                TableLogOnInfo L1 = rptDoc.Database.Tables[0].LogOnInfo;
+                GetLoginfo(L1, server);
+                rptDoc.SetParameterValue("@ContractId", contractId);
+                rptDoc.Database.Tables[0].ApplyLogOnInfo(L1);
+
+                StreamPdfReport(rptDoc, fileName);
             }
             catch (Exception ex)
             {
                 Response.Write(ex.Message);
-            }
-            finally
-            {
-                conn.Close();
             }
         }
 
@@ -206,7 +201,6 @@ namespace KKHondaReport.Contracts
         {
             using (MemoryStream oStream = new MemoryStream())
             {
-
                 rptDoc.ExportToStream(ExportFormatType.PortableDocFormat).CopyTo(oStream);
                 Response.Clear();
                 Response.Buffer = true;

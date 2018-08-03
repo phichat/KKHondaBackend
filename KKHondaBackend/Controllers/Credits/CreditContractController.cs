@@ -94,6 +94,28 @@ namespace KKHondaBackend.Controllers.Credits
                             join _contractPoint in ctx.Zone on db.ContractPoint equals _contractPoint.ZoneId into a6
                             from contractPoint in a6.DefaultIfEmpty()
 
+                            join _contrachHire in ctx.MCustomer on db.ContractHire equals _contrachHire.CustomerCode into a7
+                            from contrachHire in a7.DefaultIfEmpty()
+
+                            join _hireCard in ctx.MCustomerCard on db.ContractHire equals _hireCard.CustomerCode into a8
+                            from hireCard in a8.DefaultIfEmpty()
+
+                            join _bookingItem in ctx.BookingItem on db.BookingId equals _bookingItem.BookingId into a9
+                            from bookingItem in a9.DefaultIfEmpty()
+                            where bookingItem.ItemDetailType == 1
+
+                            join bra in ctx.ProductBrand on bookingItem.BrandId equals bra.BrandId into a11
+                            from brand in a11.DefaultIfEmpty()
+
+                            join col in ctx.ProductColor on bookingItem.ColorId equals col.ColorId into a41
+                            from color in a41.DefaultIfEmpty()
+
+                            join mod in ctx.ProductModel on bookingItem.ModelId equals mod.ModelId into a51
+                            from model in a51.DefaultIfEmpty()
+
+                            join _tfLog in ctx.TransferLog on bookingItem.ItemId equals _tfLog.ItemId into a61
+                            from tfLog in a61.DefaultIfEmpty()
+
                             select new CreditContractList
                             {
                                 ContractId = db.ContractId,
@@ -108,6 +130,13 @@ namespace KKHondaBackend.Controllers.Credits
                                 StatusDesc = status.StatusDesc,
                                 ContractStatus = db.ContractStatus,
                                 RefNo = db.RefNo,
+                                HireFullName = $"{contrachHire.CustomerPrename} {contrachHire.CustomerName} {contrachHire.CustomerSurname}",
+                                HireIdCard = hireCard.CardId,
+                                Brand = brand.BrandName,
+                                Color = color.ColorName,
+                                Model = model.ModelCode,
+                                EngineNo = tfLog.EngineNo,
+                                FrameNo = tfLog.FrameNo
                             }).ToList();
 
             return contract;
@@ -353,91 +382,6 @@ namespace KKHondaBackend.Controllers.Credits
 
         private Outstandings SetOutstanding(string contractId)
         {
-            // var contractItem = ctx.CreditContractItem.Where(item => item.ContractId == contractId && item.RefNo == refNo).ToList();
-            // // ดอกเบี้ยค้างชำระ
-            // var fineSumeOut = (from db in contractItem
-            //                    where (db.FineSumStatus == 0 || db.FineSumStatus == null)
-            //                    group db by db.ContractId into a1
-            //                    select new Outstandings
-            //                    {
-            //                        FineSum = (int)a1.Sum(x => x.FineSum == null ? 0 : x.FineSum)
-            //                    }).FirstOrDefault();
-
-            // // เงินดาวน์ค้างชำระ
-            // var depositOut = contractItem
-            //     .Where(item => (item.PayNetPrice == null || item.PayNetPrice == 0) && item.InstalmentNo == 0)
-            //     .Select(item => new Outstandings { Deposit = (decimal)item.BalanceNetPrice })
-            //     .FirstOrDefault();
-
-            // var dateNow = DateTime.Now.Date;
-
-            // // ค่างวดค้างชำระ
-            // var balanceOut = (from db in contractItem
-            //                   where (db.PayNetPrice == null || db.PayNetPrice == 0) &&
-            //                   db.InstalmentNo > 0 && DateTime.Parse(db.DueDate.ToString()).Date <= dateNow
-            //                   group db by db.ContractId into a1
-            //                   select new Outstandings
-            //                   {
-            //                       Balance = (decimal)a1.Sum(x => x.BalanceNetPrice),
-            //                       StartInstalment = a1.Min(x => x.InstalmentNo),
-            //                       EndInstalment = a1.Max(x => x.InstalmentNo)
-            //                   }).FirstOrDefault();
-
-            // // งวดต่อไปที่ต้องชำระ
-            // var nextInstalment = (from db in contractItem
-            //                       where db.InstalmentNo > 0 && DateTime.Parse(db.DueDate.ToString()).Date > dateNow
-            //                       group db by new
-            //                       {
-            //                           db.ContractId,
-            //                           db.BalanceNetPrice
-            //                       } into g
-            //                       select new Outstandings
-            //                       {
-            //                           NextInstalment = g.Min(x => x.InstalmentNo),
-            //                           NextDueDate = (DateTime)g.Min(x => x.DueDate),
-            //                           NextInstalmentBalance = (decimal)g.Key.BalanceNetPrice
-            //                       }).FirstOrDefault();
-
-            // // ค่างวดที่ยังไม่ถึงกำหนด
-            // var futureInstalment = (from db in contractItem
-            //                         where db.InstalmentNo > 0 && DateTime.Parse(db.DueDate.ToString()).Date > dateNow
-            //                         group db by db.ContractId into g
-            //                         select new Outstandings
-            //                         {
-            //                             FutureInstalment = g.Count(),
-            //                             FutureInstalmentBalance = (decimal)g.Sum(x => x.BalanceNetPrice)
-            //                         }).FirstOrDefault();
-
-            // // ยอดค้างชำระทั้งสิ้น
-            // var outstandingTotal = fineSumeOut.FineSum + depositOut.Deposit + balanceOut.Balance;
-
-            // // ยอดที่รับชำระแล้ว
-            // var payPriceTotal = (from db in contractItem
-            //                      group db by db.ContractId into g
-            //                      select new Outstandings
-            //                      {
-            //                          PayPriceTotal = (decimal)g.Sum(x => x.PayNetPrice)
-            //                      }).FirstOrDefault();
-
-            // // payPriceTotal = payPriceTotal == null ? 0.00 : payPriceTotal.PayPriceTotal;
-
-            // var obj = new Outstandings
-            // {
-            //     FineSum = fineSumeOut.FineSum,
-            //     Deposit = depositOut.Deposit,
-            //     Balance = balanceOut.Balance,
-            //     StartInstalment = balanceOut.StartInstalment,
-            //     EndInstalment = balanceOut.EndInstalment,
-            //     OutstandingTotal = outstandingTotal,
-            //     PayPriceTotal = payPriceTotal.PayPriceTotal,
-            //     NextInstalment = nextInstalment.NextInstalment,
-            //     NextInstalmentBalance = nextInstalment.NextInstalmentBalance,
-            //     NextDueDate = nextInstalment.NextDueDate,
-            //     FutureInstalment = futureInstalment.FutureInstalment,
-            //     FutureInstalmentBalance = futureInstalment.FutureInstalmentBalance,
-            // };
-            //var parameters = new List<SqlParameter>(){ new SqlParameter("@ContractId", contractId) };
-
             var obj = ctx.Outstandings
                 .FromSql("sp_RptOutstanding @p0", parameters: new[] { contractId })
                 .FirstOrDefault();
@@ -447,18 +391,6 @@ namespace KKHondaBackend.Controllers.Credits
 
         private List<DelayedInterest> SetDelayedInterest(string contractId)
         {
-            // var list = ctx.CreditContractItem
-            //     .Where(p => p.ContractId == contractId && p.RefNo == refNo && p.InstalmentNo > 0)
-            //     .Select(p => new DelayedInterest
-            //     {
-            //         InstalmentNo = p.InstalmentNo,
-            //         DueDate = (DateTime)p.DueDate,
-            //         Balance = (decimal)p.BalanceNetPrice,
-            //         FineSum = p.FineSum == null ? 0 : (decimal)p.FineSum,
-            //         Outstanding = p.FineSum == null ? 0 : (decimal)p.FineSum ,
-            //         DelayDueDate = p.DelayDueDate == null ? 0 : (int)p.DelayDueDate,
-            //         Remark = p.Remark
-            //     }).ToList();
             var list = ctx.DelayedInterest
                 .FromSql("sp_RptDelayedInterest @p0", parameters: new[] { contractId })
                 .ToList();
@@ -467,17 +399,6 @@ namespace KKHondaBackend.Controllers.Credits
 
         private IEnumerable<Discounts> SetDiscounts(string contractId)
         {
-
-            //var list = ctx.CreditContractItem
-            //    .Where(p => p.ContractId == contractId && p.RefNo == refNo && p.InstalmentNo > 0)
-            //    .Select(p => new Discounts
-            //    {                    
-            //        InstalmentNo = p.InstalmentNo,
-            //        DueDate = (DateTime)p.DueDate,
-            //        Balance = (decimal)p.BalanceNetPrice,
-            //        Outstanding = (decimal)p.BalanceNetPrice - (p.PayPrice == null ? 0 : (decimal)p.PayPrice),
-            //        Discount = p.DiscountPrice == null ? 0 : (decimal)p.DiscountPrice
-            //    }).ToList();
             var list = ctx.Discounts
                 .FromSql("sp_RptDiscounts @p0", parameters: new[] { contractId })
                 .ToList();
@@ -486,75 +407,6 @@ namespace KKHondaBackend.Controllers.Credits
 
         private CutOffSale SetCutOffSale(string contractId)
         {
-            //var contractItem = ctx.CreditContractItem.Where(p => p.ContractId == contractId && p.RefNo == refNo).ToList();
-            //var goodPrice = (from db in contractItem
-            //                 where db.PayNetPrice == null
-            //                 group db by db.ContractId into g
-            //                 select new
-            //                 {
-            //                     InterestInstalment = g.Sum(x => (decimal)x.InterestInstalment),
-            //                     GoodPrice = g.Sum(x => (decimal)x.GoodsPrice)
-            //                 }).FirstOrDefault();
-
-            //// ค่างวดที่ต้องชำระ
-            //var balance = (from db in contractItem
-            //               where db.PayNetPrice == null && db.InstalmentNo > 0
-            //               group db by db.ContractId into g
-            //               select new
-            //               {
-            //                   Balance = g.Sum(x => (decimal)x.BalanceNetPrice)
-            //               }).FirstOrDefault();
-
-            //// เงินดาวน์
-            //var deposit = contractItem
-            //    .Where(db => db.InstalmentNo == 0 && db.PayNetPrice == null)
-            //    .Select(p => new { Deposit = (decimal)p.BalanceNetPrice })
-            //    .FirstOrDefault();
-
-            //// ดอกเบี้ยล่าช้า -- ที่ยังไม่จ่าย
-            //var interest = (from db in contractItem
-            //                where db.FineSumStatus == null || db.FineSumStatus == 0
-            //                group db by db.ContractId into g
-            //                select new
-            //                {
-            //                    FineSum = g.Sum(x => x.FineSum == null ? 0 : (int)x.FineSum)
-            //                }).FirstOrDefault();
-
-            //// ส่วนลด -- ที่ยังไม่ได้ใช้
-            //var discount = (from db in contractItem
-            //                where db.UseDiscount == null || db.UseDiscount == 0
-            //                group db by db.ContractId into g
-            //                select new
-            //                {
-            //                    Discount = g.Sum(x => x.DiscountPrice == null ? 0 : (decimal)x.DiscountPrice)
-            //                }).FirstOrDefault();
-
-            //// ส่วนลดตัดสด -- ที่ยังไม่ได้ใช้
-            //var distCutOffSale = (from db in contractItem
-            //                      where db.UseDistCutOffSale == null || db.UseDistCutOffSale == 0
-            //                      group db by db.ContractId into g
-            //                      select new
-            //                      {
-            //                          Discount = g.Sum(x => x.DistCutOffSalePrice == null ? 0 : (decimal)x.DistCutOffSalePrice)
-            //                      }).FirstOrDefault();
-
-            //var sumBalance = balance.Balance + deposit.Deposit + interest.FineSum;
-            //var sumDiscount = discount.Discount + distCutOffSale.Discount;
-            //var totalBalance = sumBalance - sumDiscount;
-
-            //var obj = new CutOffSale
-            //{
-            //    InterestInstalment = goodPrice.InterestInstalment,
-            //    GoodPrice = goodPrice.GoodPrice,
-            //    Balance = balance.Balance,
-            //    DepositPrice = deposit.Deposit,
-            //    FineSum = interest.FineSum,
-            //    SumBalance = sumBalance,
-            //    Discount = discount.Discount,
-            //    DistCutOffSale = distCutOffSale.Discount,
-            //    SumDiscount = sumDiscount,
-            //    TotalBalance = totalBalance
-            //};
             var obj = ctx.CutOffSale
                 .FromSql("sp_RptCutOffSale @p0", parameters: new[] { contractId })
                 .FirstOrDefault();
@@ -563,49 +415,6 @@ namespace KKHondaBackend.Controllers.Credits
 
         private HistoryPayment SetHistoryPayment(string contractId)
         {
-            //var dateNow = DateTime.Parse(new DateTime().ToString()).Date;
-            //var contractItem = ctx.CreditContractItem
-            //    .Where(p => p.ContractId == contractId && p.RefNo == refNo &&
-            //    DateTime.Parse(p.DueDate.ToString()).Date <= dateNow)
-            //    .ToList();
-            //var calculate = ctx.CreditCalculate
-            //    .Where(p => p.CalculateId == calculateId)
-            //    .FirstOrDefault();
-
-            //var payBefore = 0;
-            //var payLate = 0;
-            //var paymatch = 0;
-            //foreach (var a in contractItem)
-            //{                
-            //    var payday = a.PayDate == null ? dateNow : DateTime.Parse(a.PayDate.ToString()).Date;
-            //    var duedate = DateTime.Parse(a.DueDate.ToString()).Date;
-            //    if (payday > duedate)
-            //    {
-            //        // จำนวนการชำละล่าช้า
-            //        payLate += 1;
-            //    }
-            //    else if (payday <= duedate)
-            //    {
-            //        // จำนวนการชำระก่อน
-            //        payBefore += 1;
-            //    }
-            //    else if (payday == duedate)
-            //    {
-            //        // จำนวนการชำระตรงกับวันที่กำหนด
-            //        paymatch += 1;
-            //    }
-            //}
-
-            //var obj = new HistoryPayment
-            //{
-            //    ContractNo = contractNo,
-            //    InstalmentEnd = calculate.InstalmentEnd,
-            //    PayBefore = payBefore,
-            //    PayMatch = paymatch,
-            //    PayLate = payLate,
-            //    RateLate = payLate * 100 / calculate.InstalmentEnd,
-            //    Grade = null
-            //};
             var obj = ctx.HistoryPayment
                 .FromSql("sp_RptHistoryPayment @p0", parameters: new[] { contractId })
                 .FirstOrDefault();
@@ -733,68 +542,6 @@ namespace KKHondaBackend.Controllers.Credits
             }
         }
 
-        // private class Outstandings
-        // {
-        //     public decimal FineSum { get; set; }
-        //     public decimal Deposit { get; set; }
-        //     public decimal Balance { get; set; }
-        //     public int StartInstalment { get; set; }
-        //     public int EndInstalment { get; set; }
-        //     public decimal OutstandingTotal { get; set; }
-        //     public decimal PayPriceTotal { get; set; }
-        //     public int NextInstalment { get; set; }
-        //     public decimal NextInstalmentBalance { get; set; }
-        //     public DateTime NextDueDate { get; set; }
-        //     public int FutureInstalment { get; set; }
-        //     public decimal FutureInstalmentBalance { get; set; }
-        // }
-
-        // private class DelayedInterest
-        // {
-        //     public int InstalmentNo { get; set; }
-        //     public DateTime DueDate { get; set; }
-        //     public decimal Balance { get; set; }
-        //     public decimal FineSum { get; set; }
-        //     public decimal Outstanding { get; set; }
-        //     public int DelayDueDate { get; set; }
-        //     public string Remark { get; set; }
-        // }
-
-        // private class Discounts
-        // {
-        //     public int InstalmentNo { get; set; }
-        //     public DateTime DueDate { get; set; }
-        //     public decimal Balance { get; set; }
-        //     public decimal Outstanding { get; set; }
-        //     public decimal Discount { get; set; }
-        // }
-
-        // private class CutOffSale
-        // {
-        //     public decimal InterestInstalment { get; set; }
-        //     public decimal GoodPrice { get; set; }
-        //     public decimal Balance { get; set; }
-        //     public decimal DepositPrice {get;set;}
-        //     public decimal FineSum { get; set; }
-        //     public decimal SumBalance { get; set; }
-        //     public decimal Discount { get; set; }
-        //     public decimal DistCutOffSale { get; set; }
-        //     public decimal SumDiscount { get; set; }
-        //     public decimal TotalBalance { get; set; }
-        // }
-
-        // private class HistoryPayment
-        // {
-        //     public string ContractNo { get; set; }
-        //     public DateTime ContractDate { get; set; }
-        //     public decimal InstalmentEnd { get; set; }
-        //     public int PayBefore { get; set; }
-        //     public int PayMatch { get; set; }
-        //     public int PayLate { get; set; }
-        //     public decimal RateLate { get; set; }
-        //     public string Grade { get; set; }
-        // }
-
         public class CreditContractList
         {
             public int ContractId { get; set; }
@@ -817,6 +564,13 @@ namespace KKHondaBackend.Controllers.Credits
             public string StatusDesc { get; set; }
             public int? ContractStatus { get; set; }
             public string RefNo { get; set; }
+            public string HireFullName { get; set; }
+            public string HireIdCard { get; set; }
+            public string Brand { get; set; }
+            public string Color { get; set; }
+            public string Model { get; set; }
+            public string EngineNo { get; set; }
+            public string FrameNo { get; set; }
             public string CreateBy { get; set; }
             public DateTime CreateDate { get; set; }
             public string UpdateBy { get; set; }
