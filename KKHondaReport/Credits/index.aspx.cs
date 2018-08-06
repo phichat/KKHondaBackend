@@ -21,7 +21,12 @@ namespace KKHondaReport.Contracts
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            var contractId = int.Parse(Request.QueryString["contractId"]);
+            var contractId = 0;
+            if (Request.QueryString["contractId"] != null)
+            {
+                contractId = int.Parse(Request.QueryString["contractId"]);
+            }
+                
             if (Request.QueryString["formContract"] != null)
             {
                 if (Boolean.Parse(Request.QueryString["formContract"]) == true)
@@ -32,12 +37,6 @@ namespace KKHondaReport.Contracts
             {
                 if (Boolean.Parse(Request.QueryString["formInstalmentTerm"]) == true)
                     ExportFormInstalmentTerm(contractId);
-            }
-
-            if (Request.QueryString["formTransfer"] != null)
-            {
-                //if (Boolean.Parse(Request.QueryString["formTransfer"]) == true)
-                    //ExportFormTransfer(contractId);
             }
 
             // -------- Report Sum -------- //
@@ -70,6 +69,15 @@ namespace KKHondaReport.Contracts
             {
                 if (Boolean.Parse(Request.QueryString["sumPaymentHistory"]) == true)
                     ExportSum(contractId, "./sumPaymentHistory.rpt", "history-payment-doc.pdf");
+            }
+
+            if (Request.QueryString["rptSumEndContract"] != null)
+            {
+                int branchId = int.Parse(Request.QueryString["branchId"]);
+                var sDate = Request.QueryString["endContractDateStart"].ToString();
+                var eDate = Request.QueryString["endContractDateEnd"].ToString();
+                if (Boolean.Parse(Request.QueryString["rptSumEndContract"]) == true)
+                    ExportSumEndContract(branchId, DateTime.Parse(sDate), DateTime.Parse(eDate), "./rptSumEndContract.rpt", "sum-end-contract.pdf");
             }
         }
 
@@ -135,44 +143,7 @@ namespace KKHondaReport.Contracts
                 Response.Write(ex.Message);
             }
         }
-
-        private void ExportFormTransfer(int contractId)
-        {
-            conn = new SqlConnection(conStr);
-            var cmd = new SqlCommand();
-            var dt = new DataTable();
-            var da = new SqlDataAdapter();
-            rptDoc = new ReportDocument();
-
-            try
-            {
-                conn.Open();
-
-                cmd.CommandText = "";
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@ContractId", contractId);
-                cmd.Connection = conn;
-                cmd.CommandTimeout = 120;
-
-                da.SelectCommand = cmd;
-                da.Fill(dt);
-
-                var file = "./formTransfer.rpt";
-                rptDoc.Load(Server.MapPath(file));
-                rptDoc.SetDataSource(dt);
-                rptDoc.SetParameterValue("@ContractId", contractId);
-                //StreamPdfReport(rptDoc);
-            }
-            catch (Exception ex)
-            {
-                Response.Write(ex.Message);
-            }
-            finally
-            {
-                conn.Close();
-            }
-        }
-
+        
         private void ExportSum(int contractId, string file, string fileName)
         {
             try
@@ -187,6 +158,32 @@ namespace KKHondaReport.Contracts
                 TableLogOnInfo L1 = rptDoc.Database.Tables[0].LogOnInfo;
                 GetLoginfo(L1, server);
                 rptDoc.SetParameterValue("@ContractId", contractId);
+                rptDoc.Database.Tables[0].ApplyLogOnInfo(L1);
+
+                StreamPdfReport(rptDoc, fileName);
+            }
+            catch (Exception ex)
+            {
+                Response.Write(ex.Message);
+            }
+        }
+
+        private void ExportSumEndContract(int branchId, DateTime endContractDateStart, DateTime endContractDateEnd, string file, string fileName)
+        {
+            try
+            {
+                rptDoc = new ReportDocument();
+                SqlConnectionStringBuilder connection = new SqlConnectionStringBuilder(conStr);
+                var server = connection.DataSource;
+
+                rptDoc.Load(Server.MapPath(file));
+                rptDoc.Refresh();
+
+                TableLogOnInfo L1 = rptDoc.Database.Tables[0].LogOnInfo;
+                GetLoginfo(L1, server);
+                rptDoc.SetParameterValue("@BranchId", branchId);
+                rptDoc.SetParameterValue("@EndContractDateStart", endContractDateStart.ToString("yyyy-MM-dd"));
+                rptDoc.SetParameterValue("@EndContractDateEnd", endContractDateEnd.ToString("yyyy-MM-dd"));
                 rptDoc.Database.Tables[0].ApplyLogOnInfo(L1);
 
                 StreamPdfReport(rptDoc, fileName);

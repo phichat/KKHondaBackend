@@ -108,6 +108,12 @@
       <DependentUpon>formTransfer.rpt</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Credits\rptSumEndContract.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>rptSumEndContract.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Credits\sumCutOffCash.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -152,6 +158,10 @@
     <EmbeddedResource Include="Credits\formTransfer.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>formTransfer1.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Credits\rptSumEndContract.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>rptSumEndContract.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Credits\sumCutOffCash.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
