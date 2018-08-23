@@ -1081,6 +1081,9 @@ namespace KKHondaBackend.Data
                     .HasColumnName("pay_vat_price")
                     .HasColumnType("decimal(18, 4)");
 
+                entity.Property(e => e.PaymentType)
+                    .HasColumnName("payment_type");
+
                 entity.Property(e => e.RefNo)
                     .HasColumnName("ref_no")
                     .HasMaxLength(10);
