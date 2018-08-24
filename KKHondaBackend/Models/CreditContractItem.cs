@@ -19,6 +19,7 @@ namespace KKHondaBackend.Models
         public decimal? PayVatPrice { get; set; }
         public decimal? PayNetPrice { get; set; }
         public DateTime? PayDate { get; set; }
+        public int? Payeer { get; set; }
         public int? PaymentType { get; set; }
         public decimal? DiscountRate { get; set; }
         public decimal? DiscountPrice { get; set; }

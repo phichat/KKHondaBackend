@@ -1077,6 +1077,9 @@ namespace KKHondaBackend.Data
                     .HasColumnName("pay_date")
                     .HasColumnType("datetime");
 
+                entity.Property(e => e.Payeer)
+                    .HasColumnName("payeer");
+
                 entity.Property(e => e.PayVatPrice)
                     .HasColumnName("pay_vat_price")
                     .HasColumnType("decimal(18, 4)");

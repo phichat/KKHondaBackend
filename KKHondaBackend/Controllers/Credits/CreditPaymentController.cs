@@ -99,25 +99,24 @@ namespace KKHondaBackend.Controllers.Credits
                         IsOutstandingTerm = values.Count()
                     }).SingleOrDefault();
 
-                var a = ctx.CreditContractItem.Where(x => x.ContractId == id && x.RefNo == contract.RefNo).ToList();
-
                 var contractItem = (from db in ctx.CreditContractItem
                                     where db.ContractId == id && db.RefNo == contract.RefNo
 
-                                    join _user in ctx.User on db.UpdateBy equals _user.Id into a1
+                                    join _user in ctx.User on db.Payeer equals _user.Id into a1
                                     from user in a1.DefaultIfEmpty()
 
                                     select new
                                     {
+                                        ContractItemId = db.ContractItemId,
                                         InstalmentNo = db.InstalmentNo,
                                         TaxInvoiceNo = db.TaxInvoiceNo,
                                         DueDate = db.DueDate,
                                         PayDate = db.PayDate,
                                         BalanceNetPrice = db.BalanceNetPrice,
-                                        PayNetPrice = db.PayNetPrice, 
+                                        PayNetPrice = db.PayNetPrice,
                                         PaymentType = db.PaymentType,
                                         Remark = db.Remark,
-                                        UpdateBy = user.Fullname
+                                        Payeer = user.Fullname
                                     }).ToList();
 
                 var obj = new Dictionary<string, object>
@@ -144,15 +143,52 @@ namespace KKHondaBackend.Controllers.Credits
         }
 
         // PUT: api/CreditPayment/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
+        [HttpPost("PaymentTerm")]
+        public IActionResult PaymentTerm([FromBody] Payment payment)
         {
+            try
+            {
+                return Get(1);
+            } catch(Exception)
+            {
+                return StatusCode(500);
+            }
         }
 
         // DELETE: api/ApiWithActions/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IActionResult CancelContractTerm(int id)
         {
+            try
+            {
+                var creditContractItem = ctx.CreditContractItem.SingleOrDefault(item => item.ContractItemId == id);
+                creditContractItem.PayDate = null;
+                creditContractItem.PaymentType = null;
+                creditContractItem.PayPrice = null;
+                creditContractItem.PayVatPrice = null;
+                creditContractItem.PayNetPrice = null;
+                ctx.SaveChanges();
+
+                return Get(creditContractItem.ContractId);
+
+            } catch(Exception)
+            {
+                return StatusCode(500);
+            }
+        }
+
+        //public class PaymentTerm
+        //{
+        //    public List<Payment> payment { get; set; }
+        //}
+
+        public partial class Payment
+        {
+            public int ContractItemId { get; set; }
+            public int ContractId { get; set; }
+            public string Payeer { get; set; }
+            public DateTime PayDate { get; set; }
+            public int PaymentType { get; set; }
         }
     }
 }
