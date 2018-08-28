@@ -80,7 +80,7 @@ namespace KKHondaBackend.Controllers.Credits
                                    BrandName = brand.BrandName,
                                    ModelCode = model.ModelCode,
                                    Color = color.ColorName,
-                                   Price = calculate.Remain
+                                   Price = calculate.OutStandingPrice
                                }).SingleOrDefault();
 
                 var isPay = ctx.CreditContractItem
@@ -115,6 +115,7 @@ namespace KKHondaBackend.Controllers.Credits
                                         BalanceNetPrice = db.BalanceNetPrice,
                                         PayNetPrice = db.PayNetPrice,
                                         PaymentType = db.PaymentType,
+                                        FineSum = db.FineSumStatus == 1 ? db.FineSum : 0,
                                         Remark = db.Remark,
                                         Payeer = user.Fullname
                                     }).ToList();
@@ -144,51 +145,110 @@ namespace KKHondaBackend.Controllers.Credits
 
         // PUT: api/CreditPayment/5
         [HttpPost("PaymentTerm")]
-        public IActionResult PaymentTerm([FromBody] Payment payment)
+        public async Task<IActionResult> PaymentTerm([FromBody] Payment[] payment)
         {
             try
             {
-                return Get(1);
-            } catch(Exception)
+                var itemIds = payment.Select(p => p.ContractItemId).ToList();
+                var contracts = ctx.CreditContractItem.Where(item => itemIds.Contains(item.ContractItemId)).ToList();
+                foreach (var item in contracts)
+                {
+                    var _p = payment.SingleOrDefault(p => p.ContractItemId == item.ContractItemId);
+                    item.PayDate = _p.PayDate;
+                    item.PaymentType = _p.PaymentType;
+                    item.Payeer = _p.Payeer;
+                    item.PayPrice = item.Balance;
+                    item.PayVatPrice = item.BalanceVatPrice;
+                    item.PayNetPrice = item.BalanceNetPrice;
+                    item.FineSumStatus = item.FineSumStatus == 0 ? 1 : item.FineSumStatus;
+                    item.UpdateBy = _p.UpdateBy;
+                    item.UpdateDate = DateTime.Now;
+                }
+                await ctx.SaveChangesAsync();
+                
+                var contractId = contracts.First().ContractId;
+                var refNo = contracts.First().RefNo;
+                
+                var term = ctx.CreditContractItem
+                    .Where(_item => _item.ContractId == contractId && _item.RefNo == refNo && _item.PayNetPrice == null)
+                    .GroupBy(x => x.InstalmentNo, (key, values) => new
+                    {
+                        InstalmenNo = values.Count()
+                    }).FirstOrDefault();
+
+                if (term == null)
+                {
+                    // ถ้าชำระครบ จะเปลี่ยนสถานะเป็น ชำระครบรอโอนทะเบียน
+                    var contract = ctx.CreditContract.FirstOrDefault(x => x.ContractId == contractId && x.RefNo == refNo);
+                    contract.ContractStatus = 30;
+                    await ctx.SaveChangesAsync();
+                }
+
+                return Get(contractId); ;
+            }
+            catch (Exception ex)
             {
                 return StatusCode(500);
             }
         }
 
         // DELETE: api/ApiWithActions/5
-        [HttpDelete("{id}")]
-        public IActionResult CancelContractTerm(int id)
+        [HttpPost("CancelItemPayment")]
+        public IActionResult CancelItemPayment([FromBody] CancelPayment cencel)
         {
             try
             {
-                var creditContractItem = ctx.CreditContractItem.SingleOrDefault(item => item.ContractItemId == id);
-                creditContractItem.PayDate = null;
-                creditContractItem.PaymentType = null;
-                creditContractItem.PayPrice = null;
-                creditContractItem.PayVatPrice = null;
-                creditContractItem.PayNetPrice = null;
+                var item = ctx.CreditContractItem.SingleOrDefault(_item => _item.ContractItemId == cencel.ContractItemId);
+                item.PayDate = null;
+                item.PaymentType = null;
+                item.PayPrice = null;
+                item.PayVatPrice = null;
+                item.PayNetPrice = null;
+                item.Payeer = null;
+                item.Remark = cencel.Remark;
+                item.UpdateBy = cencel.UpdateBy;
+                item.UpdateDate = DateTime.Now;
                 ctx.SaveChanges();
 
-                return Get(creditContractItem.ContractId);
+                var ct = ctx.CreditContract.SingleOrDefault(x => x.ContractId == item.ContractId && x.RefNo == item.RefNo); 
 
-            } catch(Exception)
+                var term = ctx.CreditContractItem
+                   .Where(_item => _item.ContractId == ct.ContractId && _item.RefNo == ct.RefNo && _item.PayNetPrice == null)
+                   .GroupBy(x => x.InstalmentNo, (key, values) => new
+                   {
+                       InstalmenNo = values.Count()
+                   }).FirstOrDefault();
+
+                if (term.InstalmenNo > 0 && ct.ContractStatus == 30)
+                {
+                    // ถ้าชำครบระครบแล้วมีการยกเลิก จะเปลี่ยนสถานะเป็น อยู่ระหว่างผ่อนชำระ
+                    ct.ContractStatus = 31;
+                    ctx.SaveChanges();
+                }
+
+                return Get(item.ContractId);
+            }
+            catch (Exception ex)
             {
                 return StatusCode(500);
             }
         }
 
-        //public class PaymentTerm
-        //{
-        //    public List<Payment> payment { get; set; }
-        //}
+        public class CancelPayment
+        {
+            public int ContractItemId { get; set; }
+            public string Remark { get; set; }
+            public int UpdateBy { get; set; }
+        }
 
         public partial class Payment
         {
             public int ContractItemId { get; set; }
             public int ContractId { get; set; }
-            public string Payeer { get; set; }
+            public int Payeer { get; set; }
             public DateTime PayDate { get; set; }
             public int PaymentType { get; set; }
+            public int UpdateBy { get; set; }
         }
     }
 }
