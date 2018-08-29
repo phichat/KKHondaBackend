@@ -137,12 +137,6 @@ namespace KKHondaBackend.Controllers.Credits
             }
         }
 
-        // POST: api/CreditPayment
-        [HttpPost]
-        public void Post([FromBody]string value)
-        {
-        }
-
         // PUT: api/CreditPayment/5
         [HttpPost("PaymentTerm")]
         public async Task<IActionResult> PaymentTerm([FromBody] Payment[] payment)
