@@ -83,41 +83,38 @@ namespace KKHondaBackend.Controllers.Credits
                                    Price = calculate.OutStandingPrice
                                }).SingleOrDefault();
 
-                var isPay = ctx.CreditContractItem
-                    .Where(x => x.ContractId == id && x.RefNo == contract.RefNo && x.PayNetPrice != null)
-                    .GroupBy(x => x.RefNo, (key, values) => new
-                    {
-                        IsPayPrice = values.Sum(x => x.PayNetPrice),
-                        IsPayTerm = values.Count()
-                    }).SingleOrDefault();
+                var _contractItem = ctx.CreditContractItem
+                                       .Where(x => x.ContractId == id && x.RefNo == contract.RefNo && x.PrincipalRemain >= (decimal)0.00)
+                                      .ToList();
 
-                var isOutstanding = ctx.CreditContractItem
-                    .Where(x => x.ContractId == id && x.RefNo == contract.RefNo && x.PayNetPrice == null)
-                    .GroupBy(x => x.RefNo, (key, values) => new
-                    {
-                        IsOutstandingPrice = values.Sum(x => x.BalanceNetPrice),
-                        IsOutstandingTerm = values.Count()
-                    }).SingleOrDefault();
+                var isPay = _contractItem.Where(x => x.PayDate != null)
+                               .GroupBy(o => new { o.ContractId })
+                               .Select(g => new
+                               {
+                                   IsPayPrice = g.Sum(x => x.PayNetPrice),
+                                   IsPayTerm = g.Count()
+                               }).SingleOrDefault();
 
-                var contractItem = (from db in ctx.CreditContractItem
-                                    where db.ContractId == id && db.RefNo == contract.RefNo
+                var isOutstanding = _contractItem.Where(x => x.PayDate == null)
+                                       .GroupBy(o => new { o.ContractId })
+                                       .Select(g => new
+                                       {
+                                           IsOutstandingPrice = g.Sum(x => x.BalanceNetPrice),
+                                           IsOutstandingTerm = g.Count()
+                                       }).SingleOrDefault();
 
-                                    join _user in ctx.User on db.Payeer equals _user.Id into a1
-                                    from user in a1.DefaultIfEmpty()
-
+                var contractItem = (from db in _contractItem
                                     select new
                                     {
                                         ContractItemId = db.ContractItemId,
                                         InstalmentNo = db.InstalmentNo,
-                                        TaxInvoiceNo = db.TaxInvoiceNo,
                                         DueDate = db.DueDate,
                                         PayDate = db.PayDate,
                                         BalanceNetPrice = db.BalanceNetPrice,
-                                        PayNetPrice = db.PayNetPrice,
+                                        PayNetPrice = db.PayDate == null ? 0 : db.PayNetPrice,
                                         PaymentType = db.PaymentType,
                                         FineSum = db.FineSumStatus == 1 ? db.FineSum : 0,
-                                        Remark = db.Remark,
-                                        Payeer = user.Fullname
+                                        Remark = db.Remark
                                     }).ToList();
 
                 var obj = new Dictionary<string, object>
@@ -131,57 +128,100 @@ namespace KKHondaBackend.Controllers.Credits
 
                 return Ok(obj);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.Write(ex.Message);
                 return StatusCode(500);
             }
         }
 
+
         // PUT: api/CreditPayment/5
         [HttpPost("PaymentTerm")]
-        public async Task<IActionResult> PaymentTerm([FromBody] Payment[] payment)
+        public async Task<IActionResult> PaymentTerm([FromBody] Payment payment)
         {
             try
             {
-                var itemIds = payment.Select(p => p.ContractItemId).ToList();
-                var contracts = ctx.CreditContractItem.Where(item => itemIds.Contains(item.ContractItemId)).ToList();
-                foreach (var item in contracts)
+                var contract = ctx.CreditContract.SingleOrDefault(p => p.ContractId == payment.ContractId);
+                var calculate = ctx.CreditCalculate.SingleOrDefault(p => p.CalculateId == contract.CalculateId);
+                var contractItem = ctx.CreditContractItem.Where(p => p.ContractId == contract.ContractId && p.RefNo == contract.RefNo).ToList();
+
+                // เลือกข้อมูลการชำระเงินระหว่างวันที่กำหนดชำระ
+                var singContractItem = contractItem.SingleOrDefault(p => payment.DueDate == p.DueDate);
+
+                var payPriceExvat = payment.PayNetPrice / (1 + (singContractItem.VatRate / 100));
+
+                singContractItem.PayPrice = payPriceExvat;
+                singContractItem.PayVatPrice = payment.PayNetPrice - payPriceExvat;
+                singContractItem.PayNetPrice = payment.PayNetPrice;
+                singContractItem.Payeer = payment.Payeer;
+                singContractItem.PayDate = payment.PayDate;
+                singContractItem.PaymentType = payment.PaymentType;
+                singContractItem.UpdateBy = payment.UpdateBy;
+                singContractItem.UpdateDate = DateTime.Now;
+
+
+
+                foreach (var item in contractItem)
                 {
-                    var _p = payment.SingleOrDefault(p => p.ContractItemId == item.ContractItemId);
-                    item.PayDate = _p.PayDate;
-                    item.PaymentType = _p.PaymentType;
-                    item.Payeer = _p.Payeer;
-                    item.PayPrice = item.Balance;
-                    item.PayVatPrice = item.BalanceVatPrice;
-                    item.PayNetPrice = item.BalanceNetPrice;
-                    item.FineSumStatus = item.FineSumStatus == 0 ? 1 : item.FineSumStatus;
-                    item.UpdateBy = _p.UpdateBy;
-                    item.UpdateDate = DateTime.Now;
+                    if (item.InstalmentNo > 0) {
+                        var preItem = contractItem.SingleOrDefault(p => p.InstalmentNo == (item.InstalmentNo -1));
+                        // กำหนดเงินตั้งต้น
+                        item.InitialPrice = (item.InstalmentNo == 1) ? item.InitialPrice : preItem.PrincipalRemain;
+                        // หาดอกเบี้ยเงินต้น ค่างวด
+                        item.InterestInstalment = (item.InitialPrice * calculate.Irr) / 100;
+                        // หาเงินต้น ค่างวด
+                        item.Principal = item.PayNetPrice - item.PayVatPrice - item.InterestInstalment;
+                        // หาเงินต้นคงเหลือ
+                        item.PrincipalRemain = item.InitialPrice - item.Principal;
+                    }
                 }
+
+                if (singContractItem.InstalmentNo > 0)
+                {
+                    var interest = contractItem.GroupBy(p => new { p.ContractId })
+                                               .Select(g => new
+                                               {
+                                                   totalInterest = g.Sum(x => x.InterestInstalment)
+                                               }).SingleOrDefault();
+
+                    foreach(var item in contractItem) {
+                        if (item.InstalmentNo > 0) {
+                            var preItem = contractItem.SingleOrDefault(p => p.InstalmentNo == (item.InstalmentNo - 1));
+                            // ถ้าชำระงวดแรก รวมดอกเบี้ยค่างวด - ดอกเบี้ยงวดแรก
+                            // ถ้างวดต่อไป ดอกเบี้ยคงเหลืองวดก่อน - ดอกเบี้ยค่างวด ปัจจุบัน
+                            item.InterestPrincipalRemain = (item.InstalmentNo == 1) 
+                                ? interest.totalInterest - item.InterestInstalment 
+                                : preItem.InterestPrincipalRemain - item.InterestInstalment;
+                            
+                            item.DiscountInterest =  (decimal)item.InterestPrincipalRemain * (decimal)0.5;
+                        }
+                    }
+                }
+
                 await ctx.SaveChangesAsync();
-                
-                var contractId = contracts.First().ContractId;
-                var refNo = contracts.First().RefNo;
-                
+
+                // เช็คว่า มีการชำระครบหรือยัง
                 var term = ctx.CreditContractItem
-                    .Where(_item => _item.ContractId == contractId && _item.RefNo == refNo && _item.PayNetPrice == null)
-                    .GroupBy(x => x.InstalmentNo, (key, values) => new
-                    {
-                        InstalmenNo = values.Count()
-                    }).FirstOrDefault();
+                              .Where(p => p.ContractId == contract.ContractId && p.RefNo == contract.RefNo)
+                              .GroupBy(x => x.InstalmentNo, (key, values) => new
+                              {
+                                  InstalmenNo = values.Count()
+                              }).FirstOrDefault();
 
                 if (term == null)
                 {
                     // ถ้าชำระครบ จะเปลี่ยนสถานะเป็น ชำระครบรอโอนทะเบียน
-                    var contract = ctx.CreditContract.FirstOrDefault(x => x.ContractId == contractId && x.RefNo == refNo);
                     contract.ContractStatus = 30;
                     await ctx.SaveChangesAsync();
                 }
 
-                return Get(contractId); ;
+                return Get(payment.ContractId);
+
             }
             catch (Exception ex)
             {
+                Console.Write(ex.Message);
                 return StatusCode(500);
             }
         }
@@ -222,7 +262,7 @@ namespace KKHondaBackend.Controllers.Credits
 
                 return Get(item.ContractId);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500);
             }
@@ -235,13 +275,17 @@ namespace KKHondaBackend.Controllers.Credits
             public int UpdateBy { get; set; }
         }
 
-        public partial class Payment
+        public class Payment
         {
-            public int ContractItemId { get; set; }
             public int ContractId { get; set; }
-            public int Payeer { get; set; }
-            public DateTime PayDate { get; set; }
+            public decimal Outstanding { get; set; }
             public int PaymentType { get; set; }
+            public DateTime DueDate { get; set; }
+            public DateTime PayDate { get; set; }
+            public decimal PayNetPrice { get; set; }
+            public int Payeer { get; set; }
+            public decimal BalanceNetPrice { get; set; }
+            public string Remark { get; set; }
             public int UpdateBy { get; set; }
         }
     }

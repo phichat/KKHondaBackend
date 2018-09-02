@@ -47,5 +47,11 @@ namespace KKHondaBackend.Models
         public int? UpdateBy { get; set; }
         public DateTime? UpdateDate { get; set; }
         public string Remark { get; set; }
+
+        public decimal? InitialPrice {get; set;}
+        public decimal? Principal {get; set;}
+        public decimal? PrincipalRemain {get; set;}
+        public decimal? InterestPrincipalRemain {get; set;}
+        public decimal? DiscountInterest {get; set;} 
     }
 }

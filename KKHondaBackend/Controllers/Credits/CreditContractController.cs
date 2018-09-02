@@ -60,7 +60,7 @@ namespace KKHondaBackend.Controllers.Credits
         public IActionResult Canceled()
         {
             List<CreditContractList> creditContractLists = GetListContracts();
-            creditContractLists = creditContractLists.Where(o => o.ContractStatus == 0).ToList();
+            creditContractLists = creditContractLists.Where(o => o.ContractStatus == 33).ToList();
             return Ok(creditContractLists);
         }
 
@@ -68,7 +68,7 @@ namespace KKHondaBackend.Controllers.Credits
         public IActionResult Active()
         {
             List<CreditContractList> creditContractLists = GetListContracts();
-            creditContractLists = creditContractLists.Where(o => o.ContractStatus != 0).ToList();
+            creditContractLists = creditContractLists.Where(o => o.ContractStatus != 33).ToList();
             return Ok(creditContractLists);
         }
 
@@ -151,10 +151,10 @@ namespace KKHondaBackend.Controllers.Credits
             {
                 var cont = ctx.CreditContract.Where(p => p.ContractId == id).SingleOrDefault();
 
-                //var statusDesc = ctx.MStatus
-                //.Where(o => o.Id == cont.ContractStatus)
-                //.Select(o => o.StatusDesc)
-                //.SingleOrDefault();
+                var statusDesc = ctx.MStatus
+                                    .Where(o => o.Id == cont.ContractStatus)
+                                    .Select(o => o.StatusDesc)
+                                    .SingleOrDefault();
 
                 var contItem = ctx.CreditContractItem
                     .Where(p => p.ContractId == id && p.RefNo == cont.RefNo)
@@ -221,11 +221,11 @@ namespace KKHondaBackend.Controllers.Credits
 
                 var branchDropdown = iBranchService.GetDropdowns();
 
-                var statusDropdown = iStatusService.GetDropdown();
+                //var statusDropdown = iStatusService.GetDropdown();
 
                 var obj = new Dictionary<string, object>
                 {
-                    {"statusDropdown", statusDropdown},
+                    {"statusDesc", statusDesc},
                     {"creditContract", cont},
                     {"creditContractItem", contItem},
                     {"creditCalculate", calcu},
@@ -344,6 +344,9 @@ namespace KKHondaBackend.Controllers.Credits
 
                 var calculate = ctx.CreditCalculate.Where(p => p.CalculateId == contract.CalculateId).SingleOrDefault();
 
+                var statusDropdown = iStatusService.GetDropdown();
+                //statusDropdown = statusDropdown.Where(x => x.Value == "27" && x.Value == "33").ToArray();
+                               
                 //var contItem = ctx.CreditContractItem
                 //   .Where(p => p.ContractId == contract.ContractId && p.RefNo == contract.RefNo)
                 //   .OrderBy(o => o.InstalmentNo).ToList();
@@ -361,7 +364,7 @@ namespace KKHondaBackend.Controllers.Credits
                 var obj = new Dictionary<string, object>
                 {
                     {"creditCalculate", calculate},
-                    //{"creditContractItem", contItem},
+                    {"statusDropdown", statusDropdown},
                     {"creditContractDetail", detail},
                     {"booking", booking},
                     {"outstanding", outstanding },
@@ -374,7 +377,7 @@ namespace KKHondaBackend.Controllers.Credits
                 return Ok(obj);
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return NotFound();
             }
@@ -430,7 +433,8 @@ namespace KKHondaBackend.Controllers.Credits
                 {
                     // Contract
                     creditContract.UpdateDate = DateTime.Now;
-                    creditContract.ContractStatus = 31; // อยู่ระหว่างผ่อนชำระ
+                    // อยู่ระหว่างผ่อนชำระ
+                    creditContract.ContractStatus = 31; 
                     ctx.Update(creditContract);
                     ctx.SaveChanges();
 
@@ -540,6 +544,27 @@ namespace KKHondaBackend.Controllers.Credits
                     return StatusCode(500, ex.Message);
                 }
             }
+        }
+
+        [HttpPost("ContractTermination")]
+        public IActionResult ContractTermination([FromBody] ContractTerminate c){
+            
+            var cc = ctx.CreditContract.SingleOrDefault(x => x.ContractId == c.ContractId);
+
+            // บอกเลิกสัญญา
+            cc.ContractStatus = 33;
+            cc.Remark = c.Remark;
+            cc.UpdateBy = c.UpdateBy;
+            cc.UpdateDate = DateTime.Now;
+            ctx.SaveChanges();
+
+            return Ok();
+        }
+
+        public class ContractTerminate {
+            public int ContractId { get; set; }
+            public string Remark { get; set; }
+            public int UpdateBy { get; set; }
         }
 
         public class CreditContractList

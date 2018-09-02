@@ -25,6 +25,7 @@ namespace KKHondaBackend.Models
         public decimal? NowVat { get; set; }
         public decimal? PromotionalPrice { get; set; }
         public decimal? Irr { get; set; }
+        public decimal? Mrr { get; set; }
         public int CreateBy { get; set; }
         public DateTime CreateDate { get; set; }
         public int? UpdateBy { get; set; }

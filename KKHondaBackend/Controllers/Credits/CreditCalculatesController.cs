@@ -45,7 +45,7 @@ namespace KKHondaBackend.Controllers.Credits
         [HttpGet("GetById")]
         public IActionResult GetCreditCalculate(int calculateId)
         {
-
+            
             var calc = _context.CreditCalculate
                                .Where(p => p.CalculateId == calculateId)
                                .SingleOrDefault();
@@ -156,6 +156,11 @@ namespace KKHondaBackend.Controllers.Credits
                     {
                         item.ContractId = contract.ContractId;
                         item.RefNo = contract.RefNo;
+
+                        item.PayPrice = item.Balance;
+                        item.PayVatPrice = item.BalanceVatPrice;
+                        item.PayNetPrice = item.BalanceNetPrice;
+
                         item.CreateBy = contract.CreateBy;
                         item.CreateDate = DateTime.Now;
                     }
@@ -214,6 +219,11 @@ namespace KKHondaBackend.Controllers.Credits
                     {
                         item.ContractId = contract.ContractId;
                         item.RefNo = contract.RefNo;
+
+                        item.PayPrice = item.Balance;
+                        item.PayVatPrice = item.BalanceVatPrice;
+                        item.PayNetPrice = item.BalanceNetPrice;
+
                         item.CreateBy = contract.CreateBy;
                         item.CreateDate = DateTime.Now;
                         item.UpdateBy = contract.UpdateBy;
@@ -294,6 +304,11 @@ namespace KKHondaBackend.Controllers.Credits
                     {
                         item.ContractId = contract.ContractId;
                         item.RefNo = contract.RefNo;
+
+                        item.PayPrice = item.Balance;
+                        item.PayVatPrice = item.BalanceVatPrice;
+                        item.PayNetPrice = item.BalanceNetPrice;
+
                         item.CreateBy = contract.CreateBy;
                         item.CreateDate = DateTime.Now;
                         item.UpdateBy = contract.UpdateBy;

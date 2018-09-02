@@ -863,6 +863,10 @@ namespace KKHondaBackend.Data
                     .HasColumnName("irr")
                     .HasColumnType("decimal(8, 4)");
 
+                entity.Property(e => e.Mrr)
+                      .HasColumnName("mrr")
+                      .HasColumnType("decimal(8, 4)");
+
                 entity.Property(e => e.NetPrice)
                     .HasColumnName("net_price")
                     .HasColumnType("decimal(18, 4)");
@@ -1125,6 +1129,26 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.Remark)
                     .HasColumnName("remark")
                     .HasMaxLength(255);
+
+                entity.Property(e => e.InitialPrice)
+                      .HasColumnName("initial_price")
+                      .HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.Principal)
+                      .HasColumnName("principal")
+                      .HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.PrincipalRemain)
+                      .HasColumnName("principal_remain")
+                      .HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.InterestPrincipalRemain)
+                      .HasColumnName("interest_principal_remain")
+                      .HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.DiscountInterest)
+                      .HasColumnName("discount_interest")
+                      .HasColumnType("decimal(18, 4)");
             });
 
             modelBuilder.Entity<CreditTermList>(entity =>
