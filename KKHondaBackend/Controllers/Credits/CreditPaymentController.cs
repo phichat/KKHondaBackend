@@ -80,7 +80,7 @@ namespace KKHondaBackend.Controllers.Credits
                                    BrandName = brand.BrandName,
                                    ModelCode = model.ModelCode,
                                    Color = color.ColorName,
-                                   Price = calculate.OutStandingPrice
+                                   Price = calculate.Remain
                                }).SingleOrDefault();
 
                 var _contractItem = ctx.CreditContractItem
