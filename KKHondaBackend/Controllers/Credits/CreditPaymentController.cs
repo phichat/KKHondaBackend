@@ -84,7 +84,7 @@ namespace KKHondaBackend.Controllers.Credits
                                }).SingleOrDefault();
 
                 var _contractItem = ctx.CreditContractItem
-                                       .Where(x => x.ContractId == id && x.RefNo == contract.RefNo && x.PrincipalRemain >= (decimal)0.00)
+                                       .Where(x => x.ContractId == id && x.RefNo == contract.RefNo && x.InitialPrice >= (decimal)0.00)
                                       .ToList();
 
                 var isPay = _contractItem.Where(x => x.PayDate != null)
