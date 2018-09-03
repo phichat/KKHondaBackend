@@ -25,6 +25,16 @@ namespace KKHondaBackend.Services
             return SetRunningCode("CO", branchId, contractNo);
         }
 
+        public string GetnerateInstalmentTaxInvoiceNo(int branchId)
+        {
+            var invNo = (from db in ctx.CreditContractItem
+                        orderby db.TaxInvoiceNo descending
+                        where db.TaxInvoiceBranchId == branchId
+                        select db.TaxInvoiceNo).FirstOrDefault();
+
+            return SetRunningCode("ST", branchId, invNo);
+        }
+
         public string GenerateSellNo(int branchId)
         {
             var sellNo = (from db in ctx.Booking
@@ -46,7 +56,7 @@ namespace KKHondaBackend.Services
 
             return SetRunningCode("MC", branchId, vatNo);
         }
-
+                
         public string GetSysParameter(string prefix)
         {
             throw new NotImplementedException();

@@ -11,5 +11,6 @@ namespace KKHondaBackend.Services
 
         string GenerateContractNo(int branchId);
 
+        string GetnerateInstalmentTaxInvoiceNo(int branchId);
     }
 }

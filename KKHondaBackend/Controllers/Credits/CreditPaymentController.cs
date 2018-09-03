@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using KKHondaBackend.Data;
 using KKHondaBackend.Models;
+using KKHondaBackend.Services;
 
 namespace KKHondaBackend.Controllers.Credits
 {
@@ -14,10 +15,15 @@ namespace KKHondaBackend.Controllers.Credits
     public class CreditPaymentController : Controller
     {
         private readonly dbwebContext ctx;
+        private readonly ISysParameterService iSysParamService;
 
-        public CreditPaymentController(dbwebContext _ctx)
+        public CreditPaymentController(
+            dbwebContext _ctx,
+            ISysParameterService isysParamService
+        )
         {
             ctx = _ctx;
+            iSysParamService = isysParamService;
         }
 
         // GET: api/CreditPayment/5
@@ -84,7 +90,9 @@ namespace KKHondaBackend.Controllers.Credits
                                }).SingleOrDefault();
 
                 var _contractItem = ctx.CreditContractItem
-                                       .Where(x => x.ContractId == id && x.RefNo == contract.RefNo && x.InitialPrice >= (decimal)0.00)
+                                       .Where(x => x.ContractId == id &&
+                                       x.RefNo == contract.RefNo &&
+                                       x.InitialPrice >= (decimal)0.00)
                                       .ToList();
 
                 var isPay = _contractItem.Where(x => x.PayDate != null)
@@ -107,6 +115,7 @@ namespace KKHondaBackend.Controllers.Credits
                                     select new
                                     {
                                         ContractItemId = db.ContractItemId,
+                                        TaxInvoiceNo = db.TaxInvoiceNo,
                                         InstalmentNo = db.InstalmentNo,
                                         DueDate = db.DueDate,
                                         PayDate = db.PayDate,
@@ -159,13 +168,15 @@ namespace KKHondaBackend.Controllers.Credits
                 singContractItem.PaymentType = payment.PaymentType;
                 singContractItem.UpdateBy = payment.UpdateBy;
                 singContractItem.UpdateDate = DateTime.Now;
-
+                singContractItem.TaxInvoiceBranchId = payment.BranchId;
+                singContractItem.TaxInvoiceNo = iSysParamService.GetnerateInstalmentTaxInvoiceNo(payment.BranchId);
 
 
                 foreach (var item in contractItem)
                 {
-                    if (item.InstalmentNo > 0) {
-                        var preItem = contractItem.SingleOrDefault(p => p.InstalmentNo == (item.InstalmentNo -1));
+                    if (item.InstalmentNo > 0)
+                    {
+                        var preItem = contractItem.SingleOrDefault(p => p.InstalmentNo == (item.InstalmentNo - 1));
                         // กำหนดเงินตั้งต้น
                         item.InitialPrice = (item.InstalmentNo == 1) ? item.InitialPrice : preItem.PrincipalRemain;
                         // หาดอกเบี้ยเงินต้น ค่างวด
@@ -185,16 +196,18 @@ namespace KKHondaBackend.Controllers.Credits
                                                    totalInterest = g.Sum(x => x.InterestInstalment)
                                                }).SingleOrDefault();
 
-                    foreach(var item in contractItem) {
-                        if (item.InstalmentNo > 0) {
+                    foreach (var item in contractItem)
+                    {
+                        if (item.InstalmentNo > 0)
+                        {
                             var preItem = contractItem.SingleOrDefault(p => p.InstalmentNo == (item.InstalmentNo - 1));
                             // ถ้าชำระงวดแรก รวมดอกเบี้ยค่างวด - ดอกเบี้ยงวดแรก
                             // ถ้างวดต่อไป ดอกเบี้ยคงเหลืองวดก่อน - ดอกเบี้ยค่างวด ปัจจุบัน
-                            item.InterestPrincipalRemain = (item.InstalmentNo == 1) 
-                                ? interest.totalInterest - item.InterestInstalment 
+                            item.InterestPrincipalRemain = (item.InstalmentNo == 1)
+                                ? interest.totalInterest - item.InterestInstalment
                                 : preItem.InterestPrincipalRemain - item.InterestInstalment;
-                            
-                            item.DiscountInterest =  (decimal)item.InterestPrincipalRemain * (decimal)0.5;
+
+                            item.DiscountInterest = (decimal)item.InterestPrincipalRemain * (decimal)0.5;
                         }
                     }
                 }
@@ -203,13 +216,18 @@ namespace KKHondaBackend.Controllers.Credits
 
                 // เช็คว่า มีการชำระครบหรือยัง
                 var term = ctx.CreditContractItem
-                              .Where(p => p.ContractId == contract.ContractId && p.RefNo == contract.RefNo)
-                              .GroupBy(x => x.InstalmentNo, (key, values) => new
+                              .Where(p => p.ContractId == contract.ContractId && 
+                              p.RefNo == contract.RefNo && 
+                              p.InstalmentNo > 0 &&
+                              p.PayDate != null)
+                              .GroupBy(x => x.PayNetPrice, (key, values) => new
                               {
-                                  InstalmenNo = values.Count()
+                                  totalPaynetPrice = values.Sum(x => x.PayNetPrice)
                               }).FirstOrDefault();
 
-                if (term == null)
+
+
+                if (term.totalPaynetPrice >= calculate.Remain)
                 {
                     // ถ้าชำระครบ จะเปลี่ยนสถานะเป็น ชำระครบรอโอนทะเบียน
                     contract.ContractStatus = 30;
@@ -244,7 +262,7 @@ namespace KKHondaBackend.Controllers.Credits
                 item.UpdateDate = DateTime.Now;
                 ctx.SaveChanges();
 
-                var ct = ctx.CreditContract.SingleOrDefault(x => x.ContractId == item.ContractId && x.RefNo == item.RefNo); 
+                var ct = ctx.CreditContract.SingleOrDefault(x => x.ContractId == item.ContractId && x.RefNo == item.RefNo);
 
                 var term = ctx.CreditContractItem
                    .Where(_item => _item.ContractId == ct.ContractId && _item.RefNo == ct.RefNo && _item.PayNetPrice == null)
@@ -287,6 +305,7 @@ namespace KKHondaBackend.Controllers.Credits
             public decimal BalanceNetPrice { get; set; }
             public string Remark { get; set; }
             public int UpdateBy { get; set; }
+            public int BranchId { get; set; }
         }
     }
 }
