@@ -225,7 +225,9 @@ namespace KKHondaBackend.Controllers.Credits
                                   totalPaynetPrice = values.Sum(x => x.PayNetPrice)
                               }).FirstOrDefault();
 
-
+                if (term == null) {
+                    return Get(payment.ContractId);
+                }
 
                 if (term.totalPaynetPrice >= calculate.Remain)
                 {
