@@ -115,6 +115,8 @@ namespace KKHondaBackend.Controllers.Credits
 
                             join _tfLog in ctx.TransferLog on bookingItem.ItemId equals _tfLog.ItemId into a61
                             from tfLog in a61.DefaultIfEmpty()
+                            where bookingItem.ItemId == tfLog.ItemId && 
+                            bookingItem.LogReceiveId == tfLog.LogId
 
                             select new CreditContractList
                             {
@@ -190,11 +192,11 @@ namespace KKHondaBackend.Controllers.Credits
                     contractMateDropdown = contractMateDropdown.Concat(mateDd).ToArray();
                 }
 
-                var contractUserDropdown = customerDropdown;
-                if (cont.ContractUser != null)
+                var contractHireDropdown = customerDropdown;
+                if (cont.ContractHire != null)
                 {
-                    var userDd = iCustService.GetDropdownByKey(cont.ContractUser);
-                    contractUserDropdown = contractUserDropdown.Concat(userDd).ToArray();
+                    var userDd = iCustService.GetDropdownByKey(cont.ContractHire);
+                    contractHireDropdown = contractHireDropdown.Concat(userDd).ToArray();
                 }
 
                 var contractGurantor1Dropdown = customerDropdown;
@@ -232,7 +234,7 @@ namespace KKHondaBackend.Controllers.Credits
                     {"booking", booking},
                     {"userDropdown", userDropdown},
                     {"contractMateDropdown", contractMateDropdown},
-                    {"contractUserDropdown", contractUserDropdown},
+                    {"contractHireDropdown", contractHireDropdown},
                     {"contractGurantor1Dropdown", contractGurantor1Dropdown},
                     {"contractGurantor2Dropdown", contractGurantor2Dropdown},
                     {"relationDropdown", relationDropdown},
@@ -284,8 +286,8 @@ namespace KKHondaBackend.Controllers.Credits
                               join _contractMate in ctx.MCustomer on db.ContractMate equals _contractMate.CustomerCode into a8
                               from contractMate in a8.DefaultIfEmpty()
 
-                              join _contractUser in ctx.MCustomer on db.ContractUser equals _contractUser.CustomerCode into a9
-                              from contractUser in a9.DefaultIfEmpty()
+                              join _contractBooking in ctx.MCustomer on db.ContractBooking equals _contractBooking.CustomerCode into a9
+                              from contractBooking in a9.DefaultIfEmpty()
 
                               join _gurantor1 in ctx.MCustomer on db.ContractGurantor1 equals _gurantor1.CustomerCode into a10
                               from gurantor1 in a10.DefaultIfEmpty()
@@ -324,7 +326,7 @@ namespace KKHondaBackend.Controllers.Credits
                                   ContractGroup = contractGroup.GroupDesc,
                                   ContractHire = contrachHire.CustomerPrename + contrachHire.CustomerName + " " + contrachHire.CustomerSurname,
                                   ContractMate = contractMate.CustomerPrename + contractMate.CustomerName + " " + contractMate.CustomerSurname,
-                                  ContractUser = contractUser.CustomerPrename + contractUser.CustomerName + " " + contractUser.CustomerSurname,
+                                  ContractBooking = contractBooking.CustomerPrename + contractBooking.CustomerName + " " + contractBooking.CustomerSurname,
                                   ContractGurantor1 = gurantor1.CustomerPrename + gurantor1.CustomerName + " " + gurantor1.CustomerSurname,
                                   GurantorRelation1 = relation1.RelationDesc,
                                   ContractGurantor2 = gurantor2.CustomerPrename + gurantor2.CustomerName + " " + gurantor2.CustomerSurname,
@@ -579,7 +581,7 @@ namespace KKHondaBackend.Controllers.Credits
             public string ContractPoint { get; set; }
             public string ContractGroup { get; set; }
             public string ContractHire { get; set; }
-            public string ContractUser { get; set; }
+            public string ContractBooking { get; set; }
             public string ContractGurantor1 { get; set; }
             public string ContractGurantor2 { get; set; }
             public string CreatedBy { get; set; }
@@ -613,7 +615,7 @@ namespace KKHondaBackend.Controllers.Credits
             public string ContractGroup { get; set; }
             public string ContractHire { get; set; }
             public string ContractMate { get; set; }
-            public string ContractUser { get; set; }
+            public string ContractBooking { get; set; }
             public string ContractGurantor1 { get; set; }
             public string GurantorRelation1 { get; set; }
             public string ContractGurantor2 { get; set; }

@@ -32,7 +32,16 @@ namespace KKHondaBackend.Services
                         where db.TaxInvoiceBranchId == branchId
                         select db.TaxInvoiceNo).FirstOrDefault();
 
-            return SetRunningCode("ST", branchId, invNo);
+            return SetRunningCode("TF", branchId, invNo);
+        }
+
+        public string GetnerateReceiptNo(int branchId) {
+            var receiptNo = (from db in ctx.CreditContractItem
+                      orderby db.ReceiptNo descending
+                      where db.TaxInvoiceBranchId == branchId
+                      select db.ReceiptNo).FirstOrDefault();
+
+            return SetRunningCode("OP", branchId, receiptNo);
         }
 
         public string GenerateSellNo(int branchId)

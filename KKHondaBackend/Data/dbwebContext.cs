@@ -474,6 +474,15 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.UpdateDate)
                     .HasColumnName("update_date")
                     .HasColumnType("datetime");
+
+                entity.Property(e => e.CpId)
+                      .HasColumnName("cp_id");
+
+                entity.Property(e => e.OtherDetail)
+                      .HasColumnName("other_detail");
+
+                entity.Property(e => e.LogReceiveId)
+                      .HasColumnName("log_receive_id");
             });
 
             modelBuilder.Entity<Branch>(entity =>
@@ -895,6 +904,9 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.UpdateDate)
                     .HasColumnName("update_date")
                     .HasColumnType("datetime");
+
+                entity.Property(e => e.LogReceiveId)
+                      .HasColumnName("log_receive_id");
             });
 
             modelBuilder.Entity<CreditContract>(entity =>
@@ -949,8 +961,8 @@ namespace KKHondaBackend.Data
 
                 entity.Property(e => e.ContractType).HasColumnName("contract_type");
 
-                entity.Property(e => e.ContractUser)
-                    .HasColumnName("contract_user")
+                entity.Property(e => e.ContractBooking)
+                    .HasColumnName("contract_booking")
                     .HasMaxLength(50);
 
                 entity.Property(e => e.CreateBy).HasColumnName("create_by");
@@ -1127,8 +1139,12 @@ namespace KKHondaBackend.Data
                     .HasColumnType("decimal(18, 4)");
 
                 entity.Property(e => e.Remark)
-                    .HasColumnName("remark")
-                    .HasMaxLength(255);
+                      .HasColumnName("remark");
+
+                entity.Property(e => e.DocumentRef)
+                      .HasColumnName("document_ref")
+                      .HasMaxLength(255);
+
 
                 entity.Property(e => e.InitialPrice)
                       .HasColumnName("initial_price")
@@ -1149,6 +1165,10 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.DiscountInterest)
                       .HasColumnName("discount_interest")
                       .HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.ReceiptNo)
+                      .HasColumnName("receipt_no")
+                      .HasMaxLength(50);
             });
 
             modelBuilder.Entity<CreditTermList>(entity =>

@@ -17,7 +17,7 @@ namespace KKHondaBackend.Models
         public int? ContractGroup { get; set; }
         public string ContractHire { get; set; }
         public string ContractMate { get; set; }
-        public string ContractUser { get; set; }
+        public string ContractBooking { get; set; }
         public string ContractGurantor1 { get; set; }
         public int? GurantorRelation1 { get; set; }
         public string ContractGurantor2 { get; set; }

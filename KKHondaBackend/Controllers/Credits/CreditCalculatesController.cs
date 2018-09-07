@@ -107,6 +107,49 @@ namespace KKHondaBackend.Controllers.Credits
             return NoContent();
         }
 
+        [HttpGet("GetEngineByKeyword")]
+        public IActionResult GetEngineByKeyword(int bookingId, int branchId, string term) {
+
+            try {
+
+                var bookItem = _context.BookingItem.SingleOrDefault(p => p.BookingId == bookingId && p.ItemDetailType == 1);
+
+                var model = _context.ProductModel.SingleOrDefault(p => p.ModelId == bookItem.ModelId);
+
+                var stockReceive = (from db in _context.StockReceive
+
+                                    join _log in _context.TransferLog on db.LogId equals _log.LogId into a1
+                                    from log in a1.DefaultIfEmpty()
+
+                                    orderby log.EngineNo ascending
+
+                                    where log.ItemId == bookItem.ItemId &&
+                                    log.ModelId == bookItem.ModelId &&
+                                    log.ColorId == bookItem.ColorId &&
+                                    log.ReceiverId == branchId &&   
+                                    db.BranchId == branchId &&
+                                    db.BalanceQty > 0 &&
+                                    (log.EngineNo.Contains(term) || log.FrameNo.Contains(term))
+
+                                    select new ModelEngine
+                                    {
+                                        LogId = log.LogId,
+                                        Model = model.ModelCode,
+                                        EngineNo = log.EngineNo,
+                                        FrameNo = log.FrameNo
+
+                                    }).ToList();
+
+                return Ok(stockReceive);
+                
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+            
+        }
+
         [HttpPost("Create")] 
         public IActionResult Create([FromBody] Credit credit)
         {
@@ -167,7 +210,22 @@ namespace KKHondaBackend.Controllers.Credits
 
                     _context.CreditContractItem.AddRange(contractItems);
                     _context.SaveChanges();
-                   
+
+                    // หลังจากเลือกรายการที่ค้นหาแล้วให้เอา log_id ที่ได้มาเก็บตอนทำการขาย      
+
+                    var bookItem = _context.BookingItem.SingleOrDefault(x => x.BookingId == contract.BookingId && x.ItemDetailType == 1);
+
+                    if (bookItem != null) {
+                        bookItem.LogReceiveId = calculate.LogReceiveId;
+                        _context.SaveChanges();
+                    }
+
+                    var stockReceive = _context.StockReceive.SingleOrDefault(x => x.LogId == calculate.LogReceiveId);
+                    if(stockReceive != null) {
+                        stockReceive.BalanceQty = stockReceive.BalanceQty - 1;
+                        _context.SaveChanges();
+
+                    }
 
                     transaction.Commit();
 
@@ -360,6 +418,9 @@ namespace KKHondaBackend.Controllers.Credits
         //    return contractNo;
         //}
 
+
+
+
         private string GenerateReferenceContract(int? contractId)
         {
             if (contractId != null)
@@ -379,6 +440,13 @@ namespace KKHondaBackend.Controllers.Credits
         private bool CreditCalculateExists(int id)
         {
             return _context.CreditCalculate.Any(e => e.CalculateId == id);
+        }
+
+        public class ModelEngine {
+            public int LogId { get; set; }
+            public string Model { get; set; }
+            public string EngineNo { get; set; }    
+            public string FrameNo { get; set; }
         }
 
     }

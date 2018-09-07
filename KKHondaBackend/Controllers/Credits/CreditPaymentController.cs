@@ -65,6 +65,7 @@ namespace KKHondaBackend.Controllers.Credits
                 var calculate = ctx.CreditCalculate.SingleOrDefault(p => p.CalculateId == contract.CalculateId);
 
                 var booking = (from item in ctx.BookingItem
+                               where item.BookingId == contract.BookingId && item.ItemDetailType == 1
 
                                join bra in ctx.ProductBrand on item.BrandId equals bra.BrandId into a1
                                from brand in a1.DefaultIfEmpty()
@@ -77,8 +78,9 @@ namespace KKHondaBackend.Controllers.Credits
 
                                join _transferlog in ctx.TransferLog on item.ItemId equals _transferlog.ItemId into a6
                                from transferlog in a6.DefaultIfEmpty()
+                               where item.LogReceiveId == transferlog.LogId
 
-                               where item.BookingId == id && item.ItemDetailType == 1
+
                                select new
                                {
                                    EngineNo = transferlog.EngineNo,
@@ -86,7 +88,8 @@ namespace KKHondaBackend.Controllers.Credits
                                    BrandName = brand.BrandName,
                                    ModelCode = model.ModelCode,
                                    Color = color.ColorName,
-                                   Price = calculate.Remain
+                                   Price = calculate.Remain,
+                                   DepositPrice = calculate.DepositPrice
                                }).SingleOrDefault();
 
                 var _contractItem = ctx.CreditContractItem
@@ -95,18 +98,23 @@ namespace KKHondaBackend.Controllers.Credits
                                        x.InitialPrice >= (decimal)0.00)
                                       .ToList();
 
-                var isPay = _contractItem.Where(x => x.PayDate != null)
+                var deposit = _contractItem.SingleOrDefault(x => x.InstalmentNo == 0);
+
+                var isPay = _contractItem.Where(x => x.InstalmentNo > 0 && x.PayDate != null)
                                .GroupBy(o => new { o.ContractId })
                                .Select(g => new
                                {
+                                   DepositIsPay = deposit.PayDate != null ? deposit.PayNetPrice : 0,
                                    IsPayPrice = g.Sum(x => x.PayNetPrice),
                                    IsPayTerm = g.Count()
                                }).SingleOrDefault();
 
-                var isOutstanding = _contractItem.Where(x => x.PayDate == null)
+
+                var isOutstanding = _contractItem.Where(x => x.InstalmentNo > 0 && x.PayDate == null)
                                        .GroupBy(o => new { o.ContractId })
                                        .Select(g => new
                                        {
+                    DepositIsOutstanding = deposit.PayDate == null ? 0 : deposit.PayNetPrice,
                                            IsOutstandingPrice = g.Sum(x => x.BalanceNetPrice),
                                            IsOutstandingTerm = g.Count()
                                        }).SingleOrDefault();
@@ -170,6 +178,9 @@ namespace KKHondaBackend.Controllers.Credits
                 singContractItem.UpdateDate = DateTime.Now;
                 singContractItem.TaxInvoiceBranchId = payment.BranchId;
                 singContractItem.TaxInvoiceNo = iSysParamService.GetnerateInstalmentTaxInvoiceNo(payment.BranchId);
+                singContractItem.ReceiptNo = iSysParamService.GetnerateReceiptNo(payment.BranchId);
+                singContractItem.Remark = payment.Remark;
+                singContractItem.DocumentRef = payment.DocumentRef;
 
 
                 foreach (var item in contractItem)
@@ -308,6 +319,7 @@ namespace KKHondaBackend.Controllers.Credits
             public string Remark { get; set; }
             public int UpdateBy { get; set; }
             public int BranchId { get; set; }
+            public string DocumentRef { get; set; }
         }
     }
 }

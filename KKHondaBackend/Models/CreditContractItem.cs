@@ -48,6 +48,8 @@ namespace KKHondaBackend.Models
         public DateTime? UpdateDate { get; set; }
         public string Remark { get; set; }
 
+        public string ReceiptNo { get; set; }
+        public string DocumentRef { get; set; }
         public decimal? InitialPrice {get; set;}
         public decimal? Principal {get; set;}
         public decimal? PrincipalRemain {get; set;}
