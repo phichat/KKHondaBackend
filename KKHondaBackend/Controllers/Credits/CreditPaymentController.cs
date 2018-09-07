@@ -64,6 +64,14 @@ namespace KKHondaBackend.Controllers.Credits
 
                 var calculate = ctx.CreditCalculate.SingleOrDefault(p => p.CalculateId == contract.CalculateId);
 
+                var _contractItem = ctx.CreditContractItem
+                                   .Where(x => x.ContractId == id &&
+                                   x.RefNo == contract.RefNo &&
+                                   x.InitialPrice >= (decimal)0.00)
+                                  .ToList();
+
+                var deposit = _contractItem.SingleOrDefault(x => x.InstalmentNo == 0);
+
                 var booking = (from item in ctx.BookingItem
                                where item.BookingId == contract.BookingId && item.ItemDetailType == 1
 
@@ -80,7 +88,6 @@ namespace KKHondaBackend.Controllers.Credits
                                from transferlog in a6.DefaultIfEmpty()
                                where item.LogReceiveId == transferlog.LogId
 
-
                                select new
                                {
                                    EngineNo = transferlog.EngineNo,
@@ -89,22 +96,15 @@ namespace KKHondaBackend.Controllers.Credits
                                    ModelCode = model.ModelCode,
                                    Color = color.ColorName,
                                    Price = calculate.Remain,
-                                   DepositPrice = calculate.DepositPrice
+                                   DepositPrice = calculate.DepositPrice,
+                                   DepositIsPay = deposit.PayDate != null ? deposit.PayNetPrice : 0,
+                                   DepositIsOutstanding = deposit.PayDate == null ? deposit.PayNetPrice : 0,
                                }).SingleOrDefault();
-
-                var _contractItem = ctx.CreditContractItem
-                                       .Where(x => x.ContractId == id &&
-                                       x.RefNo == contract.RefNo &&
-                                       x.InitialPrice >= (decimal)0.00)
-                                      .ToList();
-
-                var deposit = _contractItem.SingleOrDefault(x => x.InstalmentNo == 0);
 
                 var isPay = _contractItem.Where(x => x.InstalmentNo > 0 && x.PayDate != null)
                                .GroupBy(o => new { o.ContractId })
                                .Select(g => new
                                {
-                                   DepositIsPay = deposit.PayDate != null ? deposit.PayNetPrice : 0,
                                    IsPayPrice = g.Sum(x => x.PayNetPrice),
                                    IsPayTerm = g.Count()
                                }).SingleOrDefault();
@@ -114,7 +114,6 @@ namespace KKHondaBackend.Controllers.Credits
                                        .GroupBy(o => new { o.ContractId })
                                        .Select(g => new
                                        {
-                    DepositIsOutstanding = deposit.PayDate == null ? 0 : deposit.PayNetPrice,
                                            IsOutstandingPrice = g.Sum(x => x.BalanceNetPrice),
                                            IsOutstandingTerm = g.Count()
                                        }).SingleOrDefault();
