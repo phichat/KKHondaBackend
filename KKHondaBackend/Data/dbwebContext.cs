@@ -988,6 +988,10 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.UpdateDate)
                     .HasColumnName("update_date")
                     .HasColumnType("datetime");
+
+                entity.Property(e => e.EndContractDate)
+                      .HasColumnName("end_contract_date")
+                      .HasColumnType("datetime");
             });
 
             modelBuilder.Entity<CreditContractItem>(entity =>

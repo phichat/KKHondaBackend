@@ -243,6 +243,7 @@ namespace KKHondaBackend.Controllers.Credits
                 {
                     // ถ้าชำระครบ จะเปลี่ยนสถานะเป็น ชำระครบรอโอนทะเบียน
                     contract.ContractStatus = 30;
+                    contract.EndContractDate = DateTime.Now.Date;
                     await ctx.SaveChangesAsync();
                 }
 
