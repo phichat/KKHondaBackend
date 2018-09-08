@@ -241,8 +241,8 @@ namespace KKHondaBackend.Controllers.Credits
 
                 if (term.totalPaynetPrice >= calculate.Remain)
                 {
-                    // ถ้าชำระครบ จะเปลี่ยนสถานะเป็น ชำระครบรอโอนทะเบียน
-                    contract.ContractStatus = 30;
+                    // ถ้าชำระครบ จะเปลี่ยนสถานะ ปิดสัญญา/โอนทะเบียน
+                    contract.ContractStatus = 29;
                     contract.EndContractDate = DateTime.Now.Date;
                     await ctx.SaveChangesAsync();
                 }
