@@ -46,6 +46,11 @@ namespace KKHondaBackend.Services
         public int? BranchId { get; set; }
         public int? CreateBy { get; set; }
         public BookingItem[] BookingItem { get; set; }
+
+        public string CusSellName { get; set; }
+        public string CusTaxNo { get; set; }
+        public string CusTaxBranch { get; set; }
+        public string SellRemark { get; set; }
     }
 
     public class BookingItem {

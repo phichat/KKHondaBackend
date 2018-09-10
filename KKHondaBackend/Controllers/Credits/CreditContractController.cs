@@ -164,7 +164,13 @@ namespace KKHondaBackend.Controllers.Credits
 
                 var calcu = ctx.CreditCalculate.Where(p => p.CalculateId == cont.CalculateId).SingleOrDefault();
 
+                var __branch = ctx.Branch.SingleOrDefault(x => x.BranchId == 1);
+
                 var booking = iBookService.GetBookingById(cont.BookingId);
+                booking.CusTaxNo = __branch.BranchRegisterNo;
+                booking.CusTaxBranch = __branch.BranchName;
+                booking.CusSellName = "บริษัท เกริกไกรเอ็นเทอร์ไพรส์ จำกัด";
+
 
                 var zoneId = ctx.Branch
                     .Where(b => b.BranchId == booking.BranchId)
@@ -342,7 +348,13 @@ namespace KKHondaBackend.Controllers.Credits
 
                 CreditContract contract = ctx.CreditContract.Where(o => o.ContractId == contractId).SingleOrDefault();
 
+                var __branch = ctx.Branch.SingleOrDefault(x => x.BranchId == 1);
+
                 var booking = iBookService.GetBookingById(contract.BookingId);
+                booking.CusTaxNo = __branch.BranchRegisterNo;
+                booking.CusTaxBranch = __branch.BranchName;
+                booking.CusSellName = "บริษัท เกริกไกรเอ็นเทอร์ไพรส์ จำกัด";
+
 
                 var calculate = ctx.CreditCalculate.Where(p => p.CalculateId == contract.CalculateId).SingleOrDefault();
 
@@ -427,12 +439,14 @@ namespace KKHondaBackend.Controllers.Credits
         }
 
         [HttpPost("Create")]
-        public IActionResult Create([FromBody] CreditContract creditContract)
+        public IActionResult Create([FromBody] Contract c)
         {
             using (var transaction = ctx.Database.BeginTransaction())
             {
                 try
                 {
+                    var creditContract = c.contract;
+                    var _booking = c.booking;
                     // Contract
                     creditContract.UpdateDate = DateTime.Now;
                     // อยู่ระหว่างผ่อนชำระ
@@ -456,8 +470,10 @@ namespace KKHondaBackend.Controllers.Credits
 
                     booking.PaymentPrice = calculate.DepositPrice;
                     booking.PaymentType = booking.BookingDepositType;
-                    booking.CusSellName = customer.CustomerFullName;
-                    booking.CusTaxNo = customer.IdCard;
+                    booking.CusSellName = _booking.CusSellName;
+                    booking.CusTaxNo = _booking.CusTaxNo;
+                    booking.CusTaxBranch = _booking.CusTaxBranch;
+                    booking.SellRemark = _booking.SellRemark;
 
                     booking.SellBy = creditContract.CreateBy;
                     booking.LStartDate = calculate.FirstPayment.ToString();
@@ -472,7 +488,7 @@ namespace KKHondaBackend.Controllers.Credits
                     ctx.Update(booking);
                     ctx.SaveChanges();
 
-                    transaction.Commit();
+                    //transaction.Commit();
 
                     return Ok(creditContract);
 
@@ -486,12 +502,14 @@ namespace KKHondaBackend.Controllers.Credits
         }
 
         [HttpPost("Edit")]
-        public IActionResult Edit([FromBody] CreditContract creditContract)
+        public IActionResult Edit([FromBody] Contract c)
         {
             using (var transaction = ctx.Database.BeginTransaction())
             {
                 try
                 {
+                    var creditContract = c.contract;
+                    var _booking = c.booking;
                     // Contract
                     creditContract.UpdateDate = DateTime.Now;
                     ctx.Update(creditContract);
@@ -514,8 +532,10 @@ namespace KKHondaBackend.Controllers.Credits
                     booking.BookingStatus = 2; // สถานะขาย
                     booking.PaymentPrice = calculate.DepositPrice;
                     booking.PaymentType = booking.BookingDepositType;
-                    booking.CusSellName = customer.CustomerFullName;
-                    booking.CusTaxNo = customer.IdCard;
+                    booking.CusSellName = _booking.CusSellName;
+                    booking.CusTaxNo = _booking.CusTaxNo;
+                    booking.CusTaxBranch = _booking.CusTaxBranch;
+                    booking.SellRemark = _booking.SellRemark;
 
                     booking.SellBy = creditContract.CreateBy;
                     booking.LStartDate = calculate.FirstPayment.ToString();
@@ -561,6 +581,11 @@ namespace KKHondaBackend.Controllers.Credits
             ctx.SaveChanges();
 
             return Ok();
+        }
+
+        public class Contract {
+            public CreditContract contract { get; set; }
+            public Models.Booking booking { get; set; }
         }
 
         public class ContractTerminate {
