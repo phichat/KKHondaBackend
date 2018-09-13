@@ -13,7 +13,7 @@ namespace KKHondaBackend.Models {
         public decimal PayPriceTotal { get; set; }
         public int NextInstalment { get; set; }
         public decimal NextInstalmentBalance { get; set; }
-        public DateTime NextDueDate { get; set; }
+        public DateTime? NextDueDate { get; set; }
         public int FutureInstalment { get; set; }
         public decimal FutureInstalmentBalance { get; set; }
     }

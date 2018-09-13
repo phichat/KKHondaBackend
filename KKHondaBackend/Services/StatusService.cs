@@ -18,7 +18,7 @@ namespace KKHondaBackend.Services
 
         public Dropdown[] GetDropdown()
         {
-                List<Dropdown> dropdown = new List<Dropdown>();
+            List<Dropdown> dropdown = new List<Dropdown>();
             dropdown = (from db in ctx.MStatus
                         where db.Status == true
                         select new Dropdown
@@ -27,6 +27,32 @@ namespace KKHondaBackend.Services
                             Text = db.StatusDesc
                         }).ToList();
 
+            return dropdown.ToArray();
+        }
+
+        public Dropdown[] GetDropdownCredit(){
+            List<Dropdown> dropdown = new List<Dropdown>();
+            dropdown = (from db in ctx.MStatus
+                        where db.Status == true && 
+                        (db.Id == 16 ||
+                         db.Id == 17 ||
+                         db.Id == 18 ||
+                         db.Id == 19 ||
+                         db.Id == 20 ||
+                         db.Id == 21 ||
+                         db.Id == 23 ||
+                         db.Id == 27 ||
+                         db.Id == 28 ||
+                         db.Id == 29 ||
+                         db.Id == 30 ||
+                         db.Id == 31 ||
+                         db.Id == 32
+                        )
+                        select new Dropdown
+                        {
+                            Value = db.Id.ToString(),
+                            Text = db.StatusDesc
+                        }).ToList();
             return dropdown.ToArray();
         }
     }

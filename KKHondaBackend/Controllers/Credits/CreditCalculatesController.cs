@@ -203,6 +203,8 @@ namespace KKHondaBackend.Controllers.Credits
                         item.PayPrice = item.Balance;
                         item.PayVatPrice = item.BalanceVatPrice;
                         item.PayNetPrice = item.BalanceNetPrice;
+                        // สถานะยังไม่ชำระ
+                        item.Status = 13;
 
                         item.CreateBy = contract.CreateBy;
                         item.CreateDate = DateTime.Now;
@@ -281,6 +283,8 @@ namespace KKHondaBackend.Controllers.Credits
                         item.PayPrice = item.Balance;
                         item.PayVatPrice = item.BalanceVatPrice;
                         item.PayNetPrice = item.BalanceNetPrice;
+                        // สถานะยังไม่ชำระ
+                        item.Status = 13;
 
                         item.CreateBy = contract.CreateBy;
                         item.CreateDate = DateTime.Now;
@@ -366,6 +370,8 @@ namespace KKHondaBackend.Controllers.Credits
                         item.PayPrice = item.Balance;
                         item.PayVatPrice = item.BalanceVatPrice;
                         item.PayNetPrice = item.BalanceNetPrice;
+                        // สถานะยังไม่ชำระ
+                        item.Status = 13;
 
                         item.CreateBy = contract.CreateBy;
                         item.CreateDate = DateTime.Now;

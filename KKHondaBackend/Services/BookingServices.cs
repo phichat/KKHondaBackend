@@ -26,69 +26,74 @@ namespace KKHondaBackend.Services
             BookingItem[] bookingItems = new BookingItem[] {};
 
 
-             bookingItems = (from item in ctx.BookingItem
+            bookingItems = (from item in ctx.BookingItem
+                            where item.BookingId == id
 
-                         join bra in ctx.ProductBrand on item.BrandId equals bra.BrandId into a1
-                         from brand in a1.DefaultIfEmpty()
+                            join bra in ctx.ProductBrand on item.BrandId equals bra.BrandId into a1
+                            from brand in a1.DefaultIfEmpty()
 
-                         join cat in ctx.ProductCategory on item.CatId equals cat.CatId into a2
-                         from category in a2.DefaultIfEmpty()
+                            join cat in ctx.ProductCategory on item.CatId equals cat.CatId into a2
+                            from category in a2.DefaultIfEmpty()
 
-                         join cla in ctx.ProductClass on item.ClassId equals cla.ClassId into a3
-                         from classes in a3.DefaultIfEmpty()
+                            join cla in ctx.ProductClass on item.ClassId equals cla.ClassId into a3
+                            from classes in a3.DefaultIfEmpty()
 
-                         join col in ctx.ProductColor on item.ColorId equals col.ColorId into a4
-                         from color in a4.DefaultIfEmpty()
+                            join col in ctx.ProductColor on item.ColorId equals col.ColorId into a4
+                            from color in a4.DefaultIfEmpty()
 
-                         join mod in ctx.ProductModel on item.ModelId equals mod.ModelId into a5
-                         from model in a5.DefaultIfEmpty()
+                            join mod in ctx.ProductModel on item.ModelId equals mod.ModelId into a5
+                            from model in a5.DefaultIfEmpty()
 
-                         join typ in ctx.ProductType on item.TypeId equals typ.TypeId into a6
-                         from type in a6.DefaultIfEmpty()
+                            join typ in ctx.ProductType on item.TypeId equals typ.TypeId into a6
+                            from type in a6.DefaultIfEmpty()
 
-                         join uni in ctx.Sellunit on item.UnitId equals uni.UnitId into a7
-                         from unit in a7.DefaultIfEmpty()
+                            join uni in ctx.Sellunit on item.UnitId equals uni.UnitId into a7
+                            from unit in a7.DefaultIfEmpty()
 
-                         where item.BookingId == id
-                         select new BookingItem
-                         {
-                             BookingId = item.BookingId,
-                             BrandName = brand.BrandName,
-                             CatId = item.CatId,
-                             CatName = category.CatName,
-                             ClassName = classes.ClassName,
-                             ColorName = color.ColorName,
-                             CostNet = item.CostNet,
-                             CostPrice = item.CostPrice,
-                             CostVat = item.CostVat,
-                             CostVatPrice = item.CostVatPrice,
-                             ItemDetailType = item.ItemDetailType,
-                             ItemId = item.ItemId,
-                             ItemQty = item.ItemQty,
-                             ItemType = item.ItemType,
-                             ModelCode = model.ModelCode,
-                             ModelName = model.ModelName,
-                             PartCode = item.PartCode,
-                             PartClass = item.PartClass,
-                             PartName = item.PartName,
-                             PartSource = item.PartSource,
-                             PartSpareCode = item.PartSpareCode,
-                             RealDiscountB = item.RealDiscountB,
-                             RealDiscountP = item.RealDiscountP,
-                             RealVat = item.RealVat,
-                             RealNetPrice = item.RealNetPrice,
-                             RealVatPrice = item.RealVatPrice,
-                             RealSellPrice = item.RealSellPrice,
-                             RealTotalDiscount = item.RealTotalDiscount,
-                             RealDiscountPPrice = item.RealDiscountPPrice,
-                             RunId = item.RunId,
-                             SellNet = item.SellNet,
-                             SellVat = item.SellVat,
-                             SellPrice = item.SellPrice,
-                             SellVatPrice = item.SellVatPrice,
-                             TypeName = type.TypeName,
-                             UnitName = unit.UnitName
-                         }).ToArray();
+                            join _transferlog in ctx.TransferLog on item.LogReceiveId equals _transferlog.LogId into a8
+                            from tflog in a8.DefaultIfEmpty()
+
+                            select new BookingItem
+                            {
+                                BookingId = item.BookingId,
+                                BrandName = brand.BrandName,
+                                CatId = item.CatId,
+                                CatName = category.CatName,
+                                ClassName = classes.ClassName,
+                                ColorName = color.ColorName,
+                                CostNet = item.CostNet,
+                                CostPrice = item.CostPrice,
+                                CostVat = item.CostVat,
+                                CostVatPrice = item.CostVatPrice,
+                                ItemDetailType = item.ItemDetailType,
+                                ItemId = item.ItemId,
+                                ItemQty = item.ItemQty,
+                                ItemType = item.ItemType,
+                                ModelCode = model.ModelCode,
+                                ModelName = model.ModelName,
+                                PartCode = item.PartCode,
+                                PartClass = item.PartClass,
+                                PartName = item.PartName,
+                                PartSource = item.PartSource,
+                                PartSpareCode = item.PartSpareCode,
+                                RealDiscountB = item.RealDiscountB,
+                                RealDiscountP = item.RealDiscountP,
+                                RealVat = item.RealVat,
+                                RealNetPrice = item.RealNetPrice,
+                                RealVatPrice = item.RealVatPrice,
+                                RealSellPrice = item.RealSellPrice,
+                                RealTotalDiscount = item.RealTotalDiscount,
+                                RealDiscountPPrice = item.RealDiscountPPrice,
+                                RunId = item.RunId,
+                                SellNet = item.SellNet,
+                                SellVat = item.SellVat,
+                                SellPrice = item.SellPrice,
+                                SellVatPrice = item.SellVatPrice,
+                                TypeName = type.TypeName,
+                                UnitName = unit.UnitName,
+                                EngineNo = tflog.EngineNo,
+                                FrameNo = tflog.FrameNo
+                            }).ToArray();
 
 
 

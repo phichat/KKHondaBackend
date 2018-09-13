@@ -53,7 +53,8 @@ namespace KKHondaBackend.Services
         public string SellRemark { get; set; }
     }
 
-    public class BookingItem {
+    public class BookingItem
+    {
         public int? BookingId { get; set; }
         public string BrandName { get; set; }
         public int? CatId { get; set; }
@@ -90,6 +91,8 @@ namespace KKHondaBackend.Services
         public decimal? SellVatPrice { get; set; }
         public string TypeName { get; set; }
         public string UnitName { get; set; }
+        public string EngineNo { get; set;}
+        public string FrameNo { get; set; }
     }
 
     public class BookingList {
