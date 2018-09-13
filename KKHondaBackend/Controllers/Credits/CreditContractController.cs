@@ -605,7 +605,7 @@ namespace KKHondaBackend.Controllers.Credits
                     var cc = ctx.CreditContract.SingleOrDefault(x => x.ContractId == c.ContractId);
 
                     // ยกเลิกสัญญา
-                    cc.ContractStatus = 0;
+                    cc.ContractStatus = 33;
                     cc.Remark = c.Remark;
                     cc.UpdateBy = c.UpdateBy;
                     cc.UpdateDate = DateTime.Now;
