@@ -10,7 +10,7 @@ using KKHondaBackend.Data;
 
 namespace KKHondaBackend.Controllers.Users
 {
-    [Route("api/[controller]")]
+    [Route("api/Users")]
     public class UserController : Controller
     {
         private readonly dbwebContext ctx;
@@ -42,28 +42,26 @@ namespace KKHondaBackend.Controllers.Users
         }
 
         // GET api/values/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        [HttpGet("GetUserById")]
+        public IActionResult GetUserById(int id)
         {
-            return "value";
-        }
 
-        // POST api/values
-        [HttpPost]
-        public void Post([FromBody]string value)
-        {
-        }
+            var u = (from db in ctx.User
+                     join b in ctx.Branch on db.BranchId equals b.BranchId into _user
+                     from user in _user.DefaultIfEmpty()
+                     where db.Id == id
 
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
-        {
-        }
+                     select new
+                     {
+                         AdminName = $"{user.BranchName} ({user.BranchCode})",
+                         Branch = db.BranchId,
+                         db.Id,
+                         Name = db.Username,
+                         db.UserType,
+                         FullName = db.Fullname
+                     }).SingleOrDefault();
 
-        // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            return Ok(u);
         }
 
         public class UserDropdown
