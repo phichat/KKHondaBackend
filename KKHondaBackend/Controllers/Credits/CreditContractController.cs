@@ -60,7 +60,7 @@ namespace KKHondaBackend.Controllers.Credits
         public IActionResult Canceled()
         {
             List<CreditContractList> creditContractLists = GetListContracts();
-            creditContractLists = creditContractLists.Where(o => o.ContractStatus == 27).ToList();
+            creditContractLists = creditContractLists.Where(o => o.ContractStatus == 27).OrderByDescending(x => x.ContractNo).ToList();
             return Ok(creditContractLists);
         }
 
@@ -71,14 +71,14 @@ namespace KKHondaBackend.Controllers.Credits
             creditContractLists = creditContractLists.Where(o => 
                                                             o.ContractStatus == 30 || 
                                                             o.ContractStatus == 31 || 
-                                                            o.ContractStatus == 32).ToList();
+                                                            o.ContractStatus == 32).OrderByDescending(x => x.ContractNo).ToList();
             return Ok(creditContractLists);
         }
 
         [HttpGet("CloseContract")]
         public IActionResult CloseContract() {
             List<CreditContractList> creditContractLists = GetListContracts();
-            creditContractLists = creditContractLists.Where(o => o.ContractStatus == 29).ToList();
+            creditContractLists = creditContractLists.Where(o => o.ContractStatus == 29).OrderByDescending(x => x.ContractNo).ToList();
             return Ok(creditContractLists);
         }
 
@@ -89,7 +89,7 @@ namespace KKHondaBackend.Controllers.Credits
                                                             o.ContractStatus != 29 &&
                                                             o.ContractStatus != 30 &&
                                                             o.ContractStatus != 31 &&
-                                                            o.ContractStatus != 32).ToList();
+                                                            o.ContractStatus != 32).OrderByDescending(x => x.ContractNo).ToList();
             return Ok(creditContractLists);
         }
 
