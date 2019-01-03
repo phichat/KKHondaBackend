@@ -28,11 +28,12 @@ namespace KKHondaBackend.Services
         public string PookingNo {get; set; }
         public int? BookingId { get; set; }
         public string BookingNo { get; set; }
-        public int? PtymentType {get; set; }
+        public int? BookingPaymentType { get; set; } // 1=รถ, 2=อื่นๆ, 3=ศูนย์บริการq
+        public int? PtymentType {get; set; } // 1=รถ, 2=อื่นๆ, 3=ศูนย์บริการ
         public int? BookingStatus {get; set; }
         public int? BookingType {get; set; }
         public decimal? NetPrice {get; set; }
-        public string NickName {get; set; }
+        public string NickName {get; set; } 
         public decimal? OutStandingPrice {get; set; }
         public string ReceiveDate {get; set; }
         public string Remark {get; set; }
