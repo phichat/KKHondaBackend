@@ -68,5 +68,8 @@ namespace KKHondaBackend.Models
         public string VatNo { get; set; }
         public DateTime? VatDate { get; set; }
         public int? VatBy { get; set; }
+        public string ReturnDepNo { get; set; }
+        public DateTime? ReturnDepDate { get; set; }
+        public int? ReturnDepBy { get; set; }
     }
 }

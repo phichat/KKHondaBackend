@@ -315,6 +315,15 @@ namespace KKHondaBackend.Data
                     .HasColumnType("datetime");
 
                 entity.Property(e => e.VatNo).HasColumnName("vat_no");
+
+                entity.Property(e => e.ReturnDepNo).HasColumnName("return_dep_no");
+
+                entity.Property(e => e.ReturnDepDate)
+                    .HasColumnName("return_dep_date")
+                    .HasColumnType("datetime");
+
+                entity.Property(e => e.ReturnDepBy).HasColumnName("return_dep_by");
+
             });
 
             modelBuilder.Entity<BookingItem>(entity =>
@@ -907,6 +916,10 @@ namespace KKHondaBackend.Data
 
                 entity.Property(e => e.LogReceiveId)
                       .HasColumnName("log_receive_id");
+
+                entity.Property(e => e.ReturnDeposit).HasColumnName("return_deposit");
+
+                entity.Property(e => e.ReturnDepositPrice).HasColumnName("return_deposit_price");
             });
 
             modelBuilder.Entity<CreditContract>(entity =>

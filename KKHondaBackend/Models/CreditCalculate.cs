@@ -31,6 +31,9 @@ namespace KKHondaBackend.Models
         public int? UpdateBy { get; set; }
         public DateTime? UpdateDate { get; set; }
 
+        public int? ReturnDeposit { get; set; }
+        public decimal? ReturnDepositPrice { get; set; }
+
         public int? LogReceiveId { get; set; }
     }
 }

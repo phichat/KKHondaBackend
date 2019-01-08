@@ -200,7 +200,7 @@ namespace KKHondaBackend.Controllers.Credits
                     .Where(b => b.BranchId == booking.BranchId)
                     .Select(b => b.ZoneId)
                     .SingleOrDefault();
-
+               
 
                 cont.BranchId = cont.BranchId == null ? booking.BranchId : cont.BranchId;
                 cont.AreaPayment = cont.AreaPayment == null ? booking.BranchId : cont.AreaPayment;
@@ -487,9 +487,16 @@ namespace KKHondaBackend.Controllers.Credits
                     // Booking
                     Models.Booking booking = new Models.Booking();
                     booking = ctx.Booking.SingleOrDefault(b => b.BookingId == creditContract.BookingId);
+                    booking.ReturnDepostit = calculate.ReturnDeposit;
+                    // กรณีมีการคืนเงินมัดจำ
+                    if (calculate.ReturnDeposit == 1)
+                    {
+                        booking.ReturnDepositPrice = calculate.ReturnDepositPrice;
+                        booking.ReturnDepNo = iSysParamService.GeerateeReturnDepositNo((int)creditContract.BranchId);
+                        booking.ReturnDepBy = creditContract.CreateBy;
+                        booking.ReturnDepDate = DateTime.Now;
 
-                    // ค้นหาชื่อเช่าซื้อด้วยรหัส
-                    var customer = iCustService.GetCustomerByCode(creditContract.ContractHire);
+                    }
 
                     booking.SellDate = DateTime.Now;
                     booking.BookingStatus = 2; // สถานะขาย

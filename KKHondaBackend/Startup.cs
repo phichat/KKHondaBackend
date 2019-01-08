@@ -26,6 +26,15 @@ namespace KKHondaBackend
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(options => options.AddPolicy("CorsPolicy", builder =>
+            {
+                builder
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowAnyOrigin()
+                    .AllowCredentials();
+            }));
+
             services.AddDbContext<dbwebContext>(options =>
                options.UseSqlServer(Configuration.GetConnectionString("KKConnection")));
             services.AddMvc();
@@ -48,9 +57,13 @@ namespace KKHondaBackend
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseCors(
-                    options => options.WithOrigins("http://localhost:4200").AllowAnyMethod()
-                );
+                app.UseCors(builder =>
+                {
+                    builder.WithOrigins("http://localhost:4200")
+                           .AllowAnyOrigin()
+                           .AllowAnyHeader()
+                           .AllowAnyMethod();
+                });
             }
 
             app.UseMvc();

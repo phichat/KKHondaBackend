@@ -200,11 +200,10 @@ namespace KKHondaBackend.Controllers.Credits
                         item.ContractId = contract.ContractId;
                         item.RefNo = contract.RefNo;
 
-                        item.PayPrice = item.Balance;
-                        item.PayVatPrice = item.BalanceVatPrice;
-                        item.PayNetPrice = item.BalanceNetPrice;
-                        // สถานะยังไม่ชำระ
-                        item.Status = 13;
+                        //item.PayPrice = item.Balance;
+                        //item.PayVatPrice = item.BalanceVatPrice;
+                        //item.PayNetPrice = item.BalanceNetPrice;
+                        item.Status = 13; // สถานะยังไม่ชำระ
 
                         item.CreateBy = contract.CreateBy;
                         item.CreateDate = DateTime.Now;
@@ -214,17 +213,18 @@ namespace KKHondaBackend.Controllers.Credits
                     _context.SaveChanges();
 
                     // หลังจากเลือกรายการที่ค้นหาแล้วให้เอา log_id ที่ได้มาเก็บตอนทำการขาย      
-
-                    var bookItem = _context.BookingItem.SingleOrDefault(x => x.BookingId == contract.BookingId && x.ItemDetailType == 1);
-
+                    // มีเงื่อนไขโดย itemDetailType==1(สินค้าประเภทรถ)
+                    var bookItem = _context.BookingItem.FirstOrDefault(x => x.BookingId == contract.BookingId && x.ItemDetailType == 1);
                     if (bookItem != null) {
                         bookItem.LogReceiveId = calculate.LogReceiveId;
+                        _context.BookingItem.Update(bookItem);
                         _context.SaveChanges();
                     }
 
-                    var stockReceive = _context.StockReceive.SingleOrDefault(x => x.LogId == calculate.LogReceiveId);
+                    var stockReceive = _context.StockReceive.FirstOrDefault(x => x.LogId == calculate.LogReceiveId);
                     if(stockReceive != null) {
                         stockReceive.BalanceQty = stockReceive.BalanceQty - 1;
+                        _context.StockReceive.Update(stockReceive);
                         _context.SaveChanges();
 
                     }
@@ -261,17 +261,17 @@ namespace KKHondaBackend.Controllers.Credits
                     calculate = credit.creditCalculate;
                     contract = credit.creditContract;
                     contractItems = credit.creditContactItem.ToList();
-                    booking = _context.Booking.SingleOrDefault(b => b.BookingId == contract.BookingId);
+                    booking = _context.Booking.FirstOrDefault(b => b.BookingId == contract.BookingId);
 
                     // Calculate
                     calculate.UpdateDate = DateTime.Now;
-                    _context.Update(calculate);
+                    _context.CreditCalculate.Update(calculate);
                     _context.SaveChanges();
 
                     // Contract
                     contract.UpdateDate = DateTime.Now;
                     contract.RefNo = GenerateReferenceContract(contract.ContractId);
-                    _context.Update(contract);
+                    _context.CreditContract.Update(contract);
                     _context.SaveChanges();
 
                     // ContractItem
@@ -280,9 +280,9 @@ namespace KKHondaBackend.Controllers.Credits
                         item.ContractId = contract.ContractId;
                         item.RefNo = contract.RefNo;
 
-                        item.PayPrice = item.Balance;
-                        item.PayVatPrice = item.BalanceVatPrice;
-                        item.PayNetPrice = item.BalanceNetPrice;
+                        //item.PayPrice = item.Balance;
+                        //item.PayVatPrice = item.BalanceVatPrice;
+                        //item.PayNetPrice = item.BalanceNetPrice;
                         // สถานะยังไม่ชำระ
                         item.Status = 13;
 
@@ -295,26 +295,52 @@ namespace KKHondaBackend.Controllers.Credits
                     _context.CreditContractItem.AddRange(contractItems);
                     _context.SaveChanges();
 
-                    // ค้นหาชื่อเช่าซื้อด้วยรหัส
-                    var customer = iCustomerService.GetCustomerByCode(contract.ContractHire);
+                    // ค้นห่อผู้เช่าซื้อด้วยรหัส
+                    var __branch = _context.Branch.SingleOrDefault(x => x.BranchId == 1);
+
+                    var __company = _context.Company.FirstOrDefault(x => x.ComId == 1);
 
                     // Booking
                     if (booking.SellDate == null) 
                         booking.SellDate = DateTime.Now;
-                    
+
+                    booking.ReturnDepostit = calculate.ReturnDeposit;
+                    // กรณีมีการคืนเงินมัดจำ
+                    if (calculate.ReturnDeposit == 1 && booking.ReturnDepostit == 0)
+                    {
+                        booking.ReturnDepositPrice = calculate.ReturnDepositPrice;
+                        booking.ReturnDepNo = iSysParamService.GeerateeReturnDepositNo((int)contract.BranchId);
+                        booking.ReturnDepBy = contract.CreateBy;
+                        booking.ReturnDepDate = DateTime.Now;
+
+                    } else if (calculate.ReturnDeposit == 0)
+                    {
+                        booking.ReturnDepositPrice = 0;
+                    }
+
                     booking.BookingStatus = 2; // สถานะขาย
                     booking.PaymentPrice = calculate.DepositPrice;
                     booking.PaymentType = booking.BookingDepositType;
-                    booking.CusSellName = customer.CustomerFullName;
-                    booking.CusTaxNo = customer.IdCard;
-
+                    booking.CusSellName = __company.ComName;
+                    booking.CusTaxNo = __branch.BranchRegisterNo;
                     booking.SellBy = contract.CreateBy;
                     booking.LStartDate = calculate.FirstPayment.ToString("yyyy-MM-dd");
                     booking.LPayDay = calculate.DueDate;
                     booking.LTerm = calculate.InstalmentEnd;
                     booking.LInterest = calculate.Interest;
                     booking.LPriceTerm = calculate.InstalmentPrice;
-                    _context.Update(booking);
+                    booking.ReturnDepositPrice = calculate.ReturnDeposit;
+
+                    // กรณีมีการคืนเงินมัดจำ
+                    if (calculate.ReturnDeposit == 1 && booking.ReturnDepostit == 0)
+                    {
+                        booking.ReturnDepositPrice = calculate.ReturnDepositPrice;
+                        booking.ReturnDepNo = iSysParamService.GeerateeReturnDepositNo((int)contract.BranchId);
+                        booking.ReturnDepBy = contract.CreateBy;
+                        booking.ReturnDepDate = DateTime.Now;
+                    }
+
+                    _context.Booking.Update(booking);
                     _context.SaveChanges();
 
                     transaction.Commit();
@@ -367,9 +393,9 @@ namespace KKHondaBackend.Controllers.Credits
                         item.ContractId = contract.ContractId;
                         item.RefNo = contract.RefNo;
 
-                        item.PayPrice = item.Balance;
-                        item.PayVatPrice = item.BalanceVatPrice;
-                        item.PayNetPrice = item.BalanceNetPrice;
+                        //item.PayPrice = item.Balance;
+                        //item.PayVatPrice = item.BalanceVatPrice;
+                        //item.PayNetPrice = item.BalanceNetPrice;
                         // สถานะยังไม่ชำระ
                         item.Status = 13;
 
@@ -399,32 +425,6 @@ namespace KKHondaBackend.Controllers.Credits
             }
 
         }
-
-        //private string GenerateContractCode(int branchId){
-
-        //    var contractNo = (from db in _context.CreditContract
-        //                      orderby db.ContractNo descending
-        //                      where db.BranchId == branchId
-        //                      select db.ContractNo
-        //                     ).FirstOrDefault();
-            
-        //    string year = (DateTime.Now.Year + 543).ToString().Substring(2,2);
-        //    string month = (DateTime.Now.Month).ToString("00");
-
-        //    if (contractNo == null) {
-        //        contractNo = "CO" + branchId.ToString("00") + year + month + "/" + "0001";
-        //    } else {
-                
-        //        string preMonth = contractNo.Substring(6, 2);
-        //        int runNumber = (preMonth == month) ? int.Parse(contractNo.Split("/")[1]) + 1 : 1;
-
-        //        contractNo = "CO" + branchId.ToString("00") + year + month + "/" + runNumber.ToString("0000");
-        //    }
-            
-        //    return contractNo;
-        //}
-
-
 
 
         private string GenerateReferenceContract(int? contractId)

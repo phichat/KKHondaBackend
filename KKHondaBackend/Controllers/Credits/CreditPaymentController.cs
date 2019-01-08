@@ -16,14 +16,17 @@ namespace KKHondaBackend.Controllers.Credits
     {
         private readonly dbwebContext ctx;
         private readonly ISysParameterService iSysParamService;
+        private readonly IStatusService iStatusService;
 
         public CreditPaymentController(
             dbwebContext _ctx,
-            ISysParameterService isysParamService
+            ISysParameterService isysParamService,
+            IStatusService istatusService
         )
         {
             ctx = _ctx;
             iSysParamService = isysParamService;
+            iStatusService = istatusService;
         }
 
         // GET: api/CreditPayment/5
@@ -32,6 +35,11 @@ namespace KKHondaBackend.Controllers.Credits
         {
             try
             {
+                var statusDropdown = iStatusService.GetDropdown();
+                statusDropdown = statusDropdown
+                    .Where(db => db.Value == "10" || db.Value == "11" || db.Value == "12" || db.Value == "13")
+                    .ToArray();
+
                 var contract = (from db in ctx.CreditContract
 
                                 join _branch in ctx.Branch on db.BranchId equals _branch.BranchId into a1
@@ -51,16 +59,16 @@ namespace KKHondaBackend.Controllers.Credits
                                 select new
                                 {
                                     ContractId = id,
-                                    CalculateId = db.CalculateId,
-                                    BookingId = db.BookingId,
-                                    RefNo = db.RefNo,
-                                    ContractNo = db.ContractNo,
-                                    ContractDate = db.ContractDate,
-                                    StatusDesc = status.StatusDesc,
+                                    db.CalculateId,
+                                    db.BookingId,
+                                    db.RefNo,
+                                    db.ContractNo,
+                                    db.ContractDate,
+                                    status.StatusDesc,
                                     ContractHire = contrachHire.CustomerPrename + contrachHire.CustomerName + " " + contrachHire.CustomerSurname,
                                     SaleName = sale.Fullname,
-                                    Remark = db.Remark
-                                }).SingleOrDefault();
+                                    db.Remark
+                                }).FirstOrDefault();
 
                 var calculate = ctx.CreditCalculate.SingleOrDefault(p => p.CalculateId == contract.CalculateId);
 
@@ -90,51 +98,59 @@ namespace KKHondaBackend.Controllers.Credits
 
                                select new
                                {
-                                   EngineNo = transferlog.EngineNo,
-                                   FrameNo = transferlog.FrameNo,
-                                   BrandName = brand.BrandName,
-                                   ModelCode = model.ModelCode,
+                                   transferlog.EngineNo,
+                                   transferlog.FrameNo,
+                                   brand.BrandName,
+                                   model.ModelCode,
                                    Color = color.ColorName,
                                    Price = calculate.Remain,
-                                   DepositPrice = calculate.DepositPrice,
-                                   DepositIsPay = deposit.PayDate != null ? deposit.PayNetPrice : 0,
-                                   DepositIsOutstanding = deposit.PayDate == null ? deposit.PayNetPrice : 0,
-                               }).SingleOrDefault();
+                                   calculate.DepositPrice,
+                                   DepositIsPay = deposit.Status != 13 ? deposit.RemainNetPrice : 0,
+                                   DepositIsOutstanding = deposit.Status == 13 ? deposit.RemainNetPrice : 0,
+                               }).FirstOrDefault();
 
-                var isPay = _contractItem.Where(x => x.InstalmentNo > 0 && x.PayDate != null)
+                var isPay = _contractItem.Where(x => x.InstalmentNo > 0 && x.Status != 13)
                                .GroupBy(o => new { o.ContractId })
                                .Select(g => new
                                {
                                    IsPayPrice = g.Sum(x => x.PayNetPrice),
                                    IsPayTerm = g.Count()
-                               }).SingleOrDefault();
+                               }).FirstOrDefault();
 
 
-                var isOutstanding = _contractItem.Where(x => x.InstalmentNo > 0 && x.PayDate == null)
+                var isOutstanding = _contractItem.Where(x => x.InstalmentNo > 0)
                                        .GroupBy(o => new { o.ContractId })
                                        .Select(g => new
                                        {
-                                           IsOutstandingPrice = g.Sum(x => x.BalanceNetPrice),
+                                           IsOutstandingPrice = g.Sum(x => x.RemainNetPrice),
                                            IsOutstandingTerm = g.Count()
-                                       }).SingleOrDefault();
+                                       }).FirstOrDefault();
 
                 var contractItem = (from db in _contractItem
+
+                                    join _s in ctx.MStatus on db.Status equals _s.Id into _ms
+                                    from s in _ms.DefaultIfEmpty()
+
                                     select new
                                     {
-                                        ContractItemId = db.ContractItemId,
-                                        TaxInvoiceNo = db.TaxInvoiceNo,
-                                        InstalmentNo = db.InstalmentNo,
-                                        DueDate = db.DueDate,
-                                        PayDate = db.PayDate,
-                                        BalanceNetPrice = db.BalanceNetPrice,
-                                        PayNetPrice = db.PayDate == null ? 0 : db.PayNetPrice,
-                                        PaymentType = db.PaymentType,
-                                        FineSum = db.FineSumStatus == 1 ? db.FineSum : 0,
-                                        Remark = db.Remark
+                                        db.ContractItemId,
+                                        db.TaxInvoiceNo,
+                                        db.InstalmentNo,
+                                        db.DueDate,
+                                        db.PayDate,
+                                        db.BalanceNetPrice,
+                                        db.PayNetPrice,
+                                        db.PaymentType,
+                                        db.FineSum,
+                                        db.Remark,
+                                        RemainNetPrice = db.RemainNetPrice + db.FineSum,
+                                        db.Status,
+                                        s.StatusDesc
                                     }).ToList();
 
                 var obj = new Dictionary<string, object>
                 {
+                    {"statusDropdown", statusDropdown},
                     {"contract", contract},
                     {"booking", booking},
                     {"contractItem", contractItem},
@@ -178,8 +194,8 @@ namespace KKHondaBackend.Controllers.Credits
                     singContractItem.UpdateBy = payment.UpdateBy;
                     singContractItem.UpdateDate = DateTime.Now;
                     singContractItem.TaxInvoiceBranchId = payment.BranchId;
-                    singContractItem.TaxInvoiceNo = iSysParamService.GetnerateInstalmentTaxInvoiceNo(payment.BranchId);
-                    singContractItem.ReceiptNo = iSysParamService.GetnerateReceiptNo(payment.BranchId);
+                    singContractItem.TaxInvoiceNo = iSysParamService.GenerateInstalmentTaxInvoiceNo(payment.BranchId);
+                    singContractItem.ReceiptNo = iSysParamService.GenerateReceiptNo(payment.BranchId);
                     singContractItem.Remark = payment.Remark;
                     singContractItem.DocumentRef = payment.DocumentRef;
                     singContractItem.DiscountPrice = payment.DisCountPrice;
