@@ -5,5 +5,6 @@ namespace KKHondaBackend.Services
     {
         Dropdown[] GetDropdown();
         Dropdown[] GetDropdownCredit();
+        Dropdown[] GetDropdownTypePayment();
     }
 }

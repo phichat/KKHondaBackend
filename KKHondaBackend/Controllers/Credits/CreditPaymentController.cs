@@ -17,16 +17,19 @@ namespace KKHondaBackend.Controllers.Credits
         private readonly dbwebContext ctx;
         private readonly ISysParameterService iSysParamService;
         private readonly IStatusService iStatusService;
+        private readonly IBankingService iBankingService;
 
         public CreditPaymentController(
             dbwebContext _ctx,
             ISysParameterService isysParamService,
-            IStatusService istatusService
+            IStatusService istatusService,
+            IBankingService ibankingService
         )
         {
             ctx = _ctx;
             iSysParamService = isysParamService;
             iStatusService = istatusService;
+            iBankingService = ibankingService;
         }
 
         // GET: api/CreditPayment/5
@@ -35,10 +38,7 @@ namespace KKHondaBackend.Controllers.Credits
         {
             try
             {
-                var statusDropdown = iStatusService.GetDropdown();
-                statusDropdown = statusDropdown
-                    .Where(db => db.Value == "10" || db.Value == "11" || db.Value == "12" || db.Value == "13")
-                    .ToArray();
+                var bankingsDropdown = iBankingService.GetDropdowns();
 
                 var contract = (from db in ctx.CreditContract
 
@@ -70,13 +70,59 @@ namespace KKHondaBackend.Controllers.Credits
                                     db.Remark
                                 }).FirstOrDefault();
 
+                if (contract == null)
+                    return StatusCode(404);
+
+
                 var calculate = ctx.CreditCalculate.SingleOrDefault(p => p.CalculateId == contract.CalculateId);
+
+                if (calculate == null)
+                    return StatusCode(400);
+
 
                 var _contractItem = ctx.CreditContractItem
                                    .Where(x => x.ContractId == id &&
-                                   x.RefNo == contract.RefNo &&
-                                   x.InitialPrice >= (decimal)0)
-                                  .ToList();
+                                   x.RefNo == contract.RefNo
+                                   && x.InitialPrice >= (decimal)0
+                                   ).ToList();
+
+                if (_contractItem == null)
+                    return StatusCode(400);
+
+
+                _contractItem.ForEach(x =>
+                {
+                    var _FineSum = (decimal)CheckFineSum((DateTime)x.DueDate);
+                    switch (x.FineSumStatus)
+                    {
+                        case null:
+                        case 13: // ยังไม่ชำระ
+                            x.FineSum = _FineSum;
+                            x.FineSumRemain = _FineSum;
+                            x.DelayDueDate = (int)(_FineSum / 100);
+                            x.CheckDueDate = (DateTime.Now.Date);
+                            break;
+
+                        case 12:
+                            var _CheckDueDate = (DateTime)x.CheckDueDate;
+                            var _Compare = _CheckDueDate.Date.CompareTo(DateTime.Now.Date);
+
+                            if (_Compare < 0) 
+                            {
+                                // ถ้า _Compare < 0 แสดงว่าต้องคิดค่าปรับของวันใหม่เพิ่มเข้าไป
+                                // โดยที่ นำเอาวันที่ตรวจสอบล่าสุดนำไปเปรียบเที่ยบกับวันปัจจุบัน
+                                _FineSum = (decimal)CheckFineSum(_CheckDueDate);
+                                x.FineSum = x.FineSum + _FineSum;
+                                x.FineSumRemain = x.FineSumRemain + _FineSum;
+                                x.DelayDueDate = x.DelayDueDate + (int)(_FineSum / 100);
+                                x.CheckDueDate = (DateTime.Now.Date);
+                            }
+                            break;
+                    }
+                });
+                ctx.CreditContractItem.UpdateRange(_contractItem);
+                ctx.SaveChanges();
+
 
                 var deposit = _contractItem.SingleOrDefault(x => x.InstalmentNo == 0);
 
@@ -126,6 +172,7 @@ namespace KKHondaBackend.Controllers.Credits
                                            IsOutstandingTerm = g.Count()
                                        }).FirstOrDefault();
 
+
                 var contractItem = (from db in _contractItem
 
                                     join _s in ctx.MStatus on db.Status equals _s.Id into _ms
@@ -142,15 +189,17 @@ namespace KKHondaBackend.Controllers.Credits
                                         db.PayNetPrice,
                                         db.PaymentType,
                                         db.FineSum,
+                                        db.FineSumRemain,
+                                        db.FineSumOther,
                                         db.Remark,
-                                        RemainNetPrice = db.RemainNetPrice + db.FineSum,
+                                        db.RemainNetPrice,
                                         db.Status,
                                         s.StatusDesc
                                     }).ToList();
 
                 var obj = new Dictionary<string, object>
                 {
-                    {"statusDropdown", statusDropdown},
+                    {"bankingsDropdown", bankingsDropdown},
                     {"contract", contract},
                     {"booking", booking},
                     {"contractItem", contractItem},
@@ -167,118 +216,177 @@ namespace KKHondaBackend.Controllers.Credits
             }
         }
 
+        private static double CheckFineSum(DateTime DueDate)
+        {
+            var Compare = DueDate.CompareTo(DateTime.Now.Date);
+            var DelayDue = (DateTime.Now.Date - DueDate).TotalDays;
+            return Compare < 0 ? DelayDue * 100 : 0;
+        }
+
 
         // PUT: api/CreditPayment/5
         [HttpPost("PaymentTerm")]
-        public async Task<IActionResult> PaymentTerm([FromBody] Payment payment)
+        public async Task<IActionResult> PaymentTerm([FromBody] IPayment payment)
         {
             using (var transaction = ctx.Database.BeginTransaction())
             {
                 try
                 {
-                    var contract = ctx.CreditContract.SingleOrDefault(p => p.ContractId == payment.ContractId);
-                    var calculate = ctx.CreditCalculate.SingleOrDefault(p => p.CalculateId == contract.CalculateId);
-                    var contractItem = ctx.CreditContractItem.Where(p => p.ContractId == contract.ContractId && p.RefNo == contract.RefNo).ToList();
+                    var contract = ctx.CreditContract.FirstOrDefault(p => p.ContractId == payment.ContractId);
+                    var calculate = ctx.CreditCalculate.FirstOrDefault(p => p.CalculateId == contract.CalculateId);
 
-                    // เลือกข้อมูลการชำระเงินระหว่างวันที่กำหนดชำระ
-                    var singContractItem = contractItem.SingleOrDefault(p => payment.DueDate == p.DueDate);
+                    var PayNetPrice = payment.PayNetPrice;
 
-                    var payPriceExvat = payment.PayNetPrice / (1 + (singContractItem.VatRate / 100));
-
-                    singContractItem.PayPrice = payPriceExvat;
-                    singContractItem.PayVatPrice = payment.PayNetPrice - payPriceExvat;
-                    singContractItem.PayNetPrice = payment.PayNetPrice;
-                    singContractItem.Payeer = payment.Payeer;
-                    singContractItem.PayDate = payment.PayDate;
-                    singContractItem.PaymentType = payment.PaymentType;
-                    singContractItem.UpdateBy = payment.UpdateBy;
-                    singContractItem.UpdateDate = DateTime.Now;
-                    singContractItem.TaxInvoiceBranchId = payment.BranchId;
-                    singContractItem.TaxInvoiceNo = iSysParamService.GenerateInstalmentTaxInvoiceNo(payment.BranchId);
-                    singContractItem.ReceiptNo = iSysParamService.GenerateReceiptNo(payment.BranchId);
-                    singContractItem.Remark = payment.Remark;
-                    singContractItem.DocumentRef = payment.DocumentRef;
-                    singContractItem.DiscountPrice = payment.DisCountPrice;
-                    singContractItem.DiscountRate = payment.DiscountRate;
-                    // สถานะการใช้ส่วนลด
-                    singContractItem.UseDiscount = payment.DisCountPrice > 0 ? 1 : 0;
-                    // สถานะชำระครบ
-                    singContractItem.Status = 11;
-
-                    ctx.Update(singContractItem);
-                   await ctx.SaveChangesAsync();
-
-
-                    foreach (var item in contractItem)
+                    var _ContractItem = payment.CreditContractItem.ToList();
+                    var _CreditContractItem = new List<CreditContractItem>();
+                    _ContractItem.ForEach(x =>
                     {
-                        if (item.InstalmentNo > 0)
+                        var Item = ctx.CreditContractItem.SingleOrDefault(o => o.ContractItemId == x.ContractItemId);
+
+                        var _PayNetPrice = PayNetPrice < Item.RemainNetPrice ? Item.RemainNetPrice - PayNetPrice : Item.RemainNetPrice;
+
+                        var _RemainNetPrice = Item.RemainNetPrice - _PayNetPrice;
+
+                        var payPriceExvat = _PayNetPrice / (1 + (Item.VatRate / 100));
+                        var remainNetPriceExVat = _RemainNetPrice / (1 + (Item.VatRate / 100));
+
+                        Item.PayPrice = payPriceExvat;
+                        Item.PayVatPrice = _PayNetPrice - payPriceExvat;
+                        Item.PayNetPrice = _PayNetPrice;
+
+                        Item.Remain = remainNetPriceExVat;
+                        Item.RemainVatPrice = _RemainNetPrice - remainNetPriceExVat;
+                        Item.RemainNetPrice = _RemainNetPrice;
+
+                        Item.Status = PayNetPrice < Item.RemainNetPrice ? 12 : 11;
+
+                        Item.Payeer = payment.UpdateBy;
+                        Item.PayDate = payment.PayDate;
+                        Item.PaymentType = payment.PaymentType;
+
+                        if (x.FineSum > 0)
                         {
-                            var preItem = contractItem.SingleOrDefault(p => p.InstalmentNo == (item.InstalmentNo - 1));
-                            // กำหนดเงินตั้งต้น
-                            item.InitialPrice = (item.InstalmentNo == 1) ? item.InitialPrice : preItem.PrincipalRemain;
-                            // หาดอกเบี้ยเงินต้น ค่างวด
-                            item.InterestInstalment = (item.InitialPrice * calculate.Irr) / 100;
-                            // หาเงินต้น ค่างวด
-                            item.Principal = item.PayNetPrice - item.PayVatPrice - item.InterestInstalment;
-                            // หาเงินต้นคงเหลือ
-                            item.PrincipalRemain = item.InitialPrice - item.Principal;
+                            Item.FineSumRemain = 0;
+                            Item.FineSumStatus = 11;
                         }
-                    }
+                        
+                        Item.FineSumOther = payment.FineSumOther;
 
-                    if (singContractItem.InstalmentNo > 0)
-                    {
-                        var interest = contractItem.GroupBy(p => new { p.ContractId })
-                                                   .Select(g => new
-                                                   {
-                                                       totalInterest = g.Sum(x => x.InterestInstalment)
-                                                   }).SingleOrDefault();
+                        Item.TaxInvoiceBranchId = payment.BranchId;
+                        Item.TaxInvoiceNo = iSysParamService.GenerateInstalmentTaxInvoiceNo(payment.BranchId);
+                        Item.ReceiptNo = iSysParamService.GenerateReceiptNo(payment.BranchId);
+                        Item.Remark = payment.Remark;
+                        Item.DocumentRef = payment.DocumentRef;
 
-                        foreach (var item in contractItem)
-                        {
-                            if (item.InstalmentNo > 0)
-                            {
-                                var preItem = contractItem.SingleOrDefault(p => p.InstalmentNo == (item.InstalmentNo - 1));
-                                // ถ้าชำระงวดแรก รวมดอกเบี้ยค่างวด - ดอกเบี้ยงวดแรก
-                                // ถ้างวดต่อไป ดอกเบี้ยคงเหลืองวดก่อน - ดอกเบี้ยค่างวด ปัจจุบัน
-                                item.InterestPrincipalRemain = (item.InstalmentNo == 1)
-                                    ? interest.totalInterest - item.InterestInstalment
-                                    : preItem.InterestPrincipalRemain - item.InterestInstalment;
+                         Item.UpdateBy = payment.UpdateBy;
+                         Item.UpdateDate = DateTime.Now;
 
-                                item.DiscountInterest = (decimal)item.InterestPrincipalRemain * (decimal)0.5;
-                            }
-                        }
-                    }
+                        PayNetPrice -= Item.RemainNetPrice;
 
-                    ctx.UpdateRange(contractItem);
-                   await ctx.SaveChangesAsync();
+                        _CreditContractItem.Add(Item);
+                    });
 
-                    // เช็คว่า มีการชำระครบหรือยัง
-                    var term = ctx.CreditContractItem
-                                  .Where(p =>
-                                         p.ContractId == contract.ContractId &&
-                                         p.RefNo == contract.RefNo &&
-                                         p.InstalmentNo > 0 &&
-                                         p.PayDate != null)
-                                   .GroupBy(o => new { o.ContractId })
-                                  .Select(g => new
-                                  {
-                                      totalPaynetPrice = g.Sum(x => x.PayNetPrice)
-                                  }).SingleOrDefault();
-                    //.GroupBy(x => x.PayNetPrice, (key, values) => new
+                    //var contractItem = ctx.CreditContractItem.Where(p => p.ContractId == contract.ContractId && p.RefNo == contract.RefNo).ToList();
+
+                   // // เลือกข้อมูลการชำระเงินระหว่างวันที่กำหนดชำระ
+                   // var singContractItem = contractItem.SingleOrDefault(p => payment.DueDate == p.DueDate);
+
+                   // var payPriceExvat = payment.PayNetPrice / (1 + (singContractItem.VatRate / 100));
+
+                   // singContractItem.PayPrice = payPriceExvat;
+                   // singContractItem.PayVatPrice = payment.PayNetPrice - payPriceExvat;
+                   // singContractItem.PayNetPrice = payment.PayNetPrice;
+                   // singContractItem.Payeer = payment.Payeer;
+                   // singContractItem.PayDate = payment.PayDate;
+                   // singContractItem.PaymentType = payment.PaymentType;
+                   // singContractItem.UpdateBy = payment.UpdateBy;
+                   // singContractItem.UpdateDate = DateTime.Now;
+                   // singContractItem.TaxInvoiceBranchId = payment.BranchId;
+                   // singContractItem.TaxInvoiceNo = iSysParamService.GenerateInstalmentTaxInvoiceNo(payment.BranchId);
+                   // singContractItem.ReceiptNo = iSysParamService.GenerateReceiptNo(payment.BranchId);
+                   // singContractItem.Remark = payment.Remark;
+                   // singContractItem.DocumentRef = payment.DocumentRef;
+                   // singContractItem.DiscountPrice = payment.DisCountPrice;
+                   // singContractItem.DiscountRate = payment.DiscountRate;
+                   // // สถานะการใช้ส่วนลด
+                   // singContractItem.UseDiscount = payment.DisCountPrice > 0 ? 1 : 0;
+                   // // สถานะชำระครบ
+                   // singContractItem.Status = 11;
+
+                   // ctx.Update(singContractItem);
+                   ////await ctx.SaveChangesAsync();
+
+
+                   // foreach (var item in contractItem)
+                   // {
+                   //     if (item.InstalmentNo > 0)
+                   //     {
+                   //         var preItem = contractItem.SingleOrDefault(p => p.InstalmentNo == (item.InstalmentNo - 1));
+                   //         // กำหนดเงินตั้งต้น
+                   //         item.InitialPrice = (item.InstalmentNo == 1) ? item.InitialPrice : preItem.PrincipalRemain;
+                   //         // หาดอกเบี้ยเงินต้น ค่างวด
+                   //         item.InterestInstalment = (item.InitialPrice * calculate.Irr) / 100;
+                   //         // หาเงินต้น ค่างวด
+                   //         item.Principal = item.PayNetPrice - item.PayVatPrice - item.InterestInstalment;
+                   //         // หาเงินต้นคงเหลือ
+                   //         item.PrincipalRemain = item.InitialPrice - item.Principal;
+                   //     }
+                   // }
+
+                   // if (singContractItem.InstalmentNo > 0)
+                   // {
+                   //     var interest = contractItem.GroupBy(p => new { p.ContractId })
+                   //                                .Select(g => new
+                   //                                {
+                   //                                    totalInterest = g.Sum(x => x.InterestInstalment)
+                   //                                }).SingleOrDefault();
+
+                   //     foreach (var item in contractItem)
+                   //     {
+                   //         if (item.InstalmentNo > 0)
+                   //         {
+                   //             var preItem = contractItem.SingleOrDefault(p => p.InstalmentNo == (item.InstalmentNo - 1));
+                   //             // ถ้าชำระงวดแรก รวมดอกเบี้ยค่างวด - ดอกเบี้ยงวดแรก
+                   //             // ถ้างวดต่อไป ดอกเบี้ยคงเหลืองวดก่อน - ดอกเบี้ยค่างวด ปัจจุบัน
+                   //             item.InterestPrincipalRemain = (item.InstalmentNo == 1)
+                   //                 ? interest.totalInterest - item.InterestInstalment
+                   //                 : preItem.InterestPrincipalRemain - item.InterestInstalment;
+
+                   //             item.DiscountInterest = (decimal)item.InterestPrincipalRemain * (decimal)0.5;
+                   //         }
+                   //     }
+                   // }
+
+                   // ctx.UpdateRange(contractItem);
+                   //await ctx.SaveChangesAsync();
+
+                    //// เช็คว่า มีการชำระครบหรือยัง
+                    //var term = ctx.CreditContractItem
+                    //              .Where(p =>
+                    //                     p.ContractId == contract.ContractId &&
+                    //                     p.RefNo == contract.RefNo &&
+                    //                     p.InstalmentNo > 0 &&
+                    //                     p.PayDate != null)
+                    //               .GroupBy(o => new { o.ContractId })
+                    //              .Select(g => new
+                    //              {
+                    //                  totalPaynetPrice = g.Sum(x => x.PayNetPrice)
+                    //              }).SingleOrDefault();
+                    ////.GroupBy(x => x.PayNetPrice, (key, values) => new
+                    ////{
+                    ////    totalPaynetPrice = values.Sum(x => x.PayNetPrice)
+                    ////}).FirstOrDefault();
+
+
+                    //if (term != null && term.totalPaynetPrice >= calculate.Remain)
                     //{
-                    //    totalPaynetPrice = values.Sum(x => x.PayNetPrice)
-                    //}).FirstOrDefault();
+                    //    // ถ้าชำระครบ จะเปลี่ยนสถานะเป็น ชำระครบรอโอนทะเบียน
+                    //    contract.ContractStatus = 30;
+                    //    contract.EndContractDate = DateTime.Now.Date;
 
-
-                    if (term != null && term.totalPaynetPrice >= calculate.Remain)
-                    {
-                        // ถ้าชำระครบ จะเปลี่ยนสถานะเป็น ชำระครบรอโอนทะเบียน
-                        contract.ContractStatus = 30;
-                        contract.EndContractDate = DateTime.Now.Date;
-
-                        ctx.Update(contract);
-                       await ctx.SaveChangesAsync();
-                    }
+                    //    ctx.Update(contract);
+                    //   await ctx.SaveChangesAsync();
+                    //}
 
                     //await ctx.SaveChangesAsync();
                     transaction.Commit();
@@ -297,7 +405,7 @@ namespace KKHondaBackend.Controllers.Credits
 
         // DELETE: api/ApiWithActions/5
         [HttpPost("CancelItemPayment")]
-        public IActionResult CancelItemPayment([FromBody] CancelPayment cencel)
+        public IActionResult CancelItemPayment([FromBody] ICancelPayment cencel)
         {
             try
             {
@@ -338,29 +446,49 @@ namespace KKHondaBackend.Controllers.Credits
             }
         }
 
-        public class CancelPayment
+        public interface ICancelPayment
         {
-            public int ContractItemId { get; set; }
-            public string Remark { get; set; }
-            public int UpdateBy { get; set; }
+            int ContractItemId { get; set; }
+            string Remark { get; set; }
+            int UpdateBy { get; set; }
         }
 
-        public class Payment
+        public interface ICreditContractItem
         {
-            public int ContractId { get; set; }
-            public decimal Outstanding { get; set; }
-            public int PaymentType { get; set; }
-            public DateTime DueDate { get; set; }
-            public DateTime PayDate { get; set; }
-            public decimal PayNetPrice { get; set; }
-            public int Payeer { get; set; }
-            public decimal BalanceNetPrice { get; set; }
-            public string Remark { get; set; }
-            public int UpdateBy { get; set; }
-            public int BranchId { get; set; }
-            public string DocumentRef { get; set; }
-            public decimal DisCountPrice { get; set; }
-            public decimal DiscountRate { get; set; }
+            int ContractItemId { get; set; }
+            int ContractId { get; set; }
+            string TaxInvoiceNo { get; set; }
+            int InstalmentNo { get; set; }
+            DateTime DueDate { get; set; }
+            DateTime PayDate { get; set; }
+            decimal BalanceNetPrice { get; set; }
+            decimal PayNetPrice { get; set; }
+            int PaymentType { get; set; }
+            decimal? FineSum { get; set; }
+            decimal? FineSumRemain { get; set; }
+            decimal? FineSumeOther { get; set; }
+            string Remark { get; set; }
+            int Payeer { get; set; }
+            int Status { get; set; }
+            decimal RemainNetPrice { get; set; }
+        }
+
+        public interface IPayment
+        {
+            int ContractId { get; set; }
+            decimal? FineSum { get; set; }
+            decimal? FineSumOther { get; set; }
+            decimal? PayNetPrice { get; set; }
+            decimal? DisCountPrice { get; set; }
+            decimal? DiscountRate { get; set; }
+            int PaymentType { get; set; }
+            string BankCode { get; set; }
+            string DocumentRef { get; set; }
+            string Remark { get; set; }
+            DateTime PayDate { get; set; }
+            int BranchId { get; set; }
+            int UpdateBy { get; set; }
+            ICreditContractItem[] CreditContractItem { get; set; }
         }
     }
 }

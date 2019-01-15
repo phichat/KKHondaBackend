@@ -189,28 +189,26 @@ namespace KKHondaBackend.Services
 
         public static string ValueOrEmpty(string str)
         {
-            return str == null ? "" : str;
+            return str ?? "";
         }
 
         public static string CheckDepositType(int? d)
         {
             var val = "";
-
-            if (d == 1)
+            switch (d)
             {
-                val = "เงินสด";
-            }
-            else if (d == 2)
-            {
-                val = "โอน";
-            }
-            else if (d == 3)
-            {
-                val = "เช็ค";
-            }
-            else if (d == 4)
-            {
-                val = "บัตรเคดิต";
+                case 1:
+                    val = "เงินสด";
+                    break;
+                case 2:
+                    val = "โอน";
+                    break;
+                case 3:
+                    val = "เช็ค";
+                    break;
+                case 4:
+                    val = "บัตรเคดิต";
+                    break;
             }
             return val;
         }

@@ -49,6 +49,7 @@ namespace KKHondaBackend
             services.AddTransient<IZoneService, ZoneService>();
             services.AddTransient<ISysParameterService, SysParameterService>();
             services.AddTransient<IStatusService, StatusService>();
+            services.AddTransient<IBankingService, BankingService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

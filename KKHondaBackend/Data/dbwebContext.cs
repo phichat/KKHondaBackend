@@ -19,6 +19,7 @@ namespace KKHondaBackend.Data
         public virtual DbSet<SpDashboardBookingPaymentType> SpDashboardBookingPaymentType { get; set; }
         public virtual DbSet<SpDashboardBookingDetail> SpDashboardBookingDetail { get; set; }
 
+        public virtual DbSet<Banking> Bankings { get; set; }
         public virtual DbSet<Booking> Booking { get; set; }
         public virtual DbSet<BookingItem> BookingItem { get; set; }
         public virtual DbSet<Branch> Branch { get; set; }
@@ -88,43 +89,47 @@ namespace KKHondaBackend.Data
         public virtual DbSet<WarehouseLocation> WarehouseLocation { get; set; }
         public virtual DbSet<Zone> Zone { get; set; }
 
-        // Unable to generate entity type for table 'dbo.sale_type'. Please see the warning messages.
-        // Unable to generate entity type for table 'dbo._cyclecount_location'. Please see the warning messages.
-        // Unable to generate entity type for table 'dbo.contract_d'. Please see the warning messages.
-        // Unable to generate entity type for table 'dbo.purchase_d'. Please see the warning messages.
-        // Unable to generate entity type for table 'dbo.receipt_d'. Please see the warning messages.
-        // Unable to generate entity type for table 'dbo._warehouse_location_item'. Please see the warning messages.
-        // Unable to generate entity type for table 'dbo._date_credit_list'. Please see the warning messages.
-        // Unable to generate entity type for table 'dbo._pagelist'. Please see the warning messages.
-        // Unable to generate entity type for table 'dbo._group_page_permission'. Please see the warning messages.
-        // Unable to generate entity type for table 'dbo.m_prename'. Please see the warning messages.
-        // Unable to generate entity type for table 'dbo.m_parameter'. Please see the warning messages.
-        // Unable to generate entity type for table 'dbo.m_login_grant'. Please see the warning messages.
-        // Unable to generate entity type for table 'dbo.freeze_h'. Please see the warning messages.
-        // Unable to generate entity type for table 'dbo.freeze_d'. Please see the warning messages.
-        // Unable to generate entity type for table 'dbo.sale_activity'. Please see the warning messages.
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Banking>(entity =>
+            {
+                entity.HasKey(e => e.BankCode);
+
+                entity.ToTable("_banking");
+
+                entity.Property(e => e.BankId).HasColumnName("bank_id");
+
+                entity.Property(e => e.BankCode)
+                    .HasColumnName("bank_code")
+                    .HasMaxLength(10);
+
+                entity.Property(e => e.BankName)
+                    .HasColumnName("bank_name")
+                    .HasMaxLength(250);
+
+                entity.Property(e => e.Status)
+                    .HasColumnName("status")
+                    .HasColumnType("bit");
+
+                entity.Property(e => e.CreateBy)
+                    .HasColumnName("create_by");
+
+                entity.Property(e => e.CreateDate)
+                    .HasColumnName("create_date")
+                    .HasColumnType("datetime");
+
+                entity.Property(e => e.UpdateBy)
+                    .HasColumnName("update_by");
+
+                entity.Property(e => e.UpdateDate)
+                    .HasColumnName("update_date")
+                    .HasColumnType("datetime");
+            });
+
             modelBuilder.Entity<Booking>(entity =>
             {
                 entity.ToTable("_booking");
-
-                //entity.HasIndex(e => e.BookingNo)
-                //    .HasName("U_book_no")
-                //    .IsUnique();
-
-                //entity.HasIndex(e => e.BranchId)
-                //    .HasName("I_branch");
-
-                //entity.HasIndex(e => e.CreateBy)
-                //    .HasName("I_Create");
-
-                //entity.HasIndex(e => e.CustomerCode)
-                //    .HasName("I_Customer");
-
-                //entity.HasIndex(e => e.UpdateBy)
-                //    .HasName("I_Update");
 
                 entity.Property(e => e.BookingId).HasColumnName("booking_id");
 
@@ -1039,6 +1044,10 @@ namespace KKHondaBackend.Data
 
                 entity.Property(e => e.DelayDueDate).HasColumnName("delay_due_date");
 
+                entity.Property(e => e.CheckDueDate)
+                    .HasColumnName("check_due_date")
+                    .HasColumnType("datetime");
+
                 entity.Property(e => e.DiscountPrice)
                     .HasColumnName("discount_price")
                     .HasColumnType("decimal(18, 4)");
@@ -1069,8 +1078,16 @@ namespace KKHondaBackend.Data
                     .HasColumnName("fine_sum")
                     .HasColumnType("decimal(18, 4)");
 
+                entity.Property(e => e.FineSumRemain)
+                    .HasColumnName("fine_sum_remain")
+                    .HasColumnType("decimal(18, 4)");
+
                 entity.Property(e => e.FineSumStatus)
                    .HasColumnName("fine_sum_status");
+
+                entity.Property(e => e.FineSumOther)
+                    .HasColumnName("fine_sum_other")
+                    .HasColumnType("decimal(18, 4)");
 
                 entity.Property(e => e.GoodsPrice)
                     .HasColumnName("goods_price")
@@ -1117,6 +1134,10 @@ namespace KKHondaBackend.Data
                     .HasColumnName("pay_vat_price")
                     .HasColumnType("decimal(18, 4)");
 
+                entity.Property(e => e.BankCode)
+                    .HasColumnName("bank_code")
+                    .HasMaxLength(10);
+
                 entity.Property(e => e.PaymentType)
                     .HasColumnName("payment_type");
 
@@ -1161,7 +1182,6 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.DocumentRef)
                       .HasColumnName("document_ref")
                       .HasMaxLength(255);
-
 
                 entity.Property(e => e.InitialPrice)
                       .HasColumnName("initial_price")

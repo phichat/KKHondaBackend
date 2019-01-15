@@ -55,5 +55,23 @@ namespace KKHondaBackend.Services
                         }).ToList();
             return dropdown.ToArray();
         }
+
+        public Dropdown[] GetDropdownTypePayment()
+        {
+            var dropdown = new List<Dropdown>();
+            dropdown = (from db in ctx.MStatus
+                        where db.Status == true &&
+                        (db.Id == 10 ||
+                         db.Id == 11 ||
+                         db.Id == 12 ||
+                         db.Id == 13 
+                        )
+                        select new Dropdown
+                        {
+                            Value = db.Id.ToString(),
+                            Text = db.StatusDesc
+                        }).ToList();
+            return dropdown.ToArray();
+        }
     }
 }
