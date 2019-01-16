@@ -1,0 +1,412 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+    <!-- Bootstrap datepicker-->
+    <link href="../Plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css" rel="stylesheet" />
+
+    <!-- Bootstrap Tagsinput-->
+    <link href="../Plugins/bootstrap-tagsinput/bootstrap-tagsinput.css" rel="stylesheet" />
+    <style>
+        .typeahead {
+            z-index: 1051;
+        }
+
+        .bootstrap-tagsinput {
+            width: 100%;
+        }
+
+    </style>
+</head>
+<body>
+    <form class="form-horizontal">
+        <div class="form-group">
+            <label for="inputEmail3" class="col-sm-2 control-label">สาขา</label>
+            <div class="col-sm-8">
+                <div class="radio">
+                    <label><input type="radio" name="rdoBranch" value="1" checked>ทั้งหมด</label>
+                </div>
+                <div class="radio">
+                    <label><input type="radio" name="rdoBranch" value="2">สาขา</label>
+                    <input type="text" class="form-control" id="txtBranch">
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="inputEmail3" class="col-sm-2 control-label">ยี่ห้อ รุ่น แบบ สี</label>
+            <div class="col-sm-8">
+                <div class="radio">
+                    <label><input type="radio" name="rdoBrand" value="1" checked>ทั้งหมด</label>
+                </div>
+                <div class="radio">
+                    <label><input type="radio" name="rdoBrand" value="2">เฉพาะ</label>
+                </div>
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-md-1 control-label">ยี่ห้อ</label>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" id="txtProductType">
+                    </div>
+
+                    <label for="inputEmail3" class="col-md-1 control-label">รุ่น</label>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" id="txtVersion">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-md-1 control-label">แบบ</label>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" id="txtDesign">
+                    </div>
+
+                    <label for="inputEmail3" class="col-md-1 control-label">สี</label>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" id="txtColor">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="inputEmail3" class="col-sm-2 control-label">ชื่อผู้จอง/ชื่อจดทะเบียน</label>
+            <div class="col-sm-8">
+                <div class="radio">
+                    <label><input type="radio" name="rdoBookingName" value="1" checked>ทั้งหมด</label>
+                </div>
+                <div class="radio">
+                    <label><input type="radio" name="rdoBookingName" value="2">ชื่อผู้จอง</label>
+                    <div class="form-group">
+                        <div class="col-md-6">
+                            <input type="text" class="form-control" id="txtBookingName">
+                            <input type="hidden" name="hfBookingName" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="radio">
+                    <label><input type="radio" name="rdoBookingName" value="2">ชื่อจดทะเบียน</label>
+                    <div class="form-group">
+                        <div class="col-md-6">
+                            <input type="text" class="form-control" id="txtRegisName">
+                            <input type="hidden" name="hfRegisName" value="" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="inputEmail3" class="col-sm-2 control-label">สถานะใบจอง</label>
+            <div class="col-sm-2">
+                <div class="radio">
+                    <label><input type="radio" name="rdoBookingStatus" value="1" checked>ทั้งหมด</label>
+                </div>
+                <div class="radio">
+                    <label><input type="radio" name="rdoBookingStatus" value="2">เฉพาะ</label>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-12">
+                        <select class="form-control" id="ddlBookingStatus">
+                            <option value="">ยังไม่ได้รับรถ</option>
+                            <option value="1">จอง</option>
+                            <option value="2">ขาย</option>
+                            <option value="9">ยกเลิก</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="form-group">
+            <label for="inputEmail3" class="col-sm-2 control-label">วันที่จอง</label>
+            <div class="col-sm-8">
+                <div class="radio">
+                    <label><input type="radio" name="rdoBookingDate" value="1" checked>ทั้งหมด</label>
+                </div>
+                <div class="radio">
+                    <label><input type="radio" name="rdoBookingDate" value="2">ตั้งแต่</label>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-4">
+                        <div class="input-group date">
+                            <input id="txtStartDate" type="text" class="form-control">
+                            <div class="input-group-addon">
+                                <span class="glyphicon glyphicon-th"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <label for="inputEmail3" class="col-md-1">ถึง</label>
+                    <div class="col-md-4">
+                        <div class="input-group date">
+                            <input id="txtEndDate" type="text" class="form-control">
+                            <div class="input-group-addon">
+                                <span class="glyphicon glyphicon-th"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="inputEmail3" class="col-sm-2 control-label">วันที่ถึงกำหนด</label>
+            <div class="col-sm-8">
+                <div class="radio">
+                    <label><input type="radio" name="rdoBookingReceiveDate" value="1" checked>ทั้งหมด</label>
+                </div>
+                <div class="radio">
+                    <label><input type="radio" name="rdoBookingReceiveDate" value="2">ตั้งแต่</label>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-4">
+                        <div class="input-group date">
+                            <input id="txtStartBookingReceiveDate" type="text" class="form-control">
+                            <div class="input-group-addon">
+                                <span class="glyphicon glyphicon-th"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <label for="inputEmail3" class="col-md-1">ถึง</label>
+                    <div class="col-md-4">
+                        <div class="input-group date">
+                            <input id="txtEndBookingReceiveDate" type="text" class="form-control">
+                            <div class="input-group-addon">
+                                <span class="glyphicon glyphicon-th"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button id="btnReport" type="button" class="btn btn-default">รายงาน</button>
+            </div>
+        </div>
+    </form>
+    <!--<input type="text" class="form-control" id="txtDate">-->
+
+
+    
+
+
+
+
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <!-- Bootstrap Datepicker-->
+    <script src="../Plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
+
+    <!-- Bootstrap Typeahead-->
+    <script src="../Plugins/bootstrap-typeahead/bootstrap3-typeahead.min.js"></script>
+    <!-- Bootstrap Tags input-->
+    <script src="../Plugins/bootstrap-tagsinput/bootstrap-tagsinput.min.js"></script>
+
+
+    <script>
+        $(document).ready(function () {
+            //init  
+
+            $('#txtStartDate, #txtEndDate, #txtStartBookingReceiveDate, #txtEndBookingReceiveDate').datepicker({
+                format: 'dd/mm/yyyy' 
+            });
+             
+            //สาขา
+            $.ajax({
+                url: 'http://localhost:53075/api/Booking/GetBranchAutoComplete',  
+                type: "GET",
+                dataType: "json",
+                async: false,
+                success: function (data) {
+                    $('#txtBranch').tagsinput({
+                        itemValue: 'value',
+                        itemText: 'text', 
+                        typeahead: {
+                            source: data,
+                            afterSelect: function () {
+                                this.$element[0].value = '';
+                            }
+                        }
+                    }); 
+                }
+            });
+
+            //ยี่ห้อ
+            $.ajax({
+                url: 'http://localhost:53075/api/Booking/GetProductTypeAutoComplete',
+                type: "GET",
+                dataType: "json",
+                async: false,
+                success: function (data) {
+                    $('#txtProductType').tagsinput({
+                        itemValue: 'value',
+                        itemText: 'text',
+                        typeahead: {
+                            source: data,
+                            afterSelect: function () {
+                                this.$element[0].value = '';
+                            }
+                        }
+                    });
+                }
+            });
+
+            //รุ่น
+            $.ajax({
+                url: 'http://localhost:53075/api/Booking/GetVersionAutoComplete',
+                type: "GET",
+                dataType: "json",
+                async: false,
+                success: function (data) {
+                    $('#txtVersion').tagsinput({
+                        itemValue: 'value',
+                        itemText: 'text',
+                        typeahead: {
+                            source: data,
+                            afterSelect: function () {
+                                this.$element[0].value = '';
+                            }
+                        }
+                    });
+                }
+            });
+
+            //แบบ
+            $.ajax({
+                url: 'http://localhost:53075/api/Booking/GetDesignAutoComplete',
+                type: "GET",
+                dataType: "json",
+                async: false,
+                success: function (data) {
+                    $('#txtDesign').tagsinput({
+                        itemValue: 'value',
+                        itemText: 'text',
+                        typeahead: {
+                            source: data,
+                            afterSelect: function () {
+                                this.$element[0].value = '';
+                            }
+                        }
+                    });
+                }
+            });
+
+            //สี
+            $.ajax({
+                url: 'http://localhost:53075/api/Booking/GetColorAutoComplete',
+                type: "GET",
+                dataType: "json",
+                async: false,
+                success: function (data) {
+                    $('#txtColor').tagsinput({
+                        itemValue: 'value',
+                        itemText: 'text',
+                        typeahead: {
+                            source: data,
+                            afterSelect: function () {
+                                this.$element[0].value = '';
+                            }
+                        }
+                    });
+                }
+            });
+              
+            //ชื่อผู้จอง
+            $.get("http://localhost:53075/api/Booking/GetBookingNameAutoComplete", function (data) {
+                $('#txtBookingName').typeahead({ source: data });
+            }, 'json');
+
+             //ชื่อจดทะเบียน
+            $.get("http://localhost:53075/api/Booking/GetRegisNameAutoComplete", function (data) {
+                $('#txtRegisName').typeahead({ source: data });
+            }, 'json');
+
+            $('#txtBookingName').change(function () {
+                var current = $('#txtBookingName').typeahead("getActive");
+                $("input[name='hfBookingName']").val(current.id); 
+            });
+
+            $('#txtRegisName').change(function () {
+                var current = $('#txtRegisName').typeahead("getActive");
+                $("input[name='hfRegisName']").val(current.id);
+            });
+
+            $("#btnReport").click(function () {
+                var strParameter = "?BookingReport=true"; // page
+
+                //criteria
+                //สาขา
+                var branchType = $("input[name='rdoBranch']:checked").val();
+                var branchId = (branchType == 1 ? 0 : $("#txtBranch").val());
+                strParameter += "&branchType=" + branchType;
+                strParameter += "&branchId=" + branchId;
+
+                //ยี่ห้อ รุ่น แบบ สี
+                var brandType = $("input[name='rdoBrand']:checked").val();
+                var brandTypeId = (brandType == 1 ? 0 : $("#txtProductType").val()); 
+                var version = (brandType == 1 ? 0 : $("#txtVersion").val());
+                var design = (brandType == 1 ? 0 : $("#txtDesign").val());
+                var color = (brandType == 1 ? 0 : $("#txtColor").val());
+
+                if (brandTypeId == "") {
+                    brandTypeId = 0;
+                }
+
+                if (version == "") {
+                    version = 0;
+                }
+
+                if (design == "") {
+                    design = 0;
+                }
+
+                if (color == "") {
+                    color = 0;
+                }
+
+                strParameter += "&brandType=" + brandType;
+                strParameter += "&brandTypeId=" + brandTypeId;
+                strParameter += "&version=" + version;
+                strParameter += "&design=" + design;
+                strParameter += "&color=" + color;
+
+                //ชื่อผู้จอง/ชื่อจดทะเบียน
+                var bookingName = $("input[name='rdoBookingName']:checked").val();
+                var bookingNameId = (bookingName == 1 ? "" : $("input[name='hfBookingName']").val());
+                var regisNameId = (bookingName == 1 ? "" : $("input[name='hfRegisName']").val());
+                strParameter += "&bookingName=" + bookingName;
+                strParameter += "&bookingNameId=" + bookingNameId;
+                strParameter += "&regisNameId=" + regisNameId;
+
+                //สถานะใบจอง
+                var bookingStatus = $("input[name='rdoBookingStatus']:checked").val();
+                var bookingStatusId = (bookingStatus == 1 ? "" : $("#ddlBookingStatus").val());
+                strParameter += "&bookingStatus=" + bookingStatus;
+                strParameter += "&bookingStatusId=" + bookingStatusId;
+
+                //วันที่จอง
+                var bookingDate = $("input[name='rdoBookingDate']:checked").val();
+                var sDate = (bookingDate == 1 ? "" : $("#txtStartDate").val());
+                var eDate = (bookingDate == 1 ? "" : $("#txtEndDate").val());
+                strParameter += "&bookingDate=" + bookingDate;
+                strParameter += "&sDate=" + sDate;
+                strParameter += "&eDate=" + eDate;
+
+                //วันที่ถึงกำหนด
+                var bookingReceiveDate = $("input[name='rdoBookingReceiveDate']:checked").val();
+                var sBookingReceiveDate = (bookingReceiveDate == 1 ? "" : $("#txtStartBookingReceiveDate").val());
+                var eBookingReceiveDate = (bookingReceiveDate == 1 ? "" : $("#txtEndBookingReceiveDate").val());
+                strParameter += "&bookingReceiveDate=" + bookingReceiveDate;
+                strParameter += "&sBookingReceiveDate=" + sBookingReceiveDate;
+                strParameter += "&eBookingReceiveDate=" + eBookingReceiveDate;
+
+                window.open('http://localhost:58874/MCS/indexMCS2.aspx' + strParameter, '_blank');
+            });
+        });
+    </script>
+</body>
+</html>
