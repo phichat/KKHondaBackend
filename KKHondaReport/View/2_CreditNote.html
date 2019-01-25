@@ -1,0 +1,196 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+    <!-- Bootstrap datepicker-->
+    <link href="../Plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css" rel="stylesheet" />
+
+    <!-- Bootstrap Tagsinput-->
+    <link href="../Plugins/bootstrap-tagsinput/bootstrap-tagsinput.css" rel="stylesheet" />
+    <style>
+        .typeahead {
+            z-index: 1051;
+        }
+
+        .bootstrap-tagsinput {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <form class="form-horizontal">
+        <div class="form-group">
+            <label for="inputEmail3" class="col-sm-2 control-label">สาขา</label>
+            <div class="col-sm-8">
+                <div class="radio">
+                    <label><input type="radio" name="rdoBranch" value="1" checked>ทั้งหมด</label>
+                </div>
+                <div class="radio">
+                    <label><input type="radio" name="rdoBranch" value="2">สาขา</label>
+                    <input type="text" class="form-control" id="txtBranch">
+                </div>
+            </div>
+        </div> 
+        <div class="form-group">
+            <label for="inputEmail3" class="col-sm-2 control-label">ชื่อผู้จอง/ชื่อจดทะเบียน</label>
+            <div class="col-sm-8">
+                <div class="radio">
+                    <label><input type="radio" name="rdoBookingName" value="1" checked>ทั้งหมด</label>
+                </div>
+                <div class="radio">
+                    <label><input type="radio" name="rdoBookingName" value="2">ชื่อผู้จอง</label>
+                    <div class="form-group">
+                        <div class="col-md-6">
+                            <input type="text" class="form-control" id="txtBookingName">
+                            <input type="hidden" name="hfBookingName" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="radio">
+                    <label><input type="radio" name="rdoBookingName" value="2">ชื่อจดทะเบียน</label>
+                    <div class="form-group">
+                        <div class="col-md-6">
+                            <input type="text" class="form-control" id="txtRegisName">
+                            <input type="hidden" name="hfRegisName" value="" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> 
+        <div class="form-group">
+            <label for="inputEmail3" class="col-sm-2 control-label">วันที่จอง</label>
+            <div class="col-sm-8">
+                <div class="radio">
+                    <label><input type="radio" name="rdoBookingDate" value="1" checked>ทั้งหมด</label>
+                </div>
+                <div class="radio">
+                    <label><input type="radio" name="rdoBookingDate" value="2">ตั้งแต่</label>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-4">
+                        <div class="input-group date">
+                            <input id="txtStartDate" type="text" class="form-control">
+                            <div class="input-group-addon">
+                                <span class="glyphicon glyphicon-th"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <label for="inputEmail3" class="col-md-1">ถึง</label>
+                    <div class="col-md-4">
+                        <div class="input-group date">
+                            <input id="txtEndDate" type="text" class="form-control">
+                            <div class="input-group-addon">
+                                <span class="glyphicon glyphicon-th"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> 
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button id="btnReport" type="button" class="btn btn-default">รายงาน</button>
+            </div>
+        </div>
+    </form>
+    <!--<input type="text" class="form-control" id="txtDate">-->
+
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <!-- Bootstrap Datepicker-->
+    <script src="../Plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
+
+    <!-- Bootstrap Typeahead-->
+    <script src="../Plugins/bootstrap-typeahead/bootstrap3-typeahead.min.js"></script>
+    <!-- Bootstrap Tags input-->
+    <script src="../Plugins/bootstrap-tagsinput/bootstrap-tagsinput.min.js"></script>
+
+
+    <script>
+        $(document).ready(function () {
+            //init
+
+            $('#txtStartDate, #txtEndDate').datepicker({
+                format: 'dd/mm/yyyy'
+            });
+
+            //สาขา
+            $.ajax({
+                url: 'http://localhost:53075/api/Booking/GetBranchAutoComplete',
+                type: "GET",
+                dataType: "json",
+                async: false,
+                success: function (data) {
+                    $('#txtBranch').tagsinput({
+                        itemValue: 'value',
+                        itemText: 'text',
+                        typeahead: {
+                            source: data,
+                            afterSelect: function () {
+                                this.$element[0].value = '';
+                            }
+                        }
+                    });
+                }
+            });
+             
+
+            //ชื่อผู้จอง
+            $.get("http://localhost:53075/api/Booking/GetBookingNameAutoComplete", function (data) {
+                $('#txtBookingName').typeahead({ source: data });
+            }, 'json');
+             
+            $('#txtBookingName').change(function () {
+                var current = $('#txtBookingName').typeahead("getActive");
+                $("input[name='hfBookingName']").val(current.id);
+            }); 
+
+            $("#btnReport").click(function () {
+                var strParameter = "?CreditNote=true"; // page
+
+                //criteria
+                //สาขา
+                var branchType = $("input[name='rdoBranch']:checked").val();
+                var branchId = (branchType == 1 ? 0 : $("#txtBranch").val());
+                strParameter += "&branchType=" + branchType;
+                strParameter += "&branchId=" + branchId;
+                 
+                //ชื่อผู้จอง/ชื่อจดทะเบียน
+                var bookingName = $("input[name='rdoBookingName']:checked").val();
+                var bookingNameId = (bookingName == 1 ? "" : $("input[name='hfBookingName']").val()); 
+                strParameter += "&bookingName=" + bookingName;
+                strParameter += "&bookingNameId=" + bookingNameId; 
+                 
+                //วันที่จอง
+                var bookingDate = $("input[name='rdoBookingDate']:checked").val();
+                var sDate = (bookingDate == 1 ? "" : toDate($("#txtStartDate").val()));
+                var eDate = (bookingDate == 1 ? "" : toDateEnd($("#txtEndDate").val()));
+                strParameter += "&bookingDate=" + bookingDate;
+                strParameter += "&sDate=" + sDate;
+                strParameter += "&eDate=" + eDate;
+                 
+                window.open('http://localhost:58874/MCS/indexMCS2.aspx' + strParameter, '_blank');
+            });
+        });
+
+        function toDate(dateStr) {
+            var parts = dateStr.split("/")
+            return parts[2] + "-" + parts[1] + "-" + parts[0] + "T00:00:00.000Z";
+        }
+
+        function toDateEnd(dateStr) {
+            var parts = dateStr.split("/")
+            return parts[2] + "-" + parts[1] + "-" + parts[0] + "T23:59:59.000Z";
+        }
+    </script>
+</body>
+</html>

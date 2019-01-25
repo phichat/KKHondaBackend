@@ -16,14 +16,14 @@ namespace KKHondaReport.MCS {
     using CrystalDecisions.CrystalReports.Engine;
     
     
-    public class subCreditNote : ReportClass {
+    public class CreditNote : ReportClass {
         
-        public subCreditNote() {
+        public CreditNote() {
         }
         
         public override string ResourceName {
             get {
-                return "subCreditNote.rpt";
+                return "CreditNote.rpt";
             }
             set {
                 // Do nothing
@@ -41,7 +41,7 @@ namespace KKHondaReport.MCS {
         
         public override string FullResourceName {
             get {
-                return "KKHondaReport.MCS.subCreditNote.rpt";
+                return "KKHondaReport.MCS.CreditNote.rpt";
             }
             set {
                 // Do nothing
@@ -151,12 +151,28 @@ namespace KKHondaReport.MCS {
                 return this.DataDefinition.ParameterFields[3];
             }
         }
+        
+        [Browsable(false)]
+        [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
+        public CrystalDecisions.Shared.IParameterField Parameter_strStartCreditNoteDate {
+            get {
+                return this.DataDefinition.ParameterFields[4];
+            }
+        }
+        
+        [Browsable(false)]
+        [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
+        public CrystalDecisions.Shared.IParameterField Parameter_strEndCreditNoteDate {
+            get {
+                return this.DataDefinition.ParameterFields[5];
+            }
+        }
     }
     
     [System.Drawing.ToolboxBitmapAttribute(typeof(CrystalDecisions.Shared.ExportOptions), "report.bmp")]
-    public class CachedsubCreditNote : Component, ICachedReport {
+    public class CachedCreditNote : Component, ICachedReport {
         
-        public CachedsubCreditNote() {
+        public CachedCreditNote() {
         }
         
         [Browsable(false)]
@@ -193,7 +209,7 @@ namespace KKHondaReport.MCS {
         }
         
         public virtual CrystalDecisions.CrystalReports.Engine.ReportDocument CreateReport() {
-            subCreditNote rpt = new subCreditNote();
+            CreditNote rpt = new CreditNote();
             rpt.Site = this.Site;
             return rpt;
         }

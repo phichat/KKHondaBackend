@@ -164,5 +164,18 @@ namespace KKHondaBackend.Controllers.Booking
 
             return Ok(regisName);
         }
+
+        [HttpGet("GetSellNameAutoComplete")]
+        public IActionResult GetSellNameAutoComplete()
+        {
+            var sellName = (from db in ctx.User
+                            select new
+                            {
+                                Value = db.Id,
+                                Text = db.Fullname
+                            }).ToList();
+
+            return Ok(sellName);
+        }
     }
 }
