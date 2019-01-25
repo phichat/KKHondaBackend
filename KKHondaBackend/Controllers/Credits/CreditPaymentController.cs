@@ -40,6 +40,11 @@ namespace KKHondaBackend.Controllers.Credits
             {
                 var bankingsDropdown = iBankingService.GetDropdowns();
 
+                var statusDropdown = iStatusService.GetDropdown();
+                statusDropdown = statusDropdown
+                    .Where(db => db.Value == "10" || db.Value == "11" || db.Value == "12" || db.Value == "13")
+                    .ToArray();
+
                 var contract = (from db in ctx.CreditContract
 
                                 join _branch in ctx.Branch on db.BranchId equals _branch.BranchId into a1
@@ -84,7 +89,7 @@ namespace KKHondaBackend.Controllers.Credits
                                    .Where(x => x.ContractId == id &&
                                    x.RefNo == contract.RefNo
                                    && x.InitialPrice >= (decimal)0
-                                   ).ToList();
+                                   ).OrderBy(x => x.InstalmentNo).ToList();
 
                 if (_contractItem == null)
                     return StatusCode(400);
@@ -203,6 +208,7 @@ namespace KKHondaBackend.Controllers.Credits
 
                 var obj = new Dictionary<string, object>
                 {
+                    {"statusDropdown", statusDropdown},
                     {"bankingsDropdown", bankingsDropdown},
                     {"contract", contract},
                     {"booking", booking},
@@ -223,7 +229,7 @@ namespace KKHondaBackend.Controllers.Credits
         private static double CheckFineSum(DateTime DueDate)
         {
             var Compare = DueDate.CompareTo(DateTime.Now.Date);
-            var DelayDue = (DateTime.Now.Date - DueDate).TotalDays;
+            int DelayDue =  (int)(DateTime.Now.Date - DueDate).TotalDays;
             return Compare < 0 ? DelayDue * 100 : 0;
         }
 
@@ -242,15 +248,21 @@ namespace KKHondaBackend.Controllers.Credits
                     
                     var PayNetPrice = payment.PayNetPrice;
 
-                    var _ContractItem = payment.CreditContractItem.OrderBy(x => x.InstalmentNo).ToList();
-                    var _CreditContractItem = new List<CreditContractItem>();
+                    var InstalmentNo = payment.CreditContractItem.Min(x => x.InstalmentNo);
+
+                    var _ContractItem = ctx.CreditContractItem
+                            .Where(x => x.InstalmentNo >= InstalmentNo)
+                            .OrderBy(x => x.InstalmentNo)
+                            .ToList();
 
                     var TaxInvoiceNo = iSysParamService.GenerateInstalmentTaxInvoiceNo(payment.BranchId);
                     var ReceiptNo = iSysParamService.GenerateReceiptNo(payment.BranchId);
 
-                    _ContractItem.ForEach(x =>
+                    _ContractItem.ForEach(Item =>
                     {
-                        var Item = ctx.CreditContractItem.SingleOrDefault(o => o.ContractItemId == x.ContractItemId);
+                        //var Item = ctx.CreditContractItem.SingleOrDefault(o => o.ContractItemId == x.ContractItemId);
+                        if (PayNetPrice <= 0) 
+                            return;
 
                         // ในกรณีที่ชำระน้อยกว่าที่ระบบกำหนด เมื่อถึงงวดสุดท้ายที่เลือกชำระ ยอดคงเหลือจะถูกหักออกบางส่วน
                         // true = ให้เอายอดคงเหลือไปลบ ยอดชำระ
@@ -265,9 +277,15 @@ namespace KKHondaBackend.Controllers.Credits
                         var payPriceExvat = _PayNetPrice / (1 + (Item.VatRate / 100));
                         var remainNetPriceExVat = _PayNetPrice / (1 + (Item.VatRate / 100));
 
-                        Item.PayPrice = payPriceExvat;
-                        Item.PayVatPrice = _PayNetPrice - payPriceExvat;
-                        Item.PayNetPrice = _PayNetPrice;
+
+                        // กรณีที่มีค่าปรับ ระบบจะหักให้อัตโนมัติ
+                        // โดยจะต้องชำระค่าปรับก่อนค่างวดเสมอ
+                        if (Item.FineSum > 0)
+                        {
+                            Item.FineSumRemain = 0;
+                            Item.FineSumStatus = 11;
+                        }
+                        Item.FineSumOther = payment.FineSumOther;
 
                         // ถ้า ยอดรับชำระ น้อยกว่า ยอดคงเหลือ
                         // true = ชำระบางส่วน
@@ -277,6 +295,10 @@ namespace KKHondaBackend.Controllers.Credits
                         // ลบยอดคงเหลือออกจาก ยอดชำระ ลงเรื่อยๆ
                         PayNetPrice -= Item.RemainNetPrice;
 
+                        Item.PayPrice = Item.Balance - remainNetPriceExVat;
+                        Item.PayVatPrice = Item.BalanceVatPrice - (_PayNetPrice - remainNetPriceExVat);
+                        Item.PayNetPrice = Item.BalanceNetPrice - _PayNetPrice;
+
                         Item.Remain = remainNetPriceExVat;
                         Item.RemainVatPrice = _PayNetPrice - remainNetPriceExVat;
                         Item.RemainNetPrice = _PayNetPrice;
@@ -285,14 +307,7 @@ namespace KKHondaBackend.Controllers.Credits
                         Item.PayDate = payment.PayDate;
                         Item.PaymentType = payment.PaymentType;
 
-                        if (x.FineSum > 0)
-                        {
-                            Item.FineSumRemain = 0;
-                            Item.FineSumStatus = 11;
-                        }
-                        
-                        Item.FineSumOther = payment.FineSumOther;
-
+                        Item.BankCode = payment.BankCode;
                         Item.TaxInvoiceBranchId = payment.BranchId;
                         Item.TaxInvoiceNo = TaxInvoiceNo;
                         Item.ReceiptNo = ReceiptNo;
@@ -301,8 +316,6 @@ namespace KKHondaBackend.Controllers.Credits
 
                         Item.UpdateBy = payment.UpdateBy;
                         Item.UpdateDate = DateTime.Now;
-
-                        _CreditContractItem.Add(Item);
 
                         ctx.CreditContractItem.Update(Item);
                         ctx.SaveChanges();
@@ -334,7 +347,7 @@ namespace KKHondaBackend.Controllers.Credits
 
                     transaction.Commit();
 
-                    return Get(payment.ContractId);
+                    return StatusCode(201);
 
                 }
                 catch (Exception ex)
@@ -363,8 +376,10 @@ namespace KKHondaBackend.Controllers.Credits
                 item.RemainVatPrice = item.BalanceVatPrice;
                 item.RemainNetPrice = item.BalanceNetPrice;
                 item.FineSumRemain = item.FineSum;
+                item.FineSumOther = 0;
                 if (item.FineSumStatus != null) item.FineSumStatus = 13;
                 item.Status = 13;
+                item.BankCode = null;
                 item.TaxInvoiceNo = null;
                 item.ReceiptNo = null;
                 item.Remark = cencel.Remark;
@@ -372,7 +387,7 @@ namespace KKHondaBackend.Controllers.Credits
                 item.UpdateDate = DateTime.Now;
                 ctx.SaveChanges();
 
-                // นำจะนวนรายการชำระครบ
+                // นับจำนวนรายการชำระครบ
                 var isPay = ctx.CreditContractItem
                         .Where(p =>
                             p.Status == 11 &&
@@ -398,7 +413,7 @@ namespace KKHondaBackend.Controllers.Credits
                     ctx.SaveChanges();
                 } 
 
-                return Get(item.ContractId);
+                return StatusCode(201);
             }
             catch (Exception)
             {
