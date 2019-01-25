@@ -390,16 +390,16 @@
 
                 //วันที่จอง
                 var bookingDate = $("input[name='rdoBookingDate']:checked").val();
-                var sDate = (bookingDate == 1 ? "" : $("#txtStartDate").val());
-                var eDate = (bookingDate == 1 ? "" : $("#txtEndDate").val());
+                var sDate = (bookingDate == 1 ? "" : toDate($("#txtStartDate").val()));
+                var eDate = (bookingDate == 1 ? "" : toDate($("#txtEndDate").val()));
                 strParameter += "&bookingDate=" + bookingDate;
                 strParameter += "&sDate=" + sDate;
                 strParameter += "&eDate=" + eDate;
 
                 //วันที่ถึงกำหนด
                 var bookingReceiveDate = $("input[name='rdoBookingReceiveDate']:checked").val();
-                var sBookingReceiveDate = (bookingReceiveDate == 1 ? "" : $("#txtStartBookingReceiveDate").val());
-                var eBookingReceiveDate = (bookingReceiveDate == 1 ? "" : $("#txtEndBookingReceiveDate").val());
+                var sBookingReceiveDate = (bookingReceiveDate == 1 ? "" : toDate($("#txtStartBookingReceiveDate").val()));
+                var eBookingReceiveDate = (bookingReceiveDate == 1 ? "" : toDate($("#txtEndBookingReceiveDate").val()));
                 strParameter += "&bookingReceiveDate=" + bookingReceiveDate;
                 strParameter += "&sBookingReceiveDate=" + sBookingReceiveDate;
                 strParameter += "&eBookingReceiveDate=" + eBookingReceiveDate;
@@ -407,6 +407,12 @@
                 window.open('http://localhost:58874/MCS/indexMCS2.aspx' + strParameter, '_blank');
             });
         });
+
+        function toDate(dateStr) {
+            var parts = dateStr.split("/")
+            return parts[2] + "-" + parts[1] + "-" + parts[0] + "T00:00:00.000Z"; 
+
+        }
     </script>
 </body>
 </html>
