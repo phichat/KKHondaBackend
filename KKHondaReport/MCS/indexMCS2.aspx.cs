@@ -10,7 +10,6 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using CrystalDecisions.Shared;
-using KKHondaReport.Models;
 using System.Globalization;
 
 namespace KKHondaReport.MCS
@@ -599,8 +598,8 @@ namespace KKHondaReport.MCS
         private void GetLoginfo(TableLogOnInfo Log, string server)
         {
             Log.ConnectionInfo.ServerName = server;
-            Log.ConnectionInfo.UserID = "sa_report";
-            Log.ConnectionInfo.Password = "1234";
+            Log.ConnectionInfo.UserID = "sa";
+            Log.ConnectionInfo.Password = "Krirkkai@2012";
             //Log.ConnectionInfo.UserID = "sa";
             //Log.ConnectionInfo.Password = "sql@1234";
             Log.ConnectionInfo.DatabaseName = "";

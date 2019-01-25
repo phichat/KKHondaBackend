@@ -98,6 +98,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Credits\index.aspx" />
+    <Content Include="View\Booking.html" />
     <Content Include="Web.config" />
     <Content Include="MCS\indexMCS2.aspx" />
   </ItemGroup>

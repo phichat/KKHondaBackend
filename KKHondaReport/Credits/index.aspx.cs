@@ -38,7 +38,7 @@ namespace KKHondaReport.Contracts
                 if (Boolean.Parse(Request.QueryString["formInstalmentTerm"]) == true)
                     ExportFormInstalmentTerm(contractId);
             }
-
+http://localhost:58874/Credits/index.aspx.cs
             // -------- Report Sum -------- //
 
             if (Request.QueryString["sumCutOffCash"] != null)

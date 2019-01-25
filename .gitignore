@@ -262,3 +262,6 @@ paket-files/
 __pycache__/
 *.pyc
 KKHondaBackend/appsettings.Development.json
+KKHondaReport/Web.config
+KKHondaReport/Properties/PublishProfiles/kk-honda-report.pubxml
+KKHondaBackend/appsettings.Development.json
