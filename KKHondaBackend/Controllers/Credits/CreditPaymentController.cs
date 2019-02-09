@@ -258,12 +258,18 @@ namespace KKHondaBackend.Controllers.Credits
                     var TaxInvoiceNo = iSysParamService.GenerateInstalmentTaxInvoiceNo(payment.BranchId);
                     var ReceiptNo = iSysParamService.GenerateReceiptNo(payment.BranchId);
 
+
                     _ContractItem.ForEach(Item =>
                     {
                         //var Item = ctx.CreditContractItem.SingleOrDefault(o => o.ContractItemId == x.ContractItemId);
                         if (PayNetPrice <= 0) 
                             return;
 
+                        var vat = 1 + (Item.VatRate / 100);
+
+                        var CreditTransList = new List<CreditTransaction>();
+                        var CreditTransItem = new CreditTransaction(); 
+                    
                         // ในกรณีที่ชำระน้อยกว่าที่ระบบกำหนด เมื่อถึงงวดสุดท้ายที่เลือกชำระ ยอดคงเหลือจะถูกหักออกบางส่วน
                         // true = ให้เอายอดคงเหลือไปลบ ยอดชำระ
                         // false = ใช้ยอดคงเหลือไปตัดออกจาก ยอดคงเหลือในรายการ
@@ -274,9 +280,8 @@ namespace KKHondaBackend.Controllers.Credits
                         // false = ยอดชำระ
                         _PayNetPrice = _PayNetPrice == Item.RemainNetPrice ? Item.RemainNetPrice - _PayNetPrice : _PayNetPrice;
 
-                        var payPriceExvat = _PayNetPrice / (1 + (Item.VatRate / 100));
-                        var remainNetPriceExVat = _PayNetPrice / (1 + (Item.VatRate / 100));
-
+                        var payPriceExvat = _PayNetPrice / vat;
+                        var remainNetPriceExVat = _PayNetPrice / vat;
 
                         // กรณีที่มีค่าปรับ ระบบจะหักให้อัตโนมัติ
                         // โดยจะต้องชำระค่าปรับก่อนค่างวดเสมอ
@@ -284,20 +289,68 @@ namespace KKHondaBackend.Controllers.Credits
                         {
                             Item.FineSumRemain = 0;
                             Item.FineSumStatus = 11;
+
+                            var fineSumExvat = Item.FineSum / vat;
+
+                            CreditTransItem = new CreditTransaction
+                            {
+                                ContractItemId = Item.ContractItemId,
+                                Description = "ค่าปรับล่าช้า",
+                                PayPrice = fineSumExvat,
+                                PayVatPrice = Item.FineSum - fineSumExvat,
+                                PayNetPrice = Item.FineSum
+                            };
+                            CreditTransList.Add(CreditTransItem);
                         }
-                        Item.FineSumOther = payment.FineSumOther;
+
+                        if (payment.FineSumOther > 0)
+                        {
+                            Item.FineSumOther = payment.FineSumOther;
+                            var fineSumExvat = Item.FineSumOther / vat;
+                            CreditTransItem = new CreditTransaction
+                            {
+                                ContractItemId = Item.ContractItemId,
+                                Description = "ค่าปรับอื่นๆ",
+                                PayPrice = fineSumExvat,
+                                PayVatPrice = Item.FineSum - fineSumExvat,
+                                PayNetPrice = Item.FineSum
+                            };
+                            CreditTransList.Add(CreditTransItem);
+                        }
+
 
                         // ถ้า ยอดรับชำระ น้อยกว่า ยอดคงเหลือ
                         // true = ชำระบางส่วน
                         // false = ชำระครบ
-                        Item.Status = PayNetPrice < Item.RemainNetPrice ? 12 : 11;
+                        CreditTransItem = new CreditTransaction
+                        {
+                            ContractItemId = Item.ContractItemId
+                        };
+                        if (PayNetPrice < Item.RemainNetPrice)
+                        {
+                            CreditTransItem.Description = $"ชำระค่างวดท่ี {Item.InstalmentNo} บางส่วน";
+                            Item.Status = 12;
+                        }
+                        else
+                        {
+                            CreditTransItem.Description = Item.Status == 12 ? $"ชำระยอดยกมาจากงวดที่ {Item.InstalmentNo - 1}" : "ชำระครบ";
+                            Item.Status = 11;
+                        }
 
                         // ลบยอดคงเหลือออกจาก ยอดชำระ ลงเรื่อยๆ
                         PayNetPrice -= Item.RemainNetPrice;
+                        var PayPrice = Item.Balance - remainNetPriceExVat;
+                        var PayVatPrice = Item.BalanceVatPrice - (_PayNetPrice - remainNetPriceExVat);
+                        var __PayNetPrice = Item.BalanceNetPrice - _PayNetPrice;
 
-                        Item.PayPrice = Item.Balance - remainNetPriceExVat;
-                        Item.PayVatPrice = Item.BalanceVatPrice - (_PayNetPrice - remainNetPriceExVat);
-                        Item.PayNetPrice = Item.BalanceNetPrice - _PayNetPrice;
+                        Item.PayPrice = PayPrice;
+                        Item.PayVatPrice = PayVatPrice;
+                        Item.PayNetPrice = __PayNetPrice;
+
+                        CreditTransItem.PayPrice = PayPrice;
+                        CreditTransItem.PayVatPrice = PayVatPrice;
+                        CreditTransItem.PayNetPrice = __PayNetPrice;
+                        CreditTransList.Add(CreditTransItem);
 
                         Item.Remain = remainNetPriceExVat;
                         Item.RemainVatPrice = _PayNetPrice - remainNetPriceExVat;
@@ -309,8 +362,10 @@ namespace KKHondaBackend.Controllers.Credits
 
                         Item.BankCode = payment.BankCode;
                         Item.TaxInvoiceBranchId = payment.BranchId;
-                        Item.TaxInvoiceNo = TaxInvoiceNo;
-                        Item.ReceiptNo = ReceiptNo;
+                        if (Item.TaxInvoiceNo == null) 
+                            Item.TaxInvoiceNo = TaxInvoiceNo;
+                        if (Item.ReceiptNo == null)
+                            Item.ReceiptNo = ReceiptNo;
                         Item.Remark = payment.Remark;
                         Item.DocumentRef = payment.DocumentRef;
 
@@ -318,6 +373,9 @@ namespace KKHondaBackend.Controllers.Credits
                         Item.UpdateDate = DateTime.Now;
 
                         ctx.CreditContractItem.Update(Item);
+                        ctx.SaveChanges();
+
+                        ctx.CreditTransactions.AddRange(CreditTransList);
                         ctx.SaveChanges();
                     });
 
@@ -382,9 +440,14 @@ namespace KKHondaBackend.Controllers.Credits
                 item.BankCode = null;
                 item.TaxInvoiceNo = null;
                 item.ReceiptNo = null;
-                item.Remark = cencel.Remark;
+                item.CancelRemark = cencel.CancelRemark;
                 item.UpdateBy = cencel.UpdateBy;
                 item.UpdateDate = DateTime.Now;
+                ctx.SaveChanges();
+
+                // ลบรายการ transaction การชำระเงินใน งวดนั้น
+                var ContractTrans = ctx.CreditTransactions.Where(e => e.ContractItemId == cencel.ContractItemId).ToList();
+                ctx.RemoveRange(ContractTrans);
                 ctx.SaveChanges();
 
                 // นับจำนวนรายการชำระครบ
@@ -424,7 +487,7 @@ namespace KKHondaBackend.Controllers.Credits
         public class ICancelPayment
         {
            public int ContractItemId { get; set; }
-           public string Remark { get; set; }
+           public string CancelRemark { get; set; }
            public int UpdateBy { get; set; }
         }
 

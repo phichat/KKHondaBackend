@@ -29,6 +29,7 @@ namespace KKHondaBackend.Data
         public virtual DbSet<CreditCalculate> CreditCalculate { get; set; }
         public virtual DbSet<CreditContract> CreditContract { get; set; }
         public virtual DbSet<CreditContractItem> CreditContractItem { get; set; }
+        public virtual DbSet<CreditTransaction> CreditTransactions { get; set; }
         public virtual DbSet<CreditTermList> CreditTermList { get; set; }
         public virtual DbSet<Cyclecount> Cyclecount { get; set; }
         public virtual DbSet<CyclecountLocationItem> CyclecountLocationItem { get; set; }
@@ -1179,6 +1180,8 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.Remark)
                       .HasColumnName("remark");
 
+                entity.Property(e => e.CancelRemark).HasColumnName("cancel_remark");
+
                 entity.Property(e => e.DocumentRef)
                       .HasColumnName("document_ref")
                       .HasMaxLength(255);
@@ -1206,6 +1209,18 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.ReceiptNo)
                       .HasColumnName("receipt_no")
                       .HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<CreditTransaction>(entity =>
+            {
+                entity.ToTable("credit_trasaction");
+                entity.HasKey(e => e.TransactionId);
+                entity.Property(e => e.TransactionId).HasColumnName("trasaction_id");
+                entity.Property(e => e.ContractItemId).HasColumnName("contract_item_id");
+                entity.Property(e => e.Description).HasColumnName("description").HasMaxLength(255);
+                entity.Property(e => e.PayPrice).HasColumnName("pay_price").HasColumnType("decimal(18, 2)"); 
+                entity.Property(e => e.PayNetPrice).HasColumnName("pay_net_price").HasColumnType("decimal(18, 2)");
+                entity.Property(e => e.PayVatPrice).HasColumnName("pay_vat_price").HasColumnType("decimal(18, 2)");
             });
 
             modelBuilder.Entity<CreditTermList>(entity =>
