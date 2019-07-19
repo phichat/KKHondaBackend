@@ -99,6 +99,10 @@
     <Content Include="Credits\index.aspx" />
     <Content Include="Web.config" />
     <Content Include="MCS\indexMCS2.aspx" />
+    <Content Include="เจ4..jpg" />
+    <Content Include="เจ3.jpg" />
+    <Content Include="เจ2.jpg" />
+    <Content Include="เจ1.jpg" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Credits\formContract.cs">

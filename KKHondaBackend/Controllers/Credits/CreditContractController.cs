@@ -121,6 +121,9 @@ namespace KKHondaBackend.Controllers.Credits
                             join _hireCard in ctx.MCustomerCard on db.ContractHire equals _hireCard.CustomerCode into a8
                             from hireCard in a8.DefaultIfEmpty()
 
+                            join _booking in ctx.Booking on db.BookingId equals _booking.BookingId into a10
+                            from booking in a10.DefaultIfEmpty()
+
                             join _bookingItem in ctx.BookingItem on db.BookingId equals _bookingItem.BookingId into a9
                             from bookingItem in a9.DefaultIfEmpty()
                             where bookingItem.ItemDetailType == 1
@@ -153,6 +156,7 @@ namespace KKHondaBackend.Controllers.Credits
                                 StatusDesc = status.StatusDesc,
                                 ContractStatus = db.ContractStatus,
                                 RefNo = db.RefNo,
+                                BookingPaymentType = booking.BookingPaymentType,
                                 HireFullName = $"{contrachHire.CustomerPrename} {contrachHire.CustomerName} {contrachHire.CustomerSurname}",
                                 HireIdCard = hireCard.CardId,
                                 Brand = brand.BrandName,
@@ -375,10 +379,12 @@ namespace KKHondaBackend.Controllers.Credits
 
                 var __branch = ctx.Branch.SingleOrDefault(x => x.BranchId == 1);
 
+                var __company = ctx.Company.FirstOrDefault(x => x.ComId == 1);
+
                 var booking = iBookService.GetBookingById(contract.BookingId);
                 booking.CusTaxNo = __branch.BranchRegisterNo;
                 booking.CusTaxBranch = __branch.BranchName;
-                booking.CusSellName = "บริษัท เกริกไกรเอ็นเทอร์ไพรส์ จำกัด";
+                booking.CusSellName = __company.ComName;
 
 
                 var calculate = ctx.CreditCalculate.Where(p => p.CalculateId == contract.CalculateId).SingleOrDefault();
@@ -419,7 +425,7 @@ namespace KKHondaBackend.Controllers.Credits
             catch (Exception ex)
             {
                 Console.Write(ex);
-                return NotFound();
+                return StatusCode(500);
             }
         }
 
@@ -657,6 +663,7 @@ namespace KKHondaBackend.Controllers.Credits
             public int ContractId { get; set; }
             public int CalculateId { get; set; }
             public string Branch { get; set; }
+            public int? BookingPaymentType { get; set; }
             public string ContractNo { get; set; }
             public string ContractType { get; set; }
             public DateTime? ContractDate { get; set; }
