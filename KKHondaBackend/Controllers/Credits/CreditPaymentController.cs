@@ -289,34 +289,9 @@ namespace KKHondaBackend.Controllers.Credits
                         {
                             Item.FineSumRemain = 0;
                             Item.FineSumStatus = 11;
-
-                            var fineSumExvat = Item.FineSum / vat;
-
-                            CreditTransItem = new CreditTransaction
-                            {
-                                ContractItemId = Item.ContractItemId,
-                                Description = "ค่าปรับล่าช้า",
-                                PayPrice = fineSumExvat,
-                                PayVatPrice = Item.FineSum - fineSumExvat,
-                                PayNetPrice = Item.FineSum
-                            };
-                            CreditTransList.Add(CreditTransItem);
                         }
 
-                        if (payment.FineSumOther > 0)
-                        {
-                            Item.FineSumOther = payment.FineSumOther;
-                            var fineSumExvat = Item.FineSumOther / vat;
-                            CreditTransItem = new CreditTransaction
-                            {
-                                ContractItemId = Item.ContractItemId,
-                                Description = "ค่าปรับอื่นๆ",
-                                PayPrice = fineSumExvat,
-                                PayVatPrice = Item.FineSum - fineSumExvat,
-                                PayNetPrice = Item.FineSum
-                            };
-                            CreditTransList.Add(CreditTransItem);
-                        }
+                        if (payment.FineSumOther > 0) Item.FineSumOther = payment.FineSumOther;
 
 
                         // ถ้า ยอดรับชำระ น้อยกว่า ยอดคงเหลือ
@@ -362,10 +337,8 @@ namespace KKHondaBackend.Controllers.Credits
 
                         Item.BankCode = payment.BankCode;
                         Item.TaxInvoiceBranchId = payment.BranchId;
-                        if (Item.TaxInvoiceNo == null) 
-                            Item.TaxInvoiceNo = TaxInvoiceNo;
-                        if (Item.ReceiptNo == null)
-                            Item.ReceiptNo = ReceiptNo;
+                        if (Item.TaxInvoiceNo == null) Item.TaxInvoiceNo = TaxInvoiceNo;
+                        if (Item.ReceiptNo == null) Item.ReceiptNo = ReceiptNo;
                         Item.Remark = payment.Remark;
                         Item.DocumentRef = payment.DocumentRef;
 
@@ -405,7 +378,7 @@ namespace KKHondaBackend.Controllers.Credits
 
                     transaction.Commit();
 
-                    return StatusCode(201);
+                    return Get(payment.ContractId);
 
                 }
                 catch (Exception ex)
@@ -474,9 +447,9 @@ namespace KKHondaBackend.Controllers.Credits
                     ct.EndContractDate = DateTime.Now;
                     ctx.CreditContract.Update(ct);
                     ctx.SaveChanges();
-                } 
+                }
 
-                return StatusCode(201);
+                return Get(item.ContractId);
             }
             catch (Exception)
             {
