@@ -13,8 +13,8 @@ namespace KKHondaBackend.Models
         public DateTime? ContractDate { get; set; }
         public int? AreaPayment { get; set; }
         public int? ContractPoint { get; set; }
-        public int? ContractType { get; set; }
-        public int? ContractGroup { get; set; }
+        public string ContractType { get; set; }
+        public string ContractGroup { get; set; }
         public string ContractHire { get; set; }
         public string ContractMate { get; set; }
         public string ContractBooking { get; set; }

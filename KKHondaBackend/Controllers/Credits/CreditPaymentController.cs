@@ -112,7 +112,7 @@ namespace KKHondaBackend.Controllers.Credits
                             var _CheckDueDate = (DateTime)x.CheckDueDate;
                             var _Compare = _CheckDueDate.Date.CompareTo(DateTime.Now.Date);
 
-                            if (_Compare < 0) 
+                            if (_Compare < 0)
                             {
                                 // ถ้า _Compare < 0 แสดงว่าต้องคิดค่าปรับของวันใหม่เพิ่มเข้าไป
                                 // โดยที่ นำเอาวันที่ตรวจสอบล่าสุดนำไปเปรียบเที่ยบกับวันปัจจุบัน
@@ -229,7 +229,7 @@ namespace KKHondaBackend.Controllers.Credits
         private static double CheckFineSum(DateTime DueDate)
         {
             var Compare = DueDate.CompareTo(DateTime.Now.Date);
-            int DelayDue =  (int)(DateTime.Now.Date - DueDate).TotalDays;
+            int DelayDue = (int)(DateTime.Now.Date - DueDate).TotalDays;
             return Compare < 0 ? DelayDue * 100 : 0;
         }
 
@@ -245,13 +245,13 @@ namespace KKHondaBackend.Controllers.Credits
 
                     var contract = ctx.CreditContract.FirstOrDefault(p => p.ContractId == payment.ContractId);
                     var calculate = ctx.CreditCalculate.FirstOrDefault(p => p.CalculateId == contract.CalculateId);
-                    
+
                     var PayNetPrice = payment.PayNetPrice;
 
                     var InstalmentNo = payment.CreditContractItem.Min(x => x.InstalmentNo);
 
                     var _ContractItem = ctx.CreditContractItem
-                            .Where(x => x.InstalmentNo >= InstalmentNo)
+                            .Where(x => x.ContractId == payment.ContractId && x.InstalmentNo >= InstalmentNo)
                             .OrderBy(x => x.InstalmentNo)
                             .ToList();
 
@@ -262,14 +262,13 @@ namespace KKHondaBackend.Controllers.Credits
                     _ContractItem.ForEach(Item =>
                     {
                         //var Item = ctx.CreditContractItem.SingleOrDefault(o => o.ContractItemId == x.ContractItemId);
-                        if (PayNetPrice <= 0) 
-                            return;
+                        if (PayNetPrice <= 0) return;
 
                         var vat = 1 + (Item.VatRate / 100);
 
                         var CreditTransList = new List<CreditTransaction>();
-                        var CreditTransItem = new CreditTransaction(); 
-                    
+                        var CreditTransItem = new CreditTransaction();
+
                         // ในกรณีที่ชำระน้อยกว่าที่ระบบกำหนด เมื่อถึงงวดสุดท้ายที่เลือกชำระ ยอดคงเหลือจะถูกหักออกบางส่วน
                         // true = ให้เอายอดคงเหลือไปลบ ยอดชำระ
                         // false = ใช้ยอดคงเหลือไปตัดออกจาก ยอดคงเหลือในรายการ
@@ -292,7 +291,6 @@ namespace KKHondaBackend.Controllers.Credits
                         }
 
                         if (payment.FineSumOther > 0) Item.FineSumOther = payment.FineSumOther;
-
 
                         // ถ้า ยอดรับชำระ น้อยกว่า ยอดคงเหลือ
                         // true = ชำระบางส่วน
@@ -355,7 +353,7 @@ namespace KKHondaBackend.Controllers.Credits
                     // นำจะนวนรายการชำระครบ
                     var isPay = ctx.CreditContractItem
                             .Where(p =>
-                                p.Status == 11 && 
+                                p.Status == 11 &&
                                 p.ContractId == contract.ContractId &&
                                 p.RefNo == contract.RefNo)
                             .Count();
@@ -385,7 +383,7 @@ namespace KKHondaBackend.Controllers.Credits
                 {
                     Console.Write(ex.Message);
                     transaction.Rollback();
-                    return StatusCode(500);
+                    return StatusCode(500, ex.Message);
                 }
             }
         }
@@ -459,9 +457,9 @@ namespace KKHondaBackend.Controllers.Credits
 
         public class ICancelPayment
         {
-           public int ContractItemId { get; set; }
-           public string CancelRemark { get; set; }
-           public int UpdateBy { get; set; }
+            public int ContractItemId { get; set; }
+            public string CancelRemark { get; set; }
+            public int UpdateBy { get; set; }
         }
 
         public class ICreditContractItem
@@ -475,20 +473,20 @@ namespace KKHondaBackend.Controllers.Credits
 
         public class IPayment
         {
-           public int ContractId { get; set; }
-             public decimal? FineSum { get; set; }
-             public decimal? FineSumOther { get; set; }
-             public decimal? PayNetPrice { get; set; }
-             public decimal? DisCountPrice { get; set; }
-             public decimal? DiscountRate { get; set; }
-             public int PaymentType { get; set; }
-             public string BankCode { get; set; }
-             public string DocumentRef { get; set; }
-             public string Remark { get; set; }
-             public DateTime PayDate { get; set; }
-             public int BranchId { get; set; }
-             public int UpdateBy { get; set; }
-             public CreditContractItem[] CreditContractItem { get; set; }
+            public int ContractId { get; set; }
+            public decimal? FineSum { get; set; }
+            public decimal? FineSumOther { get; set; }
+            public decimal? PayNetPrice { get; set; }
+            public decimal? DisCountPrice { get; set; }
+            public decimal? DiscountRate { get; set; }
+            public int PaymentType { get; set; }
+            public string BankCode { get; set; }
+            public string DocumentRef { get; set; }
+            public string Remark { get; set; }
+            public DateTime PayDate { get; set; }
+            public int BranchId { get; set; }
+            public int UpdateBy { get; set; }
+            public CreditContractItem[] CreditContractItem { get; set; }
         }
     }
 

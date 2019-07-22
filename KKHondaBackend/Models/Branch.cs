@@ -20,6 +20,8 @@ namespace KKHondaBackend.Models
         public string BranchContactNo { get; set; }
         public string BranchEmail { get; set; }
         public int? ZoneId { get; set; }
+        public string ContractGroupCode { get; set; }
+        public string ContractTypeCode { get; set; }
         public string BranchParentCode { get; set; }
         public string BranchRegisterNo { get; set; }
         public int BranchOrderFlag { get; set; }
