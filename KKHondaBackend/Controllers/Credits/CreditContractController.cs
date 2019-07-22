@@ -7,7 +7,6 @@ using KKHondaBackend.Data;
 using KKHondaBackend.Models;
 using KKHondaBackend.Services;
 using Microsoft.EntityFrameworkCore;
-using System.Data.SqlClient;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -68,24 +67,26 @@ namespace KKHondaBackend.Controllers.Credits
         public IActionResult Active()
         {
             List<CreditContractList> creditContractLists = GetListContracts();
-            creditContractLists = creditContractLists.Where(o => 
-                                                            o.ContractStatus == 30 || 
-                                                            o.ContractStatus == 31 || 
+            creditContractLists = creditContractLists.Where(o =>
+                                                            o.ContractStatus == 30 ||
+                                                            o.ContractStatus == 31 ||
                                                             o.ContractStatus == 32).OrderByDescending(x => x.ContractNo).ToList();
             return Ok(creditContractLists);
         }
 
         [HttpGet("CloseContract")]
-        public IActionResult CloseContract() {
+        public IActionResult CloseContract()
+        {
             List<CreditContractList> creditContractLists = GetListContracts();
             creditContractLists = creditContractLists.Where(o => o.ContractStatus == 29).OrderByDescending(x => x.ContractNo).ToList();
             return Ok(creditContractLists);
         }
 
         [HttpGet("OtherContract")]
-        public IActionResult OtherContract(){
+        public IActionResult OtherContract()
+        {
             List<CreditContractList> creditContractLists = GetListContracts();
-            creditContractLists = creditContractLists.Where(o => 
+            creditContractLists = creditContractLists.Where(o =>
                                                             o.ContractStatus != 29 &&
                                                             o.ContractStatus != 30 &&
                                                             o.ContractStatus != 31 &&
@@ -100,13 +101,13 @@ namespace KKHondaBackend.Controllers.Credits
                             join _branch in ctx.Branch on db.BranchId equals _branch.BranchId into a1
                             from branch in a1.DefaultIfEmpty()
 
-                            join _contractType in ctx.MContractType on db.ContractType equals _contractType.Id into a2
+                            join _contractType in ctx.MContractType on db.ContractType equals _contractType.TypeCode into a2
                             from contractType in a2.DefaultIfEmpty()
 
                             join _areaPayment in ctx.Branch on db.AreaPayment equals _areaPayment.BranchId into a3
                             from areaPayment in a3.DefaultIfEmpty()
 
-                            join _contractGroup in ctx.MContractGroup on db.ContractGroup equals _contractGroup.Id into a4
+                            join _contractGroup in ctx.MContractGroup on db.ContractGroup equals _contractGroup.GroupCode into a4
                             from contractGroup in a4.DefaultIfEmpty()
 
                             join _status in ctx.MStatus on db.ContractStatus equals _status.Id into a13
@@ -139,7 +140,7 @@ namespace KKHondaBackend.Controllers.Credits
 
                             join _tfLog in ctx.TransferLog on bookingItem.ItemId equals _tfLog.ItemId into a61
                             from tfLog in a61.DefaultIfEmpty()
-                            where bookingItem.ItemId == tfLog.ItemId && 
+                            where bookingItem.ItemId == tfLog.ItemId &&
                             bookingItem.LogReceiveId == tfLog.LogId
 
                             select new CreditContractList
@@ -171,7 +172,7 @@ namespace KKHondaBackend.Controllers.Credits
 
         }
 
-        // GET api/values/5
+        // // GET api/values/5
         [HttpGet("GetById")]
         public IActionResult Get(int id)
         {
@@ -199,16 +200,16 @@ namespace KKHondaBackend.Controllers.Credits
                 booking.CusTaxBranch = __branch.BranchName;
                 booking.CusSellName = __company.ComName;
 
-
                 var zoneId = ctx.Branch
                     .Where(b => b.BranchId == booking.BranchId)
                     .Select(b => b.ZoneId)
-                    .SingleOrDefault();
-               
+                    .FirstOrDefault();
 
                 cont.BranchId = cont.BranchId == null ? booking.BranchId : cont.BranchId;
                 cont.AreaPayment = cont.AreaPayment == null ? booking.BranchId : cont.AreaPayment;
                 cont.ContractPoint = cont.ContractPoint == null ? zoneId : cont.ContractPoint;
+                cont.ContractGroup = cont.ContractGroup == null ? __branch.ContractGroupCode : cont.ContractGroup;
+                cont.ContractType = cont.ContractType == null ? __branch.ContractTypeCode : cont.ContractType;
 
                 cont.CreatedBy = cont.CreatedBy == null ? booking.CreateBy : cont.CreatedBy;
                 cont.CheckedBy = cont.CheckedBy == null ? booking.CreateBy : cont.CheckedBy;
@@ -294,19 +295,18 @@ namespace KKHondaBackend.Controllers.Credits
         {
             try
             {
-
                 var detail = (from db in ctx.CreditContract
 
                               join _branch in ctx.Branch on db.BranchId equals _branch.BranchId into a1
                               from branch in a1.DefaultIfEmpty()
 
-                              join _contractType in ctx.MContractType on db.ContractType equals _contractType.Id into a2
+                              join _contractType in ctx.MContractType on db.ContractType equals _contractType.TypeCode into a2
                               from contractType in a2.DefaultIfEmpty()
 
                               join _areaPayment in ctx.Branch on db.AreaPayment equals _areaPayment.BranchId into a3
                               from areaPayment in a3.DefaultIfEmpty()
 
-                              join _contractGroup in ctx.MContractGroup on db.ContractGroup equals _contractGroup.Id into a4
+                              join _contractGroup in ctx.MContractGroup on db.ContractGroup equals _contractGroup.GroupCode into a4
                               from contractGroup in a4.DefaultIfEmpty()
 
                               join _status in ctx.MStatus on db.ContractStatus equals _status.Id into a5
@@ -359,12 +359,12 @@ namespace KKHondaBackend.Controllers.Credits
                                   AreaPayment = areaPayment.BranchName,
                                   ContractPoint = contractPoint.ZoneName,
                                   ContractGroup = contractGroup.GroupDesc,
-                                  ContractHire = contrachHire.CustomerPrename + contrachHire.CustomerName + " " + contrachHire.CustomerSurname,
-                                  ContractMate = contractMate.CustomerPrename + contractMate.CustomerName + " " + contractMate.CustomerSurname,
-                                  ContractBooking = contractBooking.CustomerPrename + contractBooking.CustomerName + " " + contractBooking.CustomerSurname,
-                                  ContractGurantor1 = gurantor1.CustomerPrename + gurantor1.CustomerName + " " + gurantor1.CustomerSurname,
+                                  ContractHire = $"{contrachHire.CustomerPrename}{contrachHire.CustomerName} {contrachHire.CustomerSurname}",
+                                  ContractMate = $"{contractMate.CustomerPrename}{contractMate.CustomerName} {contractMate.CustomerSurname}",
+                                  ContractBooking = $"{contractBooking.CustomerPrename}{contractBooking.CustomerName} {contractBooking.CustomerSurname}",
+                                  ContractGurantor1 = $"{gurantor1.CustomerPrename}{gurantor1.CustomerName} {gurantor1.CustomerSurname}",
                                   GurantorRelation1 = relation1.RelationDesc,
-                                  ContractGurantor2 = gurantor2.CustomerPrename + gurantor2.CustomerName + " " + gurantor2.CustomerSurname,
+                                  ContractGurantor2 = $"{gurantor2.CustomerPrename}{gurantor2.CustomerName} {gurantor2.CustomerSurname}",
                                   GurantorRelation2 = relation2.RelationDesc,
                                   CreatedBy = created.Fullname,
                                   CheckedBy = checkedBy.Fullname,
@@ -391,7 +391,7 @@ namespace KKHondaBackend.Controllers.Credits
 
                 var statusDropdown = iStatusService.GetDropdown();
                 //statusDropdown = statusDropdown.Where(x => x.Value == "27" && x.Value == "33").ToArray();
-                               
+
                 //var contItem = ctx.CreditContractItem
                 //   .Where(p => p.ContractId == contract.ContractId && p.RefNo == contract.RefNo)
                 //   .OrderBy(o => o.InstalmentNo).ToList();
@@ -425,7 +425,7 @@ namespace KKHondaBackend.Controllers.Credits
             catch (Exception ex)
             {
                 Console.Write(ex);
-                return StatusCode(500);
+                return StatusCode(500, ex.Message);
             }
         }
 
@@ -482,7 +482,7 @@ namespace KKHondaBackend.Controllers.Credits
                     // Contract
                     creditContract.UpdateDate = DateTime.Now;
                     // อยู่ระหว่างผ่อนชำระ
-                    creditContract.ContractStatus = 31; 
+                    creditContract.ContractStatus = 31;
                     ctx.Update(creditContract);
                     ctx.SaveChanges();
 
@@ -611,7 +611,8 @@ namespace KKHondaBackend.Controllers.Credits
         }
 
         [HttpPost("ContractTermination")]
-        public IActionResult ContractTermination([FromBody] ContractTerminate c){
+        public IActionResult ContractTermination([FromBody] ContractTerminate c)
+        {
 
             using (var transaction = ctx.Database.BeginTransaction())
             {
@@ -637,22 +638,26 @@ namespace KKHondaBackend.Controllers.Credits
 
                     return Ok();
 
-                } catch(Exception ex) {
+                }
+                catch (Exception ex)
+                {
 
                     transaction.Rollback();
                     return StatusCode(500, ex.Message);
                 }
             }
-            
+
 
         }
 
-        public class Contract {
+        public class Contract
+        {
             public CreditContract contract { get; set; }
             public Models.Booking booking { get; set; }
         }
 
-        public class ContractTerminate {
+        public class ContractTerminate
+        {
             public int ContractId { get; set; }
             public string Remark { get; set; }
             public int UpdateBy { get; set; }

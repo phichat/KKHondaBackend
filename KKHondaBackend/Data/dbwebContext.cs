@@ -603,6 +603,8 @@ namespace KKHondaBackend.Data
                     .HasColumnType("datetime");
 
                 entity.Property(e => e.ZoneId).HasColumnName("zone_id");
+                entity.Property(e => e.ContractGroupCode).HasColumnName("contract_group_code").HasMaxLength(50);
+                entity.Property(e => e.ContractTypeCode).HasColumnName("contract_type_code").HasMaxLength(50);
             });
 
             modelBuilder.Entity<CarHistory>(entity =>
@@ -1013,7 +1015,9 @@ namespace KKHondaBackend.Data
                                     .HasColumnName("contract_date")
                                     .HasColumnType("datetime");
 
-                entity.Property(e => e.ContractGroup).HasColumnName("contract_group");
+                entity.Property(e => e.ContractGroup)
+                    .HasColumnName("contract_group")
+                    .HasMaxLength(50);
 
                 entity.Property(e => e.ContractGurantor1)
                                     .HasColumnName("contract_gurantor1")
@@ -1039,7 +1043,9 @@ namespace KKHondaBackend.Data
 
                 entity.Property(e => e.ContractStatus).HasColumnName("contract_status");
 
-                entity.Property(e => e.ContractType).HasColumnName("contract_type");
+                entity.Property(e => e.ContractType)
+                    .HasColumnName("contract_type")
+                    .HasMaxLength(50);
 
                 entity.Property(e => e.ContractBooking)
                                     .HasColumnName("contract_booking")
