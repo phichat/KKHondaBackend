@@ -90,9 +90,6 @@ namespace KKHondaBackend.Controllers.Booking
                                     Text = db.BrandName
                                 }).ToList();
 
-            
-
-
             return Ok(productBrand);
         }
 
