@@ -17,6 +17,7 @@ namespace KKHondaBackend.Models
         public DateTime CreateDate { get; set; }
         public int? UpdateBy { get; set; }
         public DateTime? UpdateDate { get; set; }
+        public string Reason { get; set; }
     }
 
     public partial class CarRegisSedListRes
@@ -39,5 +40,12 @@ namespace KKHondaBackend.Models
         public int? UpdateBy { get; set; }
         public string UpdateName { get; set; }
         public DateTime? UpdateDate { get; set; }
+        public string Reason { get; set; }
+    }
+
+    public partial class CarRegisSedCancel
+    {
+        public string SedNo { get; set; }
+        public string Reason { get; set; }
     }
 }

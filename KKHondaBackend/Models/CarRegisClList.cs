@@ -21,11 +21,13 @@ namespace KKHondaBackend.Models
         public DateTime? UpdateDate { get; set; }
         public int? UpdateBy { get; set; }
         public string Remark { get; set; }
+        public string Reason { get; set; }
     }
 
     public partial class CarRegisClListRes
     {
         public int ClId { get; set; }
+        public string SedNo { get; set; }
         public string ClNo { get; set; }
         public string AlNo { get; set; }
         public int RefundId { get; set; }
@@ -49,6 +51,7 @@ namespace KKHondaBackend.Models
         public int? UpdateBy { get; set; }
         public string UpdateName { get; set; }
         public string Remark { get; set; }
+        public string Reason { get; set; }
     }
 
     public class CarRegisClSummary
@@ -57,6 +60,13 @@ namespace KKHondaBackend.Models
         public decimal BalancePrice { get; set; }
         public decimal ReceivePrice { get; set; }
         public decimal NetPrice { get; set; }
+    }
 
+    public class CarRegisClCancel
+    {
+        public string ClNo { get; set; }
+        public string Reason { get; set; }
+        public string Remark { get; set; }
+        public int UpdateBy { get; set; }
     }
 }

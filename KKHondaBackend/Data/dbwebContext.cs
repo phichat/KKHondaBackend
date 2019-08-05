@@ -20,6 +20,7 @@ namespace KKHondaBackend.Data
         public virtual DbSet<SpDashboardBookingDetail> SpDashboardBookingDetail { get; set; }
 
         public virtual DbSet<Banking> Bankings { get; set; }
+        public virtual DbSet<BookingCancel> BookingCancel { get; set; }
         public virtual DbSet<Booking> Booking { get; set; }
         public virtual DbSet<BookingItem> BookingItem { get; set; }
         public virtual DbSet<Branch> Branch { get; set; }
@@ -28,7 +29,7 @@ namespace KKHondaBackend.Data
         public virtual DbSet<CarRegisListItem> CarRegisListItem { get; set; }
         public virtual DbSet<CarRegisSedList> CarRegisSedList { get; set; }
         public virtual DbSet<CarRegisAlList> CarRegisAlList { get; set; }
-        public virtual DbSet<CarRegisClList> CarRegisClList {get;set;}
+        public virtual DbSet<CarRegisClList> CarRegisClList { get; set; }
         public virtual DbSet<CampaignH> CampaignH { get; set; }
         public virtual DbSet<Company> Company { get; set; }
         public virtual DbSet<ContractH> ContractH { get; set; }
@@ -133,6 +134,20 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.UpdateDate)
                     .HasColumnName("update_date")
                     .HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<BookingCancel>(entity =>
+            {
+                entity.ToTable("_booking_cancel");
+                entity.HasKey(e => e.CancelCode);
+                entity.Property(e => e.CancelId).HasColumnName("cancel_id");
+                entity.Property(e => e.CancelCode).HasColumnName("cancel_code").HasMaxLength(5);
+                entity.Property(e => e.CancelDep).HasColumnName("cancel_dep").HasMaxLength(250);
+                entity.Property(e => e.CreateBy).HasColumnName("create_by");
+                entity.Property(e => e.CreateDate).HasColumnName("create_date").HasColumnType("datetime");
+                entity.Property(e => e.UpdateBy).HasColumnName("update_by");
+                entity.Property(e => e.UpdateDate).HasColumnName("update_date").HasColumnType("datetime");
+                entity.Property(e => e.Status).HasColumnType("bit");
             });
 
             modelBuilder.Entity<Booking>(entity =>
@@ -655,6 +670,7 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.BranchId).HasColumnName("branch_id");
                 entity.Property(e => e.TransportReceiptDate).HasColumnName("transport_receipt_date").HasColumnType("datetime");
                 entity.Property(e => e.TransportServiceCharge).HasColumnName("transport_service_charge").HasColumnType("numeric(18,0)");
+                entity.Property(e => e.Reason).HasColumnName("reason").HasMaxLength(255);
             });
 
             modelBuilder.Entity<CarRegisListItem>(entity =>
@@ -687,6 +703,7 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.CreateDate).HasColumnName("create_date").HasColumnType("datetime").IsRequired();
                 entity.Property(e => e.UpdateBy).HasColumnName("update_by");
                 entity.Property(e => e.UpdateDate).HasColumnName("update_date").HasColumnType("datetime");
+                entity.Property(e => e.Reason).HasColumnName("reason").HasMaxLength(255);
             });
 
             modelBuilder.Entity<CarRegisAlList>(entity =>
@@ -708,9 +725,11 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.CreateBy).IsRequired().HasColumnName("create_by");
                 entity.Property(e => e.UpdateDate).HasColumnName("update_date").HasColumnType("datetime");
                 entity.Property(e => e.UpdateBy).HasColumnName("update_by");
+                entity.Property(e => e.Reason).HasColumnName("reason").HasMaxLength(255);
             });
 
-            modelBuilder.Entity<CarRegisClList>(entity => {
+            modelBuilder.Entity<CarRegisClList>(entity =>
+            {
                 entity.HasKey(e => e.ClId);
                 entity.ToTable("_car_regis_cl_list");
                 entity.Property(e => e.ClId).HasColumnName("cl_id");
@@ -731,6 +750,7 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.UpdateDate).HasColumnName("update_date");
                 entity.Property(e => e.UpdateBy).HasColumnName("update_by");
                 entity.Property(e => e.Remark).HasColumnName("remark").HasMaxLength(255);
+                entity.Property(e => e.Reason).HasColumnName("reason").HasMaxLength(255);
             });
 
             modelBuilder.Entity<CampaignH>(entity =>

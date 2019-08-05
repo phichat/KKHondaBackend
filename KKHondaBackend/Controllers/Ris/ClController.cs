@@ -26,6 +26,7 @@ namespace KKHondaBackend.Controllers.Ris
         private IEnumerable<CarRegisClListRes> ClListRes
         {
             get => (from cl in ctx.CarRegisClList
+                    join al in ctx.CarRegisAlList on cl.AlNo equals al.AlNo
                     join brh in ctx.Branch on cl.BranchId equals brh.BranchId
                     join usr in ctx.User on cl.CreateBy equals usr.Id
                     join usrUpd in ctx.User on cl.UpdateBy equals usrUpd.Id into _upd
@@ -37,6 +38,7 @@ namespace KKHondaBackend.Controllers.Ris
                     select new CarRegisClListRes
                     {
                         ClId = cl.ClId,
+                        SedNo = al.AlNo,
                         AlNo = cl.AlNo,
                         ClNo = cl.ClNo,
                         BalancePrice = cl.BalancePrice,
@@ -66,6 +68,12 @@ namespace KKHondaBackend.Controllers.Ris
         [HttpGet("All")]
         public IActionResult All() => Ok(ClListRes.ToList());
 
+        [HttpGet("GetByClNo")]
+        public IActionResult GetByClNo(string clNo)
+        {
+            return Ok(ClListRes.FirstOrDefault(x => x.ClNo == clNo));
+        }
+
         [HttpPost]
         public IActionResult Post([FromBody]CarRegisClList value)
         {
@@ -81,10 +89,37 @@ namespace KKHondaBackend.Controllers.Ris
                 if (value.BalancePrice == 0)
                 {
                     var sed = ctx.CarRegisAlList.FirstOrDefault(x => x.AlNo == value.AlNo);
-                    sed.Status = AlStatus.CashBack; // บันทึกคืนเงิน
+                    sed.Status = AlStatus.Normal; // บันทึกคืนเงิน
                     ctx.Entry(sed).State = EntityState.Modified;
                     ctx.SaveChanges();
                 }
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+            return NoContent();
+        }
+
+        [HttpPost("Cancel")]
+        public IActionResult Cancel([FromBody]CarRegisClCancel value)
+        {
+            try
+            {
+                var cl = ctx.CarRegisClList.FirstOrDefault(x => x.ClNo == value.ClNo);
+                cl.UpdateDate = DateTime.Now;
+                cl.UpdateBy = value.UpdateBy;
+                cl.Status = ClStatus.Cancel;
+                cl.Reason = value.Reason;
+                cl.Remark = value.Remark;
+                ctx.Entry(cl).State = EntityState.Modified;
+                ctx.SaveChanges();
+
+                var sed = ctx.CarRegisAlList.FirstOrDefault(x => x.AlNo == cl.AlNo);
+                sed.Status = AlStatus.Normal; // ปกติ
+                ctx.Entry(sed).State = EntityState.Modified;
+                ctx.SaveChanges();
+
             }
             catch (DbUpdateConcurrencyException ex)
             {

@@ -26,6 +26,7 @@ namespace KKHondaBackend.Controllers.Ris
         private IEnumerable<CarRegisClSummary> ClList
         {
             get => ctx.CarRegisClList
+                .Where(x => x.Status == AlStatus.Normal)
                 .GroupBy(x => new { x.AlNo })
                 .Select(x => new CarRegisClSummary
                 {
@@ -39,6 +40,8 @@ namespace KKHondaBackend.Controllers.Ris
         private IEnumerable<CarRegisAlListRes> AlListRes
         {
             get => (from al in ctx.CarRegisAlList
+                    join sd in ctx.CarRegisSedList on al.SedNo equals sd.SedNo
+
                     join cl1 in ClList on al.AlNo equals cl1.AlNo into _cl
                     from cl in _cl.DefaultIfEmpty()
 
@@ -46,6 +49,8 @@ namespace KKHondaBackend.Controllers.Ris
                     join usr in ctx.User on al.CreateBy equals usr.Id
                     join usrUpd in ctx.User on al.UpdateBy equals usrUpd.Id into _upd
                     from upd in _upd.DefaultIfEmpty()
+                    join bro in ctx.User on sd.CreateBy equals bro.Id into _bro
+                    from brow in _bro.DefaultIfEmpty()
                     join bak in ctx.Bankings on al.BankCode equals bak.BankCode into _bk
                     from bk in _bk.DefaultIfEmpty()
                     select new CarRegisAlListRes
@@ -53,6 +58,7 @@ namespace KKHondaBackend.Controllers.Ris
                         AlId = al.AlId,
                         AlNo = al.AlNo,
                         SedNo = al.SedNo,
+                        BorrowerName = brow.Fullname,
                         BalancePrice = cl.NetPrice > 0 ? cl.NetPrice - cl.ReceivePrice : al.PaymentPrice,
                         ReceivePrice = cl.NetPrice > 0 ? cl.ReceivePrice : 0,
                         NetPrice = cl.NetPrice > 0 ? cl.NetPrice : al.PaymentPrice,
@@ -88,6 +94,9 @@ namespace KKHondaBackend.Controllers.Ris
         [HttpGet("All")]
         public IActionResult All() => Ok(AlListRes.ToList());
 
+        [HttpGet("GetByAlNo")]
+        public IActionResult GetByAlNo(string alNo) => Ok(AlListRes.FirstOrDefault(x => x.AlNo == alNo));
+
         [HttpPost]
         public IActionResult Post([FromBody] CarRegisAlList value)
         {
@@ -103,6 +112,36 @@ namespace KKHondaBackend.Controllers.Ris
                 sed.Price2Remain = sed.Price2Remain - value.PaymentPrice;
                 if (sed.Price2Remain == 0)
                     sed.Status = SedStatus.Borrowed; // บันทึกยืมเงิน
+                ctx.Entry(sed).State = EntityState.Modified;
+                ctx.SaveChanges();
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+            return NoContent();
+        }
+
+        [HttpPost("Cancel")]
+        public IActionResult Cancel([FromBody]CarRegisAlCancel value)
+        {
+            try
+            {
+                var al = ctx.CarRegisAlList.FirstOrDefault(x => x.AlNo == value.AlNo);
+
+                if (al == null) return BadRequest();
+
+                al.Status = AlStatus.Cancel;
+                al.Reason = value.Reason;
+                al.Remark = value.Remark;
+                al.UpdateBy = value.UpdateBy;
+                al.UpdateDate = DateTime.Now;
+                ctx.CarRegisAlList.Update(al);
+                ctx.SaveChanges();
+
+                var sed = ctx.CarRegisSedList.FirstOrDefault(x => x.SedNo == al.SedNo);
+                sed.Price2Remain = sed.Price2Remain + al.PaymentPrice;
+                sed.Status = SedStatus.Normal; // ปกติ
                 ctx.Entry(sed).State = EntityState.Modified;
                 ctx.SaveChanges();
             }

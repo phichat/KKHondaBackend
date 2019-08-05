@@ -18,6 +18,7 @@ namespace KKHondaBackend.Models
         public int? BranchId { get; set; }
         public DateTime? TransportReceiptDate { get; set; }
         public double? TransportServiceCharge { get; set; }
+        public string Reason { get; set; }
     }
 
     public partial class CarRegisListRes

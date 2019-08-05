@@ -110,13 +110,14 @@ namespace KKHondaBackend.Controllers.Ris
         // }
 
         [HttpPost("Cancel")]
-        public IActionResult Cancel([FromBody] CarRegisSedList c)
+        public IActionResult Cancel([FromBody] CarRegisSedCancel c)
         {
             try
             {
                 var value = ctx.CarRegisSedList.FirstOrDefault(x => x.SedNo == c.SedNo);
                 value.Status = SedStatus.Cancel;
                 value.UpdateDate = DateTime.Now;
+                value.Reason = c.Reason;
                 // ctx.Entry(value).State = EntityState.Modified;
                 ctx.CarRegisSedList.Update(value);
                 ctx.SaveChanges();
