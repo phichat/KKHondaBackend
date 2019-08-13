@@ -77,6 +77,24 @@ namespace KKHondaBackend.Services
             return SetRunningCode("MC", branchId, vatNo);
         }
 
+        public string GenerateHistoryCarNo(int branchId) {
+            var no = (from db in ctx.CarHistory
+                      orderby db.CarId descending
+                      where db.BranchId == branchId
+                      select db.CarNo).FirstOrDefault();
+
+            return SetRunningCode("PRB", branchId, no);
+        }
+
+        public string GenerateConNo(int branchId){
+            var no = (from db in ctx.CarRegisList
+                      orderby db.BookingId descending
+                      where db.BranchId == branchId
+                      select db.BookingNo).FirstOrDefault();
+
+            return SetRunningCode("CON", branchId, no);
+        }
+
         public string GenerateSedNo(int branchId)
         {
             var no = (from db in ctx.CarRegisSedList

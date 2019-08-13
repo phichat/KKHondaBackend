@@ -10,6 +10,8 @@ namespace KKHondaBackend.Services
         string GenerateInstalmentTaxInvoiceNo(int branchId);
         string GenerateReceiptNo(int branchId);
         string GeerateeReturnDepositNo(int branchId);
+        string GenerateConNo(int branchId);
+        string GenerateHistoryCarNo(int branchId);
         string GenerateSedNo(int branchId);
         string GenerateAlNo(int branchId);
         string GenerateClNo(int branchId);
