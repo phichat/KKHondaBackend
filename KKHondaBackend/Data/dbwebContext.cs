@@ -521,6 +521,7 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.TransportReceiptDate).HasColumnName("transport_receipt_date").HasColumnType("datetime");
                 entity.Property(e => e.TransportServiceCharge).HasColumnName("transport_service_charge").HasColumnType("numeric(18,0)");
                 entity.Property(e => e.Reason).HasColumnName("reason").HasMaxLength(255);
+                entity.Property(e => e.Remark).HasColumnName("remark").HasMaxLength(255);
             });
 
             modelBuilder.Entity<CarRegisListItem>(entity =>
@@ -545,6 +546,8 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.SedNo).HasColumnName("sed_no").IsRequired();
                 entity.Property(e => e.ConList).HasColumnName("con_list").HasColumnType("varchar(max)").IsRequired();
                 entity.Property(e => e.Price1).HasColumnName("price1").HasColumnType("decimal(18,2)").IsRequired();
+                entity.Property(e => e.VatPrice1).HasColumnName("vat_price1").HasColumnType("decimal(18,2)").HasDefaultValue(0).IsRequired();
+                entity.Property(e => e.NetPrice1).HasColumnName("net_price1").HasColumnType("decimal(18,2)").HasDefaultValue(0).IsRequired();
                 entity.Property(e => e.Price2).HasColumnName("price2").HasColumnType("decimal(18,2)").IsRequired();
                 entity.Property(e => e.Price2Remain).HasColumnName("price2_remain").HasColumnType("decimal(18,2)").IsRequired();
                 entity.Property(e => e.TotalPrice).HasColumnName("total_price").HasColumnType("decimal(18,2)").IsRequired();
@@ -556,6 +559,7 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.UpdateBy).HasColumnName("update_by");
                 entity.Property(e => e.UpdateDate).HasColumnName("update_date").HasColumnType("datetime");
                 entity.Property(e => e.Reason).HasColumnName("reason").HasMaxLength(255);
+                entity.Property(e => e.Remark).HasColumnName("remark").HasMaxLength(255);
             });
 
             modelBuilder.Entity<CarRegisAlList>(entity =>

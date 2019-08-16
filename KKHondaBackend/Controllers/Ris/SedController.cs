@@ -40,6 +40,8 @@ namespace KKHondaBackend.Controllers.Ris
                         // .Split(new string[] { "," }, StringSplitOptions.None),
                         Price1 = sed.Price1,
                         Price2 = sed.Price2,
+                        VatPrice1 = sed.VatPrice1,
+                        NetPrice1 = sed.NetPrice1,
                         BorrowMoney = sed.Price2Remain == sed.Price2 ? sed.BorrowMoney : sed.BorrowMoney - sed.Price2Remain,
                         Price2Remain = sed.Price2Remain,
                         TotalPrice = sed.TotalPrice,
@@ -52,7 +54,9 @@ namespace KKHondaBackend.Controllers.Ris
                         CreateDate = sed.CreateDate,
                         UpdateBy = sed.UpdateBy,
                         UpdateName = upd.Fullname,
-                        UpdateDate = sed.UpdateDate
+                        UpdateDate = sed.UpdateDate,
+                        Reason = sed.Reason,
+                        Remark = sed.Remark
                     });
         }
 
@@ -75,6 +79,15 @@ namespace KKHondaBackend.Controllers.Ris
         public IActionResult GetBySedNo(string sedNo)
         {
             return Ok(SedListRes.FirstOrDefault(x => x.SedNo == sedNo));
+        }
+
+        [HttpGet("GetByTermSedNo")]
+        public IActionResult GetByTermSedNo(string term)
+        {
+            var list = SedListRes
+            .Where(x => x.Status != SedStatus.Cancel && x.SedNo.Contains(term.ToUpper()))
+            .Take(100).ToList();
+            return Ok(list);
         }
 
         [HttpPost]

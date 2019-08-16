@@ -22,6 +22,7 @@ namespace KKHondaBackend.Models
         public DateTime? TransportReceiptDate { get; set; }
         public double? TransportServiceCharge { get; set; }
         public string Reason { get; set; }
+        public string Remark { get; set; }
     }
 
     public partial class CarRegisListRes
@@ -48,7 +49,10 @@ namespace KKHondaBackend.Models
         public string BranchName { get; set; }
         public string BranchProvince { get; set; }
         public string TagNo { get; set; }
+        public string Province { get; set; }
+        public DateTime? TagRegis { get; set; }
         public string Reason { get; set; }
+        public string Remark { get; set; }
     }
 
     public partial class CarRegisWaitingTagRes
@@ -82,7 +86,8 @@ namespace KKHondaBackend.Models
         public CarHistory TagHistory { get; set; }
         public List<CarRegisListItem> TagListItem { get; set; }
     }
-    public partial class UpdateConFormBody {
+    public partial class UpdateConFormBody
+    {
         public CarRegisList TagRegis { get; set; }
         public CarHistory TagHistory { get; set; }
         public List<CarRegisListItem> TagListItem { get; set; }

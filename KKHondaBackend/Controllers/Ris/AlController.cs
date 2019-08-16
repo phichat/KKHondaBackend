@@ -97,6 +97,10 @@ namespace KKHondaBackend.Controllers.Ris
         [HttpGet("GetByAlNo")]
         public IActionResult GetByAlNo(string alNo) => Ok(AlListRes.FirstOrDefault(x => x.AlNo == alNo));
 
+        [HttpGet("GetBySedNo")]
+        public IActionResult GetBySedNo(string sedNo) => Ok(AlListRes.Where(x => x.SedNo == sedNo).ToList());
+
+
         [HttpPost]
         public IActionResult Post([FromBody] CarRegisAlList value)
         {

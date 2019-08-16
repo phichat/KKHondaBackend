@@ -56,7 +56,10 @@ namespace KKHondaBackend.Controllers.Ris
                         TransportReceiptDate = crl.TransportReceiptDate,
                         TransportServiceCharge = crl.TransportServiceCharge,
                         TagNo = his.TagNo,
-                        Reason = crl.Reason
+                        Province = his.Province,
+                        TagRegis = his.TagRegis,
+                        Reason = crl.Reason,
+                        Remark = crl.Remark
                     })
                     .Distinct()
                     .OrderByDescending(x => x.BookingId);
@@ -138,7 +141,9 @@ namespace KKHondaBackend.Controllers.Ris
         public IActionResult GetByConNoList(string conListNo)
         {
             var value = conListNo.Split(new string[] { "," }, StringSplitOptions.None);
-            return Ok(RegisList.Where(x => value.Contains(x.BookingNo)).ToList());
+            var a = RegisList.Where(x => value.Contains(x.BookingNo)).ToList();
+            var b = RegisList.ToList();
+            return Ok(a);
         }
 
         [HttpGet("GetCarBySellNo")]
@@ -234,7 +239,8 @@ namespace KKHondaBackend.Controllers.Ris
                     var trashTagListItem = value.TrashTagListItem;
                     trashTagListItem.ForEach(v =>
                     {
-                        ctx.Entry(v).State = EntityState.Deleted;
+                        if (v.RunId > 0)
+                            ctx.Entry(v).State = EntityState.Deleted;
                     });
                     ctx.SaveChanges();
 

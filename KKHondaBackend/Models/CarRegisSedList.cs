@@ -7,6 +7,8 @@ namespace KKHondaBackend.Models
         public string SedNo { get; set; }
         public string ConList { get; set; }
         public decimal Price1 { get; set; }
+        public decimal VatPrice1 { get; set; }
+        public decimal NetPrice1 { get; set; }
         public decimal Price2 { get; set; }
         public decimal Price2Remain { get; set; }
         public decimal TotalPrice { get; set; }
@@ -18,6 +20,7 @@ namespace KKHondaBackend.Models
         public int? UpdateBy { get; set; }
         public DateTime? UpdateDate { get; set; }
         public string Reason { get; set; }
+        public string Remark { get; set; }
     }
 
     public partial class CarRegisSedListRes
@@ -26,6 +29,8 @@ namespace KKHondaBackend.Models
         public string SedNo { get; set; }
         public string ConList { get; set; }
         public decimal Price1 { get; set; }
+        public decimal VatPrice1 { get; set; }
+        public decimal NetPrice1 { get; set; }
         public decimal Price2 { get; set; }
         public decimal Price2Remain { get; set; }
         public decimal TotalPrice { get; set; }
@@ -41,6 +46,7 @@ namespace KKHondaBackend.Models
         public string UpdateName { get; set; }
         public DateTime? UpdateDate { get; set; }
         public string Reason { get; set; }
+        public string Remark { get; set; }
     }
 
     public partial class CarRegisSedCancel
