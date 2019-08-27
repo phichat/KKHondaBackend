@@ -104,4 +104,10 @@ namespace KKHondaBackend.Models
         public string Reason { get; set; }
         public int UpdateBy { get; set; }
     }
+
+    public partial class CarRegisItemRes
+    {
+        public IEnumerable<CarRegisListItemRes> CarRegisListItemRes { get; set; }
+        public IEnumerable<CarRegisListItemDocRes> CarRegisListItemDocRes { get; set; }
+    }
 }
