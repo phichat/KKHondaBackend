@@ -508,10 +508,13 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.BookingId).HasColumnName("booking_id");
                 entity.Property(e => e.BookingNo).HasColumnName("booking_no").HasMaxLength(250);
                 entity.Property(e => e.BookingStatus).HasColumnName("booking_status");
+                entity.Property(e => e.State1).HasColumnName("state_1");
+                entity.Property(e => e.State2).HasColumnName("state_2");
                 entity.Property(e => e.ENo).HasColumnName("e_no").HasMaxLength(250);
                 entity.Property(e => e.FNo).HasColumnName("f_no").HasMaxLength(250);
                 entity.Property(e => e.Price1).HasColumnName("price_1").HasColumnType("numeric(18,2)");
                 entity.Property(e => e.VatPrice1).HasColumnName("vat_price_1").HasColumnType("numeric(18,2)");
+                entity.Property(e => e.CutBalance).HasColumnName("cut_balance").HasColumnType("numeric(18,2)");
                 entity.Property(e => e.Price2).HasColumnName("price_2").HasColumnType("numeric(18,2)");
                 entity.Property(e => e.TotalPrice).HasColumnName("total_price").HasColumnType("numeric(18,2)");
                 entity.Property(e => e.CreateBy).HasColumnName("create_by");
@@ -535,6 +538,7 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.ItemName).HasColumnName("item_name").HasMaxLength(250);
                 entity.Property(e => e.ItemPrice1).HasColumnName("item_price_1").HasColumnType("numeric(18,2)");
                 entity.Property(e => e.ItemVatPrice1).HasColumnName("item_vat_price_1").HasColumnType("numeric(18,2)");
+                entity.Property(e => e.ItemCutBalance).HasColumnName("item_cut_balance").HasColumnType("numeric(18,2)");
                 entity.Property(e => e.ItemPrice2).HasColumnName("item_price_2").HasColumnType("numeric(18,2)");
                 entity.Property(e => e.ItemPriceTotal).HasColumnName("item_price_total").HasColumnType("numeric(18,2)");
                 entity.Property(e => e.State).HasColumnName("state");
@@ -548,7 +552,7 @@ namespace KKHondaBackend.Data
                 entity.ToTable("_car_regis_m_sendback");
                 entity.Property(e => e.Id).HasColumnName("id");
                 entity.Property(e => e.Code).HasColumnName("code").IsRequired().HasMaxLength(10);
-                entity.Property(e => e.Name).HasColumnName("name").IsRequired().HasMaxLength(50).HasDefaultValue(1);
+                entity.Property(e => e.Name).HasColumnName("name").IsRequired().HasMaxLength(50);
                 entity.Property(e => e.Status).HasColumnName("status").IsRequired().HasColumnType("bit").HasDefaultValue(1);
                 entity.Property(e => e.Checked).HasColumnName("checked").IsRequired().HasColumnType("bit").HasDefaultValue(1);
                 entity.Property(e => e.NewCar).HasColumnName("new_car").IsRequired().HasColumnType("bit").HasDefaultValue(1);
@@ -568,7 +572,7 @@ namespace KKHondaBackend.Data
                 entity.HasKey(e => e.SedId);
                 entity.ToTable("_car_regis_sed_list");
                 entity.Property(e => e.SedId).HasColumnName("sed_id");
-                entity.Property(e => e.SedNo).HasColumnName("sed_no").IsRequired();
+                entity.Property(e => e.SedNo).HasColumnName("sed_no").HasMaxLength(50).IsRequired();
                 entity.Property(e => e.ConList).HasColumnName("con_list").HasColumnType("varchar(max)").IsRequired();
                 entity.Property(e => e.Price1).HasColumnName("price1").HasColumnType("decimal(18,2)").IsRequired();
                 entity.Property(e => e.VatPrice1).HasColumnName("vat_price1").HasColumnType("decimal(18,2)").HasDefaultValue(0).IsRequired();

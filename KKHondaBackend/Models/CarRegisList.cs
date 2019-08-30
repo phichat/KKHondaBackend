@@ -8,10 +8,13 @@ namespace KKHondaBackend.Models
         public int BookingId { get; set; }
         public string BookingNo { get; set; }
         public int BookingStatus { get; set; }
+        public int? State1 { get; set; }
+        public int? State2 { get; set; }
         public string ENo { get; set; }
         public string FNo { get; set; }
         public decimal? Price1 { get; set; }
         public decimal? VatPrice1 { get; set; }
+        public decimal? CutBalance { get; set; }
         public decimal? Price2 { get; set; }
         public decimal? TotalPrice { get; set; }
         public int? CreateBy { get; set; }
@@ -31,10 +34,13 @@ namespace KKHondaBackend.Models
         public string BookingNo { get; set; }
         public int BookingStatus { get; set; }
         public string StatusDesc { get; set; }
+        public int? State1 { get; set; }
+        public int? State2 { get; set; }
         public string ENo { get; set; }
         public string FNo { get; set; }
         public decimal? Price1 { get; set; }
         public decimal? VatPrice1 { get; set; }
+        public decimal? CutBalance { get; set; }
         public decimal? Price2 { get; set; }
         public decimal? TotalPrice { get; set; }
         public int? CreateBy { get; set; }

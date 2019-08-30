@@ -37,6 +37,7 @@ namespace KKHondaBackend.Controllers.Ris
                         ItemName = list.ItemName,
                         ItemPrice1 = list.ItemPrice1,
                         ItemVatPrice1 = list.ItemVatPrice1,
+                        ItemCutBalance = list.ItemCutBalance,
                         ItemPrice2 = list.ItemPrice2,
                         ItemPriceTotal = list.ItemPriceTotal,
                         State = list.State,
@@ -62,21 +63,21 @@ namespace KKHondaBackend.Controllers.Ris
                         itemSendBack = iMSendback.Active.FirstOrDefault(x => x.NewCar == true);
                         break;
 
-                    case "EXP10002": //ซื้อ พ.ร.บ
-                        itemSendBack = iMSendback.Active.FirstOrDefault(x => x.Act == true);
-                        break;
-
-                    case "EXP10003": //ต่อทะเบียน
-                    case "EXP10004": //ต่อภาษี
+                    case "EXP10002": //ต่อทะเบียน
+                    // case "EXP10004": //ต่อภาษี
                         itemSendBack = iMSendback.Active.FirstOrDefault(x => x.Tag == true);
                         break;
 
-                    case "EXP10005": //ประกันภัย
+                    case "EXP10003": //ซื้อ พ.ร.บ
+                        itemSendBack = iMSendback.Active.FirstOrDefault(x => x.Act == true);
+                        break;
+
+                    case "EXP10004": //ประกันภัย
                         itemSendBack = iMSendback.Active.FirstOrDefault(x => x.Warranty == true);
                         break;
                 }
 
-                if (itemSendBack != null)
+                if (itemSendBack != null && itemSendBack.Code != null)
                 {
                     itemDoc = new CarRegisListItemDocRes
                     {
