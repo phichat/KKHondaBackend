@@ -20,23 +20,30 @@ namespace KKHondaBackend.Data
         public virtual DbSet<SpDashboardBookingDetail> SpDashboardBookingDetail { get; set; }
 
         public virtual DbSet<Banking> Bankings { get; set; }
+        public virtual DbSet<BookingCancel> BookingCancel { get; set; }
         public virtual DbSet<Booking> Booking { get; set; }
         public virtual DbSet<BookingItem> BookingItem { get; set; }
         public virtual DbSet<Branch> Branch { get; set; }
         public virtual DbSet<CarHistory> CarHistory { get; set; }
         public virtual DbSet<CarRegisList> CarRegisList { get; set; }
         public virtual DbSet<CarRegisListItem> CarRegisListItem { get; set; }
+        public virtual DbSet<CarRegisMSendback> CarRegisMSendback { get; set; }
+        public virtual DbSet<CarRegisSedList> CarRegisSedList { get; set; }
+        public virtual DbSet<CarRegisAlList> CarRegisAlList { get; set; }
+        public virtual DbSet<CarRegisClList> CarRegisClList { get; set; }
         public virtual DbSet<CampaignH> CampaignH { get; set; }
         public virtual DbSet<Company> Company { get; set; }
         public virtual DbSet<ContractH> ContractH { get; set; }
         public virtual DbSet<CreditCalculate> CreditCalculate { get; set; }
         public virtual DbSet<CreditContract> CreditContract { get; set; }
         public virtual DbSet<CreditContractItem> CreditContractItem { get; set; }
+        public virtual DbSet<CreditContractPayment> CreditContractPayment { get; set; }
         public virtual DbSet<CreditTransaction> CreditTransactions { get; set; }
         public virtual DbSet<CreditTermList> CreditTermList { get; set; }
         public virtual DbSet<Cyclecount> Cyclecount { get; set; }
         public virtual DbSet<CyclecountLocationItem> CyclecountLocationItem { get; set; }
         public virtual DbSet<CyclecountScan> CyclecountScan { get; set; }
+        public virtual DbSet<ExpensesOtherRis> ExpensesOtherRis { get; set; }
         public virtual DbSet<FinanceComList> FinanceComList { get; set; }
         public virtual DbSet<FinanceIntList> FinanceIntList { get; set; }
         public virtual DbSet<FinanceList> FinanceList { get; set; }
@@ -131,208 +138,90 @@ namespace KKHondaBackend.Data
                     .HasColumnType("datetime");
             });
 
+            modelBuilder.Entity<BookingCancel>(entity =>
+            {
+                entity.ToTable("_booking_cancel");
+                entity.HasKey(e => e.CancelCode);
+                entity.Property(e => e.CancelId).HasColumnName("cancel_id");
+                entity.Property(e => e.CancelCode).HasColumnName("cancel_code").HasMaxLength(5);
+                entity.Property(e => e.CancelDep).HasColumnName("cancel_dep").HasMaxLength(250);
+                entity.Property(e => e.CreateBy).HasColumnName("create_by");
+                entity.Property(e => e.CreateDate).HasColumnName("create_date").HasColumnType("datetime");
+                entity.Property(e => e.UpdateBy).HasColumnName("update_by");
+                entity.Property(e => e.UpdateDate).HasColumnName("update_date").HasColumnType("datetime");
+                entity.Property(e => e.Status).HasColumnType("bit");
+            });
+
             modelBuilder.Entity<Booking>(entity =>
             {
                 entity.ToTable("_booking");
 
                 entity.Property(e => e.BookingId).HasColumnName("booking_id");
-
                 entity.Property(e => e.BookAddress).HasColumnName("book_address");
-
                 entity.Property(e => e.BookBirthDate).HasColumnName("book_birth_date");
-
-                entity.Property(e => e.BookContactNo)
-                    .HasColumnName("book_contact_no")
-                    .HasMaxLength(250);
-
-                entity.Property(e => e.BookDeposit)
-                    .HasColumnName("book_deposit")
-                    .HasColumnType("numeric(18, 2)");
-
-                entity.Property(e => e.BookDiscountB)
-                    .HasColumnName("book_discount_b")
-                    .HasColumnType("numeric(18, 2)");
-
-                entity.Property(e => e.BookDiscountP)
-                    .HasColumnName("book_discount_p")
-                    .HasColumnType("numeric(18, 2)");
-
-                entity.Property(e => e.BookDiscountPPrice)
-                    .HasColumnName("book_discount_p_price")
-                    .HasColumnType("numeric(18, 2)");
-
-                entity.Property(e => e.BookEmail)
-                    .HasColumnName("book_email")
-                    .HasMaxLength(250);
-
-                entity.Property(e => e.BookFName)
-                    .HasColumnName("book_f_name")
-                    .HasMaxLength(250);
-
+                entity.Property(e => e.BookContactNo).HasColumnName("book_contact_no").HasMaxLength(250);
+                entity.Property(e => e.BookDeposit).HasColumnName("book_deposit").HasColumnType("numeric(18, 2)");
+                entity.Property(e => e.BookDiscountB).HasColumnName("book_discount_b").HasColumnType("numeric(18, 2)");
+                entity.Property(e => e.BookDiscountP).HasColumnName("book_discount_p").HasColumnType("numeric(18, 2)");
+                entity.Property(e => e.BookDiscountPPrice).HasColumnName("book_discount_p_price").HasColumnType("numeric(18, 2)");
+                entity.Property(e => e.BookEmail).HasColumnName("book_email").HasMaxLength(250);
+                entity.Property(e => e.BookFName).HasColumnName("book_f_name").HasMaxLength(250);
                 entity.Property(e => e.BookGender).HasColumnName("book_gender");
-
-                entity.Property(e => e.BookIdCard)
-                    .HasColumnName("book_id_card")
-                    .HasMaxLength(250);
-
-                entity.Property(e => e.BookNetPrice)
-                    .HasColumnName("book_net_price")
-                    .HasColumnType("numeric(18, 2)");
-
-                entity.Property(e => e.BookNickName)
-                    .HasColumnName("book_nick_name")
-                    .HasMaxLength(250);
-
-                entity.Property(e => e.BookOutstandingPrice)
-                    .HasColumnName("book_outstanding_price")
-                    .HasColumnType("numeric(18, 2)");
-
-                entity.Property(e => e.BookReceiveDate)
-                    .HasColumnName("book_receive_date")
-                    .HasMaxLength(250);
-
+                entity.Property(e => e.BookIdCard).HasColumnName("book_id_card").HasMaxLength(250);
+                entity.Property(e => e.BookNetPrice).HasColumnName("book_net_price").HasColumnType("numeric(18, 2)");
+                entity.Property(e => e.BookNickName).HasColumnName("book_nick_name").HasMaxLength(250);
+                entity.Property(e => e.BookOutstandingPrice).HasColumnName("book_outstanding_price").HasColumnType("numeric(18, 2)");
+                entity.Property(e => e.BookReceiveDate).HasColumnName("book_receive_date").HasMaxLength(250);
                 entity.Property(e => e.BookRemark).HasColumnName("book_remark");
-
-                entity.Property(e => e.BookSName)
-                    .HasColumnName("book_s_name")
-                    .HasMaxLength(250);
-
-                entity.Property(e => e.BookSellPrice)
-                    .HasColumnName("book_sell_price")
-                    .HasColumnType("numeric(18, 2)");
-
-                entity.Property(e => e.BookTitleName)
-                    .HasColumnName("book_title_name")
-                    .HasMaxLength(250);
-
-                entity.Property(e => e.BookTotalDiscount)
-                    .HasColumnName("book_total_discount")
-                    .HasColumnType("numeric(18, 2)");
-
-                entity.Property(e => e.BookVat)
-                    .HasColumnName("book_vat")
-                    .HasColumnType("numeric(18, 2)");
-
-                entity.Property(e => e.BookVatPrice)
-                    .HasColumnName("book_vat_price")
-                    .HasColumnType("numeric(18, 2)");
-
-                entity.Property(e => e.BookingDate)
-                    .HasColumnName("booking_date")
-                    .HasMaxLength(250);
-
+                entity.Property(e => e.BookSName).HasColumnName("book_s_name").HasMaxLength(250);
+                entity.Property(e => e.BookSellPrice).HasColumnName("book_sell_price").HasColumnType("numeric(18, 2)");
+                entity.Property(e => e.BookTitleName).HasColumnName("book_title_name").HasMaxLength(250);
+                entity.Property(e => e.BookTotalDiscount).HasColumnName("book_total_discount").HasColumnType("numeric(18, 2)");
+                entity.Property(e => e.BookVat).HasColumnName("book_vat").HasColumnType("numeric(18, 2)");
+                entity.Property(e => e.BookVatPrice).HasColumnName("book_vat_price").HasColumnType("numeric(18, 2)");
+                entity.Property(e => e.BookingDate).HasColumnName("booking_date").HasMaxLength(250);
                 entity.Property(e => e.BookingDepositType).HasColumnName("booking_deposit_type");
-
-                entity.Property(e => e.BookingNo)
-                    .HasColumnName("booking_no")
-                    .HasMaxLength(250);
-
+                entity.Property(e => e.BookingNo).HasColumnName("booking_no").HasMaxLength(250);
                 entity.Property(e => e.BookingPaymentType).HasColumnName("booking_payment_type");
-
                 entity.Property(e => e.BookingStatus).HasColumnName("booking_status");
-
                 entity.Property(e => e.BookingType).HasColumnName("booking_type");
-
                 entity.Property(e => e.BranchId).HasColumnName("branch_id");
-
                 entity.Property(e => e.CancelBy).HasColumnName("cancel_by");
-
-                entity.Property(e => e.CancelDate)
-                    .HasColumnName("cancel_date")
-                    .HasColumnType("datetime");
-
+                entity.Property(e => e.CancelDate).HasColumnName("cancel_date").HasColumnType("datetime");
                 entity.Property(e => e.CancelRemark).HasColumnName("cancel_remark");
-
                 entity.Property(e => e.CreateBy).HasColumnName("create_by");
-
-                entity.Property(e => e.CreateDate)
-                    .HasColumnName("create_date")
-                    .HasColumnType("datetime");
-
+                entity.Property(e => e.CreateDate).HasColumnName("create_date").HasColumnType("datetime");
                 entity.Property(e => e.CusSellName).HasColumnName("cus_sell_name");
-
                 entity.Property(e => e.CusTaxBranch).HasColumnName("cus_tax_branch");
-
                 entity.Property(e => e.CusTaxNo).HasColumnName("cus_tax_no");
-
-                entity.Property(e => e.CustomerCode)
-                    .HasColumnName("customer_code")
-                    .HasMaxLength(250);
-
-                entity.Property(e => e.DiscountType)
-                    .HasColumnName("discount_type")
-                    .HasDefaultValueSql("((1))");
-
+                entity.Property(e => e.CustomerCode).HasColumnName("customer_code").HasMaxLength(250);
+                entity.Property(e => e.DiscountType).HasColumnName("discount_type").HasDefaultValueSql("((1))");
                 entity.Property(e => e.FiId).HasColumnName("fi_id");
-
                 entity.Property(e => e.FreeAct).HasColumnName("free_act");
-
                 entity.Property(e => e.FreeTag).HasColumnName("free_tag");
-
                 entity.Property(e => e.FreeWarranty).HasColumnName("free_warranty");
-
-                entity.Property(e => e.LComPrice)
-                    .HasColumnName("l_com_price")
-                    .HasColumnType("numeric(18, 2)");
-
-                entity.Property(e => e.LInterest)
-                    .HasColumnName("l_interest")
-                    .HasColumnType("numeric(18, 2)");
-
+                entity.Property(e => e.LComPrice).HasColumnName("l_com_price").HasColumnType("numeric(18, 2)");
+                entity.Property(e => e.LInterest).HasColumnName("l_interest").HasColumnType("numeric(18, 2)");
                 entity.Property(e => e.LPayDay).HasColumnName("l_pay_day");
-
-                entity.Property(e => e.LPriceTerm)
-                    .HasColumnName("l_price_term")
-                    .HasColumnType("numeric(18, 2)");
-
+                entity.Property(e => e.LPriceTerm).HasColumnName("l_price_term").HasColumnType("numeric(18, 2)");
                 entity.Property(e => e.LStartDate).HasColumnName("l_start_date");
-
                 entity.Property(e => e.LTerm).HasColumnName("l_term");
-
-                entity.Property(e => e.PaymentPrice)
-                    .HasColumnName("payment_price")
-                    .HasColumnType("numeric(18, 2)");
-
+                entity.Property(e => e.PaymentPrice).HasColumnName("payment_price").HasColumnType("numeric(18, 2)");
                 entity.Property(e => e.PaymentType).HasColumnName("payment_type");
-
-                entity.Property(e => e.ReturnDepositPrice)
-                    .HasColumnName("return_deposit_price")
-                    .HasColumnType("numeric(18, 2)");
-
+                entity.Property(e => e.ReturnDepositPrice).HasColumnName("return_deposit_price").HasColumnType("numeric(18, 2)");
                 entity.Property(e => e.ReturnDepostit).HasColumnName("return_depostit");
-
                 entity.Property(e => e.SellBy).HasColumnName("sell_by");
-
-                entity.Property(e => e.SellDate)
-                    .HasColumnName("sell_date")
-                    .HasColumnType("datetime");
-
+                entity.Property(e => e.SellDate).HasColumnName("sell_date").HasColumnType("datetime");
                 entity.Property(e => e.SellNo).HasColumnName("sell_no");
-
                 entity.Property(e => e.SellRemark).HasColumnName("sell_remark");
-
                 entity.Property(e => e.UpdateBy).HasColumnName("update_by");
-
-                entity.Property(e => e.UpdateDate)
-                    .HasColumnName("update_date")
-                    .HasColumnType("datetime");
-
+                entity.Property(e => e.UpdateDate).HasColumnName("update_date").HasColumnType("datetime");
                 entity.Property(e => e.VatBy).HasColumnName("vat_by");
-
-                entity.Property(e => e.VatDate)
-                    .HasColumnName("vat_date")
-                    .HasColumnType("datetime");
-
+                entity.Property(e => e.VatDate).HasColumnName("vat_date").HasColumnType("datetime");
                 entity.Property(e => e.VatNo).HasColumnName("vat_no");
-
                 entity.Property(e => e.ReturnDepNo).HasColumnName("return_dep_no");
-
-                entity.Property(e => e.ReturnDepDate)
-                    .HasColumnName("return_dep_date")
-                    .HasColumnType("datetime");
-
+                entity.Property(e => e.ReturnDepDate).HasColumnName("return_dep_date").HasColumnType("datetime");
                 entity.Property(e => e.ReturnDepBy).HasColumnName("return_dep_by");
-
             });
 
             modelBuilder.Entity<BookingItem>(entity =>
@@ -470,37 +359,16 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.SellNet)
                     .HasColumnName("sell_net")
                     .HasColumnType("numeric(18, 2)");
-
-                entity.Property(e => e.SellPrice)
-                    .HasColumnName("sell_price")
-                    .HasColumnType("numeric(18, 2)");
-
-                entity.Property(e => e.SellVat)
-                    .HasColumnName("sell_vat")
-                    .HasColumnType("numeric(18, 2)");
-
-                entity.Property(e => e.SellVatPrice)
-                    .HasColumnName("sell_vat_price")
-                    .HasColumnType("numeric(18, 2)");
-
+                entity.Property(e => e.SellPrice).HasColumnName("sell_price").HasColumnType("numeric(18, 2)");
+                entity.Property(e => e.SellVat).HasColumnName("sell_vat").HasColumnType("numeric(18, 2)");
+                entity.Property(e => e.SellVatPrice).HasColumnName("sell_vat_price").HasColumnType("numeric(18, 2)");
                 entity.Property(e => e.TypeId).HasColumnName("type_id");
-
                 entity.Property(e => e.UnitId).HasColumnName("unit_id");
-
                 entity.Property(e => e.UpdateBy).HasColumnName("update_by");
-
-                entity.Property(e => e.UpdateDate)
-                    .HasColumnName("update_date")
-                    .HasColumnType("datetime");
-
-                entity.Property(e => e.CpId)
-                      .HasColumnName("cp_id");
-
-                entity.Property(e => e.OtherDetail)
-                      .HasColumnName("other_detail");
-
-                entity.Property(e => e.LogReceiveId)
-                      .HasColumnName("log_receive_id");
+                entity.Property(e => e.UpdateDate).HasColumnName("update_date").HasColumnType("datetime");
+                entity.Property(e => e.CpId).HasColumnName("cp_id");
+                entity.Property(e => e.OtherDetail).HasColumnName("other_detail");
+                entity.Property(e => e.LogReceiveId).HasColumnName("log_receive_id");
             });
 
             modelBuilder.Entity<Branch>(entity =>
@@ -612,24 +480,25 @@ namespace KKHondaBackend.Data
                 entity.ToTable("_car_history");
                 entity.HasKey(e => e.CarId);
                 entity.Property(e => e.CarId).HasColumnName("car_id");
-                entity.Property(e => e.CarNo).HasColumnName("car_no").HasMaxLength(250);
+                entity.Property(e => e.CarNo).HasColumnName("car_no").HasMaxLength(50);
                 entity.Property(e => e.BookingId).HasColumnName("booking_id");
                 entity.Property(e => e.ENo).HasColumnName("e_no").HasMaxLength(250);
                 entity.Property(e => e.FNo).HasColumnName("f_no").HasMaxLength(250);
-                entity.Property(e => e.TagNo).HasColumnName("tag_no").HasMaxLength(250);
+                entity.Property(e => e.TagNo).HasColumnName("tag_no").HasMaxLength(50);
+                entity.Property(e => e.Province).HasColumnName("province").HasMaxLength(250);
                 entity.Property(e => e.BranchId).HasColumnName("branch_id");
-                entity.Property(e => e.TagRegis).HasColumnName("tag_regis").HasMaxLength(250);
-                entity.Property(e => e.TagExpire).HasColumnName("tag_expire").HasMaxLength(250);
-                entity.Property(e => e.PrbNo).HasColumnName("prb_no").HasMaxLength(250);
+                entity.Property(e => e.TagRegis).HasColumnName("tag_regis").HasColumnType("datetime");
+                entity.Property(e => e.TagExpire).HasColumnName("tag_expire").HasColumnType("datetime");
+                entity.Property(e => e.PrbNo).HasColumnName("prb_no").HasMaxLength(50);
                 entity.Property(e => e.PrbCompany).HasColumnName("prb_company").HasMaxLength(250);
-                entity.Property(e => e.PrbRegis).HasColumnName("prb_regis").HasMaxLength(250);
-                entity.Property(e => e.PrbExpire).HasColumnName("prb_expire").HasMaxLength(250);
-                entity.Property(e => e.CommitNo).HasColumnName("commit_no").HasMaxLength(250);
-                entity.Property(e => e.CommitExpire).HasColumnName("commit_expire").HasMaxLength(250);
-                entity.Property(e => e.WarNo).HasColumnName("war_no").HasMaxLength(250);
+                entity.Property(e => e.PrbRegis).HasColumnName("prb_regis").HasColumnType("datetime");
+                entity.Property(e => e.PrbExpire).HasColumnName("prb_expire").HasColumnType("datetime");
+                entity.Property(e => e.CommitNo).HasColumnName("commit_no").HasMaxLength(50);
+                entity.Property(e => e.CommitExpire).HasColumnName("commit_expire").HasColumnType("datetime");
+                entity.Property(e => e.WarNo).HasColumnName("war_no").HasMaxLength(50);
                 entity.Property(e => e.WarCompany).HasColumnName("war_company").HasMaxLength(250);
-                entity.Property(e => e.WarRegis).HasColumnName("war_regis").HasMaxLength(250);
-                entity.Property(e => e.WarExpire).HasColumnName("war_expire").HasMaxLength(250);
+                entity.Property(e => e.WarRegis).HasColumnName("war_regis").HasColumnType("datetime");
+                entity.Property(e => e.WarExpire).HasColumnName("war_expire").HasColumnType("datetime");
             });
 
             modelBuilder.Entity<CarRegisList>(entity =>
@@ -639,11 +508,15 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.BookingId).HasColumnName("booking_id");
                 entity.Property(e => e.BookingNo).HasColumnName("booking_no").HasMaxLength(250);
                 entity.Property(e => e.BookingStatus).HasColumnName("booking_status");
+                entity.Property(e => e.State1).HasColumnName("state_1");
+                entity.Property(e => e.State2).HasColumnName("state_2");
                 entity.Property(e => e.ENo).HasColumnName("e_no").HasMaxLength(250);
                 entity.Property(e => e.FNo).HasColumnName("f_no").HasMaxLength(250);
-                entity.Property(e => e.Price1).HasColumnName("price_1").HasColumnType("numeric(18,0)");
-                entity.Property(e => e.Price2).HasColumnName("price_2").HasColumnType("numeric(18,0)");
-                entity.Property(e => e.TotalPrice).HasColumnName("total_price").HasColumnType("numeric(18,0)");
+                entity.Property(e => e.Price1).HasColumnName("price_1").HasColumnType("numeric(18,2)");
+                entity.Property(e => e.VatPrice1).HasColumnName("vat_price_1").HasColumnType("numeric(18,2)");
+                entity.Property(e => e.CutBalance).HasColumnName("cut_balance").HasColumnType("numeric(18,2)");
+                entity.Property(e => e.Price2).HasColumnName("price_2").HasColumnType("numeric(18,2)");
+                entity.Property(e => e.TotalPrice).HasColumnName("total_price").HasColumnType("numeric(18,2)");
                 entity.Property(e => e.CreateBy).HasColumnName("create_by");
                 entity.Property(e => e.CreateDate).HasColumnName("create_date").HasColumnType("datetime");
                 entity.Property(e => e.UpdateBy).HasColumnName("update_by");
@@ -651,18 +524,118 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.BranchId).HasColumnName("branch_id");
                 entity.Property(e => e.TransportReceiptDate).HasColumnName("transport_receipt_date").HasColumnType("datetime");
                 entity.Property(e => e.TransportServiceCharge).HasColumnName("transport_service_charge").HasColumnType("numeric(18,0)");
+                entity.Property(e => e.Reason).HasColumnName("reason").HasMaxLength(255);
+                entity.Property(e => e.Remark).HasColumnName("remark").HasMaxLength(255);
             });
 
             modelBuilder.Entity<CarRegisListItem>(entity =>
             {
-                entity.ToTable("_car_regis_list_item");
                 entity.HasKey(e => e.RunId);
+                entity.ToTable("_car_regis_list_item");
                 entity.Property(e => e.RunId).HasColumnName("run_id");
                 entity.Property(e => e.BookingId).HasColumnName("booking_id");
-                entity.Property(e => e.ItemName).HasColumnName("item_name");
-                entity.Property(e => e.ItemPrice1).HasColumnName("item_price_1");
-                entity.Property(e => e.ItemPrice2).HasColumnName("item_price_2");
-                entity.Property(e => e.ItemPriceTotal).HasColumnName("item_price_total");
+                entity.Property(e => e.ItemCode).HasColumnName("item_code").HasMaxLength(8);
+                entity.Property(e => e.ItemName).HasColumnName("item_name").HasMaxLength(250);
+                entity.Property(e => e.ItemPrice1).HasColumnName("item_price_1").HasColumnType("numeric(18,2)");
+                entity.Property(e => e.ItemVatPrice1).HasColumnName("item_vat_price_1").HasColumnType("numeric(18,2)");
+                entity.Property(e => e.ItemCutBalance).HasColumnName("item_cut_balance").HasColumnType("numeric(18,2)");
+                entity.Property(e => e.ItemPrice2).HasColumnName("item_price_2").HasColumnType("numeric(18,2)");
+                entity.Property(e => e.ItemPriceTotal).HasColumnName("item_price_total").HasColumnType("numeric(18,2)");
+                entity.Property(e => e.State).HasColumnName("state");
+                entity.Property(e => e.DateReceipt).HasColumnName("date_receipt").HasColumnType("datetime");
+                entity.Property(e => e.Remark).HasColumnName("remark").HasMaxLength(255);
+            });
+
+            modelBuilder.Entity<CarRegisMSendback>(entity =>
+            {
+                entity.HasKey(e => e.Code);
+                entity.ToTable("_car_regis_m_sendback");
+                entity.Property(e => e.Id).HasColumnName("id");
+                entity.Property(e => e.Code).HasColumnName("code").IsRequired().HasMaxLength(10);
+                entity.Property(e => e.Name).HasColumnName("name").IsRequired().HasMaxLength(50);
+                entity.Property(e => e.Status).HasColumnName("status").IsRequired().HasColumnType("bit").HasDefaultValue(1);
+                entity.Property(e => e.Checked).HasColumnName("checked").IsRequired().HasColumnType("bit").HasDefaultValue(1);
+                entity.Property(e => e.NewCar).HasColumnName("new_car").IsRequired().HasColumnType("bit").HasDefaultValue(1);
+                entity.Property(e => e.Tag).HasColumnName("tag").IsRequired().HasColumnType("bit").HasDefaultValue(0);
+                entity.Property(e => e.Act).HasColumnName("act").IsRequired().HasColumnType("bit").HasDefaultValue(0);
+                entity.Property(e => e.Warranty).HasColumnName("warranty").IsRequired().HasColumnType("bit").HasDefaultValue(0);
+                entity.Property(e => e.CheckCar).HasColumnName("check_car").IsRequired().HasColumnType("bit").HasDefaultValue(0);
+                entity.Property(e => e.Other).HasColumnName("other").IsRequired().HasColumnType("bit").HasDefaultValue(1);
+                entity.Property(e => e.UpdateBy).HasColumnName("update_by");
+                entity.Property(e => e.UpdateDate).HasColumnName("update_date").HasColumnType("datetime");
+                entity.Property(e => e.CreateBy).HasColumnName("create_by").IsRequired();
+                entity.Property(e => e.CreateDate).HasColumnName("create_date").IsRequired().HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<CarRegisSedList>(entity =>
+            {
+                entity.HasKey(e => e.SedId);
+                entity.ToTable("_car_regis_sed_list");
+                entity.Property(e => e.SedId).HasColumnName("sed_id");
+                entity.Property(e => e.SedNo).HasColumnName("sed_no").HasMaxLength(50).IsRequired();
+                entity.Property(e => e.ConList).HasColumnName("con_list").HasColumnType("varchar(max)").IsRequired();
+                entity.Property(e => e.Price1).HasColumnName("price1").HasColumnType("decimal(18,2)").IsRequired();
+                entity.Property(e => e.VatPrice1).HasColumnName("vat_price1").HasColumnType("decimal(18,2)").HasDefaultValue(0).IsRequired();
+                entity.Property(e => e.NetPrice1).HasColumnName("net_price1").HasColumnType("decimal(18,2)").HasDefaultValue(0).IsRequired();
+                entity.Property(e => e.Price2).HasColumnName("price2").HasColumnType("decimal(18,2)").IsRequired();
+                entity.Property(e => e.Price2Remain).HasColumnName("price2_remain").HasColumnType("decimal(18,2)").IsRequired();
+                entity.Property(e => e.TotalPrice).HasColumnName("total_price").HasColumnType("decimal(18,2)").IsRequired();
+                entity.Property(e => e.BorrowMoney).HasColumnName("borrow_money").HasColumnType("decimal(18,2)").IsRequired();
+                entity.Property(e => e.Status).HasColumnName("status").HasDefaultValue(0).IsRequired();
+                entity.Property(e => e.BranchId).HasColumnName("branch_id").IsRequired();
+                entity.Property(e => e.CreateBy).HasColumnName("create_by").IsRequired();
+                entity.Property(e => e.CreateDate).HasColumnName("create_date").HasColumnType("datetime").IsRequired();
+                entity.Property(e => e.UpdateBy).HasColumnName("update_by");
+                entity.Property(e => e.UpdateDate).HasColumnName("update_date").HasColumnType("datetime");
+                entity.Property(e => e.Reason).HasColumnName("reason").HasMaxLength(255);
+                entity.Property(e => e.Remark).HasColumnName("remark").HasMaxLength(255);
+            });
+
+            modelBuilder.Entity<CarRegisAlList>(entity =>
+            {
+                entity.HasKey(e => e.AlId);
+                entity.ToTable("_car_regis_al_list");
+                entity.Property(e => e.AlId).HasColumnName("al_id");
+                entity.Property(e => e.AlNo).IsRequired().HasColumnName("al_no").HasMaxLength(50);
+                entity.Property(e => e.SedNo).IsRequired().HasColumnName("sed_no").HasMaxLength(50);
+                entity.Property(e => e.PaymentPrice).IsRequired().HasColumnName("payment_price");
+                entity.Property(e => e.Price2Remain).IsRequired().HasColumnName("price2_remain");
+                entity.Property(e => e.PaymentType).HasColumnName("payment_type");
+                entity.Property(e => e.BankCode).HasColumnName("bank_code").HasMaxLength(10);
+                entity.Property(e => e.DocumentRef).HasColumnName("document_ref").HasMaxLength(255);
+                entity.Property(e => e.Remark).HasColumnName("remark").HasMaxLength(255);
+                entity.Property(e => e.Status).HasDefaultValue(0).HasColumnName("status");
+                entity.Property(e => e.BranchId).IsRequired().HasColumnName("branch_id");
+                entity.Property(e => e.CreateDate).IsRequired().HasColumnName("create_date").HasColumnType("datetime");
+                entity.Property(e => e.CreateBy).IsRequired().HasColumnName("create_by");
+                entity.Property(e => e.UpdateDate).HasColumnName("update_date").HasColumnType("datetime");
+                entity.Property(e => e.UpdateBy).HasColumnName("update_by");
+                entity.Property(e => e.Reason).HasColumnName("reason").HasMaxLength(255);
+            });
+
+            modelBuilder.Entity<CarRegisClList>(entity =>
+            {
+                entity.HasKey(e => e.ClId);
+                entity.ToTable("_car_regis_cl_list");
+                entity.Property(e => e.ClId).HasColumnName("cl_id");
+                entity.Property(e => e.ClNo).HasColumnName("cl_no").IsRequired().HasMaxLength(50);
+                entity.Property(e => e.AlNo).HasColumnName("al_no").IsRequired().HasMaxLength(50);
+                entity.Property(e => e.RevNo).HasColumnName("rev_no").IsRequired().HasMaxLength(50);
+                entity.Property(e => e.RefundId).HasColumnName("refund_id").IsRequired();
+                entity.Property(e => e.BalancePrice).HasColumnName("balance_price").IsRequired();
+                entity.Property(e => e.ReceivePrice).HasColumnName("receive_price").IsRequired();
+                entity.Property(e => e.NetPrice).HasColumnName("net_price").IsRequired();
+                entity.Property(e => e.BankCode).HasColumnName("bank_code").HasMaxLength(10);
+                entity.Property(e => e.DocumentRef).HasColumnName("document_ref").HasMaxLength(255);
+                entity.Property(e => e.PaymentType).HasColumnName("payment_type").IsRequired();
+                entity.Property(e => e.BranchId).HasColumnName("branch_id").IsRequired();
+                entity.Property(e => e.Status).HasColumnName("status");
+                entity.Property(e => e.CreateDate).HasColumnName("create_date").IsRequired();
+                entity.Property(e => e.CreateBy).HasColumnName("create_by").IsRequired();
+                entity.Property(e => e.UpdateDate).HasColumnName("update_date");
+                entity.Property(e => e.UpdateBy).HasColumnName("update_by");
+                entity.Property(e => e.Remark).HasColumnName("remark").HasMaxLength(255);
+                entity.Property(e => e.Reason).HasColumnName("reason").HasMaxLength(255);
             });
 
             modelBuilder.Entity<CampaignH>(entity =>
@@ -903,91 +876,32 @@ namespace KKHondaBackend.Data
                 entity.ToTable("credit_calculate");
 
                 entity.Property(e => e.CalculateId).HasColumnName("calculate_id");
-
                 entity.Property(e => e.BookingId).HasColumnName("booking_id");
-
                 entity.Property(e => e.CreateBy).HasColumnName("create_by");
-
-                entity.Property(e => e.CreateDate)
-                                    .HasColumnName("create_date")
-                                    .HasColumnType("datetime");
-
-                entity.Property(e => e.Deposit)
-                                    .HasColumnName("deposit")
-                                    .HasColumnType("decimal(18, 4)");
-
-                entity.Property(e => e.DepositPrice)
-                                    .HasColumnName("deposit_price")
-                                    .HasColumnType("decimal(18, 4)");
-
+                entity.Property(e => e.CreateDate).HasColumnName("create_date").HasColumnType("datetime");
+                entity.Property(e => e.Deposit).HasColumnName("deposit").HasColumnType("decimal(18, 4)");
+                entity.Property(e => e.DepositPrice).HasColumnName("deposit_price").HasColumnType("decimal(18, 4)");
                 entity.Property(e => e.DueDate).HasColumnName("due_date");
-
                 entity.Property(e => e.TypePayment).HasColumnName("type_payment");
-
-                entity.Property(e => e.FirstPayment)
-                                    .HasColumnName("first_payment")
-                                    .HasColumnType("date");
-
+                entity.Property(e => e.FirstPayment).HasColumnName("first_payment").HasColumnType("date");
                 entity.Property(e => e.InstalmentEnd).HasColumnName("instalment_end");
-
-                entity.Property(e => e.InstalmentPrice)
-                                    .HasColumnName("instalment_price")
-                                    .HasColumnType("decimal(18, 4)");
-
-                entity.Property(e => e.InstalmentRemain)
-                                    .HasColumnName("instalment_remain")
-                                    .HasColumnType("decimal(18, 4)");
-
-                entity.Property(e => e.Interest)
-                                    .HasColumnName("interest")
-                                    .HasColumnType("decimal(18, 4)");
-
-                entity.Property(e => e.InterestPrice)
-                                    .HasColumnName("interest_price")
-                                    .HasColumnType("decimal(18, 4)");
-
-                entity.Property(e => e.Irr)
-                                    .HasColumnName("irr")
-                                    .HasColumnType("decimal(8, 4)");
-
-                entity.Property(e => e.Mrr)
-                                      .HasColumnName("mrr")
-                                      .HasColumnType("decimal(8, 4)");
-
-                entity.Property(e => e.NetPrice)
-                                    .HasColumnName("net_price")
-                                    .HasColumnType("decimal(18, 4)");
-
-                entity.Property(e => e.NowVat)
-                                    .HasColumnName("now_vat")
-                                    .HasColumnType("decimal(18, 4)");
-
-                entity.Property(e => e.OutStandingPrice)
-                                    .HasColumnName("out_standing_price")
-                                    .HasColumnType("decimal(18, 4)")
-                                    .HasDefaultValueSql("((0))");
-
+                entity.Property(e => e.InstalmentPrice).HasColumnName("instalment_price").HasColumnType("decimal(18, 4)");
+                entity.Property(e => e.InstalmentRemain).HasColumnName("instalment_remain").HasColumnType("decimal(18, 4)");
+                entity.Property(e => e.Interest).HasColumnName("interest").HasColumnType("decimal(18, 4)");
+                entity.Property(e => e.InterestPrice).HasColumnName("interest_price").HasColumnType("decimal(18, 4)");
+                entity.Property(e => e.Irr).HasColumnName("irr").HasColumnType("decimal(8, 4)");
+                entity.Property(e => e.Mrr).HasColumnName("mrr").HasColumnType("decimal(8, 4)");
+                entity.Property(e => e.NetPrice).HasColumnName("net_price").HasColumnType("decimal(18, 4)");
+                entity.Property(e => e.NowVat).HasColumnName("now_vat").HasColumnType("decimal(18, 4)");
+                entity.Property(e => e.OutStandingPrice).HasColumnName("out_standing_price").HasColumnType("decimal(18, 4)").HasDefaultValueSql("((0))");
                 entity.Property(e => e.PromotionalPrice).HasColumnName("promotional_price");
-
-                entity.Property(e => e.Remain)
-                                    .HasColumnName("remain")
-                                    .HasColumnType("decimal(18, 4)");
-
+                entity.Property(e => e.Remain).HasColumnName("remain").HasColumnType("decimal(18, 4)");
                 entity.Property(e => e.SellAcitvityId).HasColumnName("sell_acitvityId");
-
                 entity.Property(e => e.SellTypeId).HasColumnName("sell_typeId");
-
                 entity.Property(e => e.UpdateBy).HasColumnName("update_by");
-
-                entity.Property(e => e.UpdateDate)
-                                    .HasColumnName("update_date")
-                                    .HasColumnType("datetime");
-
-                entity.Property(e => e.LogReceiveId)
-                                      .HasColumnName("log_receive_id");
-
+                entity.Property(e => e.UpdateDate).HasColumnName("update_date").HasColumnType("datetime");
+                entity.Property(e => e.LogReceiveId).HasColumnName("log_receive_id");
                 entity.Property(e => e.ReturnDeposit).HasColumnName("return_deposit");
-
                 entity.Property(e => e.ReturnDepositPrice).HasColumnName("return_deposit_price");
             });
 
@@ -1106,37 +1020,13 @@ namespace KKHondaBackend.Data
 
                 entity.Property(e => e.CreateBy).HasColumnName("create_by");
 
-                entity.Property(e => e.CreateDate)
-                                    .HasColumnName("create_date")
-                                    .HasColumnType("datetime");
+                entity.Property(e => e.CreateDate).HasColumnName("create_date").HasColumnType("datetime");
 
                 entity.Property(e => e.DelayDueDate).HasColumnName("delay_due_date");
 
                 entity.Property(e => e.CheckDueDate)
                                     .HasColumnName("check_due_date")
                                     .HasColumnType("datetime");
-
-                entity.Property(e => e.DiscountPrice)
-                                    .HasColumnName("discount_price")
-                                    .HasColumnType("decimal(18, 4)");
-
-                entity.Property(e => e.DiscountRate)
-                                    .HasColumnName("discount_rate")
-                                    .HasColumnType("decimal(8, 4)");
-
-                entity.Property(e => e.UseDiscount)
-                                    .HasColumnName("use_discount");
-
-                entity.Property(e => e.DistCutOffSaleRate)
-                                    .HasColumnName("dist_cut_off_sale_rate")
-                                    .HasColumnType("decimal(8, 4)");
-
-                entity.Property(e => e.DistCutOffSalePrice)
-                                    .HasColumnName("dist_cut_off_sale_price")
-                                    .HasColumnType("decimal(8, 4)");
-
-                entity.Property(e => e.UseDistCutOffSale)
-                                    .HasColumnName("use_dist_cut_off_sale");
 
                 entity.Property(e => e.DueDate)
                                     .HasColumnName("due_date")
@@ -1148,66 +1038,16 @@ namespace KKHondaBackend.Data
 
                 entity.Property(e => e.FineSumRemain)
                                     .HasColumnName("fine_sum_remain")
-                                    .HasColumnType("decimal(18, 4)");
+                                    .HasColumnType("decimal(18,4)");
 
                 entity.Property(e => e.FineSumStatus)
                                    .HasColumnName("fine_sum_status");
 
-                entity.Property(e => e.FineSumOther)
-                                    .HasColumnName("fine_sum_other")
-                                    .HasColumnType("decimal(18, 4)");
-
-                entity.Property(e => e.GoodsPrice)
-                                    .HasColumnName("goods_price")
-                                    .HasColumnType("decimal(18, 4)");
-
-                entity.Property(e => e.GoodsPriceRemain)
-                                    .HasColumnName("goods_price_remain")
-                                    .HasColumnType("decimal(18, 4)");
-
                 entity.Property(e => e.InstalmentNo).HasColumnName("instalment_no");
-
-                entity.Property(e => e.InstalmentPrice)
-                                    .HasColumnName("instalment_price")
-                                    .HasColumnType("decimal(18, 4)");
 
                 entity.Property(e => e.InterestInstalment)
                                     .HasColumnName("interest_instalment")
                                     .HasColumnType("decimal(18, 4)");
-
-                entity.Property(e => e.InterestRemainAccount)
-                                    .HasColumnName("interest_remain_account")
-                                    .HasColumnType("decimal(18, 4)");
-
-                entity.Property(e => e.NetInvoice)
-                                    .HasColumnName("net_invoice")
-                                    .HasColumnType("decimal(18, 4)");
-
-                entity.Property(e => e.PayNetPrice)
-                                    .HasColumnName("pay_net_price")
-                                    .HasColumnType("decimal(18, 4)");
-
-                entity.Property(e => e.PayPrice)
-                                    .HasColumnName("pay_price")
-                                    .HasColumnType("decimal(18, 4)");
-
-                entity.Property(e => e.PayDate)
-                                    .HasColumnName("pay_date")
-                                    .HasColumnType("datetime");
-
-                entity.Property(e => e.Payeer)
-                                    .HasColumnName("payeer");
-
-                entity.Property(e => e.PayVatPrice)
-                                    .HasColumnName("pay_vat_price")
-                                    .HasColumnType("decimal(18, 4)");
-
-                entity.Property(e => e.BankCode)
-                                    .HasColumnName("bank_code")
-                                    .HasMaxLength(10);
-
-                entity.Property(e => e.PaymentType)
-                                    .HasColumnName("payment_type");
 
                 entity.Property(e => e.RefNo)
                                     .HasColumnName("ref_no")
@@ -1227,13 +1067,6 @@ namespace KKHondaBackend.Data
 
                 entity.Property(e => e.Status).HasColumnName("status");
 
-                entity.Property(e => e.TaxInvoiceBranchId).HasColumnName("tax_invoice_branch_id");
-
-                entity.Property(e => e.TaxInvoiceNo)
-                                    .HasColumnName("tax_invoice_no")
-                                    .HasMaxLength(50)
-                                    .IsUnicode(false);
-
                 entity.Property(e => e.UpdateBy).HasColumnName("update_by");
 
                 entity.Property(e => e.UpdateDate)
@@ -1248,10 +1081,6 @@ namespace KKHondaBackend.Data
                                       .HasColumnName("remark");
 
                 entity.Property(e => e.CancelRemark).HasColumnName("cancel_remark");
-
-                entity.Property(e => e.DocumentRef)
-                                      .HasColumnName("document_ref")
-                                      .HasMaxLength(255);
 
                 entity.Property(e => e.InitialPrice)
                                       .HasColumnName("initial_price")
@@ -1272,10 +1101,120 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.DiscountInterest)
                                       .HasColumnName("discount_interest")
                                       .HasColumnType("decimal(18, 4)");
+            });
+
+            modelBuilder.Entity<CreditContractPayment>(entity =>
+            {
+                entity.HasKey(e => e.PaymentId);
+
+                entity.ToTable("credit_contract_payment");
+
+                entity.Property(e => e.ContractId).HasColumnName("contract_id").IsRequired();
+
+                entity.Property(e => e.InstalmentNo).HasColumnName("instalment_no").IsRequired();
+
+                entity.Property(e => e.DiscountPrice)
+                                    .HasColumnName("discount_price")
+                                    .HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.DiscountRate)
+                                    .HasColumnName("discount_rate")
+                                    .HasColumnType("decimal(8, 4)");
+
+                entity.Property(e => e.DistCutOffSaleRate)
+                                    .HasColumnName("dist_cut_off_sale_rate")
+                                    .HasColumnType("decimal(8, 4)");
+
+                entity.Property(e => e.DistCutOffSalePrice)
+                                    .HasColumnName("dist_cut_off_sale_price")
+                                    .HasColumnType("decimal(8, 4)");
+
+                entity.Property(e => e.PayPrice)
+                                    .HasColumnName("pay_price")
+                                    .HasColumnType("decimal(18, 4)")
+                                    .IsRequired();
+
+                entity.Property(e => e.PayDate)
+                                    .HasColumnName("pay_date")
+                                    .HasColumnType("datetime")
+                                    .IsRequired();
+
+                entity.Property(e => e.Payeer)
+                                    .HasColumnName("payeer")
+                                    .IsRequired();
+
+                entity.Property(e => e.PayVatPrice)
+                                    .HasColumnName("pay_vat_price")
+                                    .HasColumnType("decimal(18, 4)")
+                                    .IsRequired();
+
+                entity.Property(e => e.BankCode)
+                                    .HasColumnName("bank_code")
+                                    .HasMaxLength(10);
+
+                entity.Property(e => e.PaymentType)
+                                    .HasColumnName("payment_type")
+                                    .IsRequired();
+
+                entity.Property(e => e.Remain)
+                                    .HasColumnName("remain")
+                                    .HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.RemainVatPrice)
+                                    .HasColumnName("remain_vat_price")
+                                    .HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.RemainNetPrice)
+                                    .HasColumnName("remain_net_price")
+                                    .HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.TaxInvoiceBranchId)
+                                    .HasColumnName("tax_invoice_branch_id")
+                                    .IsRequired();
+
+                entity.Property(e => e.TaxInvoiceNo)
+                                    .HasColumnName("tax_invoice_no")
+                                    .HasMaxLength(50)
+                                    .IsRequired();
+
+                entity.Property(e => e.DocumentRef)
+                                      .HasColumnName("document_ref")
+                                      .HasMaxLength(255);
+
+                entity.Property(e => e.DelayDueDate)
+                                    .HasColumnName("delay_due_date");
+
+                entity.Property(e => e.CheckDueDate)
+                                    .HasColumnName("check_due_date")
+                                    .HasColumnType("datetime");
+
+
+                entity.Property(e => e.FineSum)
+                                    .HasColumnName("fine_sum")
+                                    .HasColumnType("decimal(18,4)");
+
+                entity.Property(e => e.FineSumRemain)
+                                    .HasColumnName("fine_sum_remain")
+                                    .HasColumnType("decimal(18,4)");
+
+                entity.Property(e => e.FineSumCode)
+                                    .HasColumnName("fine_sum_code");
 
                 entity.Property(e => e.ReceiptNo)
                                       .HasColumnName("receipt_no")
                                       .HasMaxLength(50);
+
+                entity.Property(e => e.PaymentName)
+                                      .HasColumnName("payment_name")
+                                      .HasMaxLength(50);
+
+                entity.Property(e => e.CreateBy).HasColumnName("create_by");
+
+                entity.Property(e => e.CreateDate).HasColumnName("create_date").HasColumnType("datetime");
+
+                entity.Property(e => e.UpdateBy).HasColumnName("update_by");
+
+                entity.Property(e => e.UpdateDate).HasColumnName("update_date").HasColumnType("datetime");
             });
 
             modelBuilder.Entity<CreditTransaction>(entity =>
@@ -1421,36 +1360,37 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.WhlId).HasColumnName("whl_id");
             });
 
+            modelBuilder.Entity<ExpensesOtherRis>(entity =>
+            {
+                entity.HasKey(e => e.ExpensesCode);
+                entity.ToTable("_ExpensesOther_RIS");
+                entity.Property(e => e.ExpensesID).HasColumnName("Expenses_ID");
+                entity.Property(e => e.ExpensesCode).HasColumnName("Expenses_Code").HasMaxLength(8).IsRequired();
+                entity.Property(e => e.ExpensesDescription).HasColumnName("Expenses_Description").HasMaxLength(200).IsRequired();
+                entity.Property(e => e.ExpensesAmount).HasColumnName("Expenses_Amount").HasColumnType("money");
+                entity.Property(e => e.ExpensesType).HasColumnName("Expenses_Type").IsRequired().HasDefaultValue(2);
+                entity.Property(e => e.Status).HasColumnType("bit").IsRequired();
+                entity.Property(e => e.CreateBy).IsRequired();
+                entity.Property(e => e.DateCreate).HasColumnType("datetime").IsRequired();
+                entity.Property(e => e.UpdateBy);
+                entity.Property(e => e.DateUpdate).HasColumnType("datetime");
+            });
+
             modelBuilder.Entity<FinanceComList>(entity =>
             {
                 entity.HasKey(e => e.FicomId);
 
                 entity.ToTable("_finance_com_list");
 
-                entity.HasIndex(e => e.FiId)
-                    .HasName("I_fi_id");
-
+                entity.HasIndex(e => e.FiId).HasName("I_fi_id");
                 entity.Property(e => e.FicomId).HasColumnName("ficom_id");
-
-                entity.Property(e => e.ComPrice)
-                                    .HasColumnName("com_price")
-                                    .HasColumnType("numeric(18, 2)");
-
+                entity.Property(e => e.ComPrice).HasColumnName("com_price").HasColumnType("numeric(18, 2)");
                 entity.Property(e => e.FiId).HasColumnName("fi_id");
-
                 entity.Property(e => e.FiintId).HasColumnName("fiint_id");
-
                 entity.Property(e => e.MaxCtId).HasColumnName("max_ct_id");
-
-                entity.Property(e => e.MaxDown)
-                                    .HasColumnName("max_down")
-                                    .HasColumnType("numeric(18, 2)");
-
+                entity.Property(e => e.MaxDown).HasColumnName("max_down").HasColumnType("numeric(18, 2)");
                 entity.Property(e => e.MinCtId).HasColumnName("min_ct_id");
-
-                entity.Property(e => e.MinDown)
-                                    .HasColumnName("min_down")
-                                    .HasColumnType("numeric(18, 2)");
+                entity.Property(e => e.MinDown).HasColumnName("min_down").HasColumnType("numeric(18, 2)");
             });
 
             modelBuilder.Entity<FinanceIntList>(entity =>

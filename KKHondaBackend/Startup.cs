@@ -11,6 +11,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
 using KKHondaBackend.Data;
 using KKHondaBackend.Services;
+using KKHondaBackend.Services.Ris;
 
 namespace KKHondaBackend
 {
@@ -50,6 +51,7 @@ namespace KKHondaBackend
             services.AddTransient<ISysParameterService, SysParameterService>();
             services.AddTransient<IStatusService, StatusService>();
             services.AddTransient<IBankingService, BankingService>();
+            services.AddTransient<IMSendbackService, MSendbackService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

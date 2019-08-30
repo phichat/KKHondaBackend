@@ -9,19 +9,20 @@ namespace KKHondaBackend.Models
         public string ENo { get; set; }
         public string FNo { get; set; }
         public string TagNo { get; set; }
+        public string Province { get; set; }
         public int? BranchId { get; set; }
-        public string TagRegis { get; set; }
-        public string TagExpire { get; set; }
+        public DateTime? TagRegis { get; set; }
+        public DateTime? TagExpire { get; set; }
         public string PrbNo { get; set; }
         public string PrbCompany { get; set; }
-        public string PrbRegis { get; set; }
-        public string PrbExpire { get; set; }
+        public DateTime? PrbRegis { get; set; }
+        public DateTime? PrbExpire { get; set; }
         public string CommitNo { get; set; }
-        public string CommitExpire { get; set; }
+        public DateTime? CommitExpire { get; set; }
         public string WarNo { get; set; }
         public string WarCompany { get; set; }
-        public string WarRegis { get; set; }
-        public string WarExpire { get; set; }
+        public DateTime? WarRegis { get; set; }
+        public DateTime? WarExpire { get; set; }
     }
 }
 

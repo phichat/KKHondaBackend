@@ -31,25 +31,26 @@ namespace KKHondaBackend.Services
                               where db.BranchId == branchId
                               select db.ContractNo
                              ).FirstOrDefault();
-            
+
             return SetRunningCode("CO", branchId, contractNo);
         }
 
         public string GenerateInstalmentTaxInvoiceNo(int branchId)
         {
-            var invNo = (from db in ctx.CreditContractItem
-                        orderby db.TaxInvoiceNo descending
-                        where db.TaxInvoiceBranchId == branchId
-                        select db.TaxInvoiceNo).FirstOrDefault();
+            var invNo = (from db in ctx.CreditContractPayment
+                         orderby db.TaxInvoiceNo descending
+                         where db.TaxInvoiceBranchId == branchId
+                         select db.TaxInvoiceNo).FirstOrDefault();
 
             return SetRunningCode("TF", branchId, invNo);
         }
 
-        public string GenerateReceiptNo(int branchId) {
-            var receiptNo = (from db in ctx.CreditContractItem
-                      orderby db.ReceiptNo descending
-                      where db.TaxInvoiceBranchId == branchId
-                      select db.ReceiptNo).FirstOrDefault();
+        public string GenerateReceiptNo(int branchId)
+        {
+            var receiptNo = (from db in ctx.CreditContractPayment
+                             orderby db.ReceiptNo descending
+                             where db.TaxInvoiceBranchId == branchId
+                             select db.ReceiptNo).FirstOrDefault();
 
             return SetRunningCode("OP", branchId, receiptNo);
         }
@@ -75,7 +76,65 @@ namespace KKHondaBackend.Services
 
             return SetRunningCode("MC", branchId, vatNo);
         }
-                
+
+        public string GenerateHistoryCarNo(int branchId) {
+            var no = (from db in ctx.CarHistory
+                      orderby db.CarId descending
+                      where db.BranchId == branchId
+                      select db.CarNo).FirstOrDefault();
+
+            return SetRunningCode("PRB", branchId, no);
+        }
+
+        public string GenerateConNo(int branchId){
+            var no = (from db in ctx.CarRegisList
+                      orderby db.BookingId descending
+                      where db.BranchId == branchId
+                      select db.BookingNo).FirstOrDefault();
+
+            return SetRunningCode("CON", branchId, no);
+        }
+
+        public string GenerateSedNo(int branchId)
+        {
+            var no = (from db in ctx.CarRegisSedList
+                      orderby db.SedId descending
+                      where db.BranchId == branchId
+                      select db.SedNo).FirstOrDefault();
+
+            return SetRunningCode("SED", branchId, no);
+        }
+
+        public string GenerateAlNo(int branchId)
+        {
+            var no = (from db in ctx.CarRegisAlList
+                      orderby db.AlId descending
+                      where db.BranchId == branchId
+                      select db.AlNo).FirstOrDefault();
+
+            return SetRunningCode("AL", branchId, no);
+        }
+
+        public string GenerateClNo(int branchId)
+        {
+            var no = (from db in ctx.CarRegisClList
+                      orderby db.ClId descending
+                      where db.BranchId == branchId
+                      select db.ClNo).FirstOrDefault();
+
+            return SetRunningCode("CL", branchId, no);
+        }
+
+        public string GenerateRegisClRevNo(int branchId)
+        {
+            var no = (from db in ctx.CarRegisClList
+                      orderby db.ClId descending
+                      where db.BranchId == branchId
+                      select db.RevNo).FirstOrDefault();
+
+            return SetRunningCode("REV", branchId, no);
+        }
+
         public string GetSysParameter(string prefix)
         {
             throw new NotImplementedException();
@@ -85,13 +144,16 @@ namespace KKHondaBackend.Services
         {
             string year = (DateTime.Now.Year + 543).ToString().Substring(2, 2);
             string month = (DateTime.Now.Month).ToString("00");
+            string r = $"{prefix}{branchId.ToString("00")}{year}{month}";
 
-            if (runningNumber == null)
-                return prefix + branchId.ToString("00") + year + month + "/" + "0001";
+            if (runningNumber == null) return $"{r}/0001";
 
-            string preMonth = runningNumber.Substring(6, 2);
-            int runNumber = (preMonth == month) ? int.Parse(runningNumber.Split("/")[1]) + 1 : 1;
-            return prefix + branchId.ToString("00") + year + month + "/" + runNumber.ToString("0000");
+            string preStr = runningNumber.Split("/")[0];
+            string endStr = runningNumber.Split("/")[1];
+
+            string preMonth = preStr.Substring(preStr.Length - 2);
+            int runNumber = (preMonth == month) ? int.Parse(endStr) + 1 : 1;
+            return $"{r}/{runNumber.ToString("0000")}";
         }
     }
 }
