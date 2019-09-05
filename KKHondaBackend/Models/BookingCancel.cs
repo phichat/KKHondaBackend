@@ -1,7 +1,7 @@
 using System;
 namespace KKHondaBackend.Models
 {
-    public class BookingCancel
+    public class BookingReasonCode
     {
         public int CancelId { get; set; }
         public string CancelCode { get; set; }

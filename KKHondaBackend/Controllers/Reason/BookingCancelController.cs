@@ -21,9 +21,9 @@ namespace KKHondaBackend.Controllers.Reason
             ctx = _ctx;
         }
 
-        public IEnumerable<BookingCancel> list
+        public IEnumerable<BookingReasonCode> list
         {
-            get => ctx.BookingCancel.Where(x => x.Status == true);
+            get => ctx.BookingReasonCode.Where(x => x.Status == true);
         }
 
         [HttpGet("DropDown")]
