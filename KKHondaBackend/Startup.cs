@@ -36,8 +36,9 @@ namespace KKHondaBackend
                     .AllowCredentials();
             }));
 
-            services.AddDbContext<dbwebContext>(options =>
-               options.UseSqlServer(Configuration.GetConnectionString("KKConnection")));
+            var connection = Configuration.GetConnectionString("KKConnection");
+            services.AddDbContext<dbwebContext>(options => options.UseSqlServer(connection));
+
             services.AddMvc();
 
             services.AddTransient<ICustomerServices, CustomerServices>();

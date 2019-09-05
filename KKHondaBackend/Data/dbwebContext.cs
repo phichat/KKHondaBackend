@@ -20,7 +20,7 @@ namespace KKHondaBackend.Data
         public virtual DbSet<SpDashboardBookingDetail> SpDashboardBookingDetail { get; set; }
 
         public virtual DbSet<Banking> Bankings { get; set; }
-        public virtual DbSet<BookingCancel> BookingCancel { get; set; }
+        public virtual DbSet<BookingReasonCode> BookingReasonCode { get; set; }
         public virtual DbSet<Booking> Booking { get; set; }
         public virtual DbSet<BookingItem> BookingItem { get; set; }
         public virtual DbSet<Branch> Branch { get; set; }
@@ -138,9 +138,9 @@ namespace KKHondaBackend.Data
                     .HasColumnType("datetime");
             });
 
-            modelBuilder.Entity<BookingCancel>(entity =>
+            modelBuilder.Entity<BookingReasonCode>(entity =>
             {
-                entity.ToTable("_booking_cancel");
+                entity.ToTable("_booking_reasoncode");
                 entity.HasKey(e => e.CancelCode);
                 entity.Property(e => e.CancelId).HasColumnName("cancel_id");
                 entity.Property(e => e.CancelCode).HasColumnName("cancel_code").HasMaxLength(5);
