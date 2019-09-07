@@ -5,6 +5,7 @@ namespace KKHondaBackend.Models
 {
     public partial class CarRegisListItemDoc
     {
+        public int DocId { get; set; }
         public string BookingNo { get; set; }
         public string SendBackCode { get; set; }
         public bool IsReceive { get; set; }
@@ -18,6 +19,7 @@ namespace KKHondaBackend.Models
 
     public partial class CarRegisListItemDocRes
     {
+        public int DocId { get; set; }
         public string BookingNo { get; set; }
         public string SendBackCode { get; set; }
         public string SendBackName { get; set; }
