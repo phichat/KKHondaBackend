@@ -80,7 +80,6 @@ namespace KKHondaBackend.Controllers.Ris
             try
             {
                 value.ClNo = iSysParamService.GenerateClNo(value.BranchId);
-                value.RevNo = iSysParamService.GenerateRegisClRevNo(value.BranchId);
                 value.CreateDate = DateTime.Now;
                 value.Status = ClStatus.Normal;
                 ctx.Entry(value).State = EntityState.Added;

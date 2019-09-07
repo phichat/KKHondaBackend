@@ -15,6 +15,6 @@ namespace KKHondaBackend.Services
         string GenerateSedNo(int branchId);
         string GenerateAlNo(int branchId);
         string GenerateClNo(int branchId);
-        string GenerateRegisClRevNo(int branchId);
+        string GenerateRegisRevNo(int branchId);
     }
 }

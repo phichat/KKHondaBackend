@@ -67,6 +67,16 @@ namespace KKHondaBackend.Entities
         };
     }
 
+    public class RevStatus {
+        public const int Cancel = 0;
+        public const int Normal = 1;
+        public static List<Status> Status = new List<Status>
+        {
+            new Status { Id = 0, Desc = "ยกเลิก"},
+            new Status { Id = 1, Desc = "ปกติ"}
+        };
+    }
+
     public class ExpensesType {
         public const int Service = 1;
         public const int Expenses = 2;
@@ -87,4 +97,5 @@ namespace KKHondaBackend.Entities
             new Status { Id = 1, Desc = "ใช้งาน"}
         };
     }
+
 }

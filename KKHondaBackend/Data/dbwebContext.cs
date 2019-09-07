@@ -27,7 +27,9 @@ namespace KKHondaBackend.Data
         public virtual DbSet<CarHistory> CarHistory { get; set; }
         public virtual DbSet<CarRegisList> CarRegisList { get; set; }
         public virtual DbSet<CarRegisListItem> CarRegisListItem { get; set; }
+        public virtual DbSet<CarRegisListItemDoc> CarRegisListItemDoc { get; set; }
         public virtual DbSet<CarRegisMSendback> CarRegisMSendback { get; set; }
+        public virtual DbSet<CarRegisRevList> CarRegisRevList { get; set; }
         public virtual DbSet<CarRegisSedList> CarRegisSedList { get; set; }
         public virtual DbSet<CarRegisAlList> CarRegisAlList { get; set; }
         public virtual DbSet<CarRegisClList> CarRegisClList { get; set; }
@@ -546,6 +548,22 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.Remark).HasColumnName("remark").HasMaxLength(255);
             });
 
+            modelBuilder.Entity<CarRegisListItemDoc>(entity =>
+            {
+                entity.HasKey(e => e.DocId);
+                entity.ToTable("_car_regis_list_item_doc");
+                entity.Property(e => e.DocId).HasColumnName("doc_id");
+                entity.Property(e => e.BookingNo).HasColumnName("booking_no").HasMaxLength(50).IsRequired();
+                entity.Property(e => e.SendBackCode).HasColumnName("send_back_code").HasMaxLength(10).IsRequired();
+                entity.Property(e => e.IsReceive).HasColumnName("is_receive").HasColumnType("bit").IsRequired();
+                entity.Property(e => e.ReceiveDate).HasColumnName("receive_date").HasColumnType("datetime").IsRequired();
+                entity.Property(e => e.ReceiveBy).HasColumnName("receive_by").IsRequired();
+                entity.Property(e => e.IsSend).HasColumnName("is_send").HasColumnType("bit");
+                entity.Property(e => e.SendBy).HasColumnName("send_by");
+                entity.Property(e => e.SendDate).HasColumnName("send_date").HasColumnType("datetime");
+                entity.Property(e => e.Remark).HasColumnName("remark").HasMaxLength(255);
+            });
+
             modelBuilder.Entity<CarRegisMSendback>(entity =>
             {
                 entity.HasKey(e => e.Code);
@@ -565,6 +583,32 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.UpdateDate).HasColumnName("update_date").HasColumnType("datetime");
                 entity.Property(e => e.CreateBy).HasColumnName("create_by").IsRequired();
                 entity.Property(e => e.CreateDate).HasColumnName("create_date").IsRequired().HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<CarRegisRevList>(entity =>
+            {
+                entity.HasKey(e => e.RevId);
+                entity.ToTable("_car_regis_rev_list");
+                entity.Property(e => e.RevId).HasColumnName("rev_id");
+                entity.Property(e => e.RevNo).HasColumnName("rev_no").HasMaxLength(50).IsRequired();
+                entity.Property(e => e.SedNo).HasColumnName("sed_no").HasMaxLength(50).IsRequired();
+                entity.Property(e => e.BranchId).HasColumnName("branch_id").IsRequired();
+                entity.Property(e => e.TotalPrice1).HasColumnName("total_price1").HasColumnType("numeric(18,2)").IsRequired();
+                entity.Property(e => e.TotalVatPrice1).HasColumnName("total_vat_price1").HasColumnType("numeric(18,2)").IsRequired();
+                entity.Property(e => e.TotalNetPrice).HasColumnName("total_net_price").HasColumnType("numeric(18,2)").IsRequired();
+                entity.Property(e => e.TotalCutBalance).HasColumnName("total_cut_balance").HasColumnType("numeric(18,2)").IsRequired();
+                entity.Property(e => e.TotalPrice2).HasColumnName("total_price2").HasColumnType("numeric(18,2)").IsRequired();
+                entity.Property(e => e.TotalIncome).HasColumnName("total_income").HasColumnType("numeric(18,2)").IsRequired();
+                entity.Property(e => e.TotalClBalancePrice).HasColumnName("total_cl_balance_price").HasColumnType("numeric(18,2)").IsRequired();
+                entity.Property(e => e.TotalClReceivePrice).HasColumnName("total_cl_receive_price").HasColumnType("numeric(18,2)").IsRequired();
+                entity.Property(e => e.TotalExpenses).HasColumnName("total_expenses").HasColumnType("numeric(18,2)").IsRequired();
+                entity.Property(e => e.TotalAccruedExpense).HasColumnName("total_accrued_expenses").HasColumnType("numeric(18,2)").IsRequired();
+                entity.Property(e => e.Status).HasColumnName("status").IsRequired();
+                entity.Property(e => e.Remark).HasColumnName("remark").HasMaxLength(255);
+                entity.Property(e => e.CreateBy).HasColumnName("create_by").IsRequired();
+                entity.Property(e => e.CreateDate).HasColumnName("create_date").HasColumnType("datetime").IsRequired();
+                entity.Property(e => e.UpdateBy).HasColumnName("update_by");
+                entity.Property(e => e.UpdateDate).HasColumnName("update_date").HasColumnType("datetime");
             });
 
             modelBuilder.Entity<CarRegisSedList>(entity =>
@@ -620,7 +664,6 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.ClId).HasColumnName("cl_id");
                 entity.Property(e => e.ClNo).HasColumnName("cl_no").IsRequired().HasMaxLength(50);
                 entity.Property(e => e.AlNo).HasColumnName("al_no").IsRequired().HasMaxLength(50);
-                entity.Property(e => e.RevNo).HasColumnName("rev_no").IsRequired().HasMaxLength(50);
                 entity.Property(e => e.RefundId).HasColumnName("refund_id").IsRequired();
                 entity.Property(e => e.BalancePrice).HasColumnName("balance_price").IsRequired();
                 entity.Property(e => e.ReceivePrice).HasColumnName("receive_price").IsRequired();

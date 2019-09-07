@@ -125,10 +125,10 @@ namespace KKHondaBackend.Services
             return SetRunningCode("CL", branchId, no);
         }
 
-        public string GenerateRegisClRevNo(int branchId)
+        public string GenerateRegisRevNo(int branchId)
         {
-            var no = (from db in ctx.CarRegisClList
-                      orderby db.ClId descending
+            var no = (from db in ctx.CarRegisRevList
+                      orderby db.RevId descending
                       where db.BranchId == branchId
                       select db.RevNo).FirstOrDefault();
 

@@ -6,7 +6,6 @@ namespace KKHondaBackend.Models
         public int ClId { get; set; }
         public string ClNo { get; set; }
         public string AlNo { get; set; }
-        public string RevNo { get; set; }
         public int RefundId { get; set; }
         public decimal BalancePrice { get; set; }
         public decimal ReceivePrice { get; set; }
