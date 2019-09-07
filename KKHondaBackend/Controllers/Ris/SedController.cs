@@ -85,8 +85,9 @@ namespace KKHondaBackend.Controllers.Ris
         [HttpGet("GetByTermSedNo")]
         public IActionResult GetByTermSedNo(string term)
         {
+            var exclude = new List<int> { SedStatus.Cancel, SedStatus.Received };
             var list = SedListRes
-            .Where(x => x.Status != SedStatus.Cancel && x.SedNo.Contains(term.ToUpper()))
+            .Where(x => !exclude.Contains(x.Status) && x.SedNo.Contains(term.ToUpper()))
             .Take(100).ToList();
             return Ok(list);
         }

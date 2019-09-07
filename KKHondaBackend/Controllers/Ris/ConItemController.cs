@@ -64,7 +64,7 @@ namespace KKHondaBackend.Controllers.Ris
                         break;
 
                     case "EXP10002": //ต่อทะเบียน
-                    // case "EXP10004": //ต่อภาษี
+                                     // case "EXP10004": //ต่อภาษี
                         itemSendBack = iMSendback.Active.FirstOrDefault(x => x.Tag == true);
                         break;
 
@@ -104,6 +104,34 @@ namespace KKHondaBackend.Controllers.Ris
                     listItemDoc.Add(itemDoc);
                 }
             }
+
+            listItemDoc = (from item in listItemDoc
+                           join d in ctx.CarRegisListItemDoc
+                                on new { item.BookingNo, item.SendBackCode }
+                                equals new { d.BookingNo, d.SendBackCode }
+                                into _d
+                           from doc in _d.DefaultIfEmpty()
+                           join r in ctx.User on doc?.ReceiveBy equals r.Id into _r
+                           join s in ctx.User on doc?.SendBy equals s.Id into _s
+                           from rec in _r.DefaultIfEmpty()
+                           from sed in _s.DefaultIfEmpty()
+                           where item.BookingNo == conNo
+                           select new CarRegisListItemDocRes
+                           {
+                               DocId = doc != null ? doc.DocId : 0,
+                               BookingNo = item.BookingNo,
+                               SendBackCode = item.SendBackCode,
+                               SendBackName = item.SendBackName,
+                               IsReceive = doc != null ? doc.IsReceive : default(bool?),
+                               ReceiveDate = doc != null ? doc.ReceiveDate : default(DateTime?),
+                               ReceiveBy = doc != null ? doc.ReceiveBy : default(int?),
+                               ReceiveName = rec != null ? rec.Fullname : null,
+                               IsSend = doc != null ? doc.IsSend : default(bool?),
+                               SendBy = doc != null ? doc.SendBy : default(int?),
+                               SendName = sed != null ? sed.Fullname : null,
+                               SendDate = doc != null ? doc.SendDate : default(DateTime?),
+                               Remark = doc != null ? doc.Remark : null
+                           }).ToList();
 
             var res = new CarRegisItemRes
             {

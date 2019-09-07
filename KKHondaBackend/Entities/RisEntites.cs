@@ -34,11 +34,13 @@ namespace KKHondaBackend.Entities
     {
         public const int Normal = 1;
         public const int Borrowed = 2;
+        public const int Received = 3;
         public const int Cancel = 0;
         public static List<Status> Status = new List<Status>
         {
             new Status { Id = 1, Desc = "ปกติ" },
             new Status { Id = 2, Desc = "บันทึกการยืมเงิน"},
+            new Status { Id = 3, Desc = "บันทึกรับคืนเรื่อง"},
             new Status { Id = 0, Desc = "ยกเลิก"}
         };
     }

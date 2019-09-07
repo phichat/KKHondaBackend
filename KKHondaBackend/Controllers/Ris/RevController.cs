@@ -36,6 +36,11 @@ namespace KKHondaBackend.Controllers.Ris
                     ctx.CarRegisRevList.Add(value.TagRev);
                     ctx.SaveChanges();
 
+                    var sed = ctx.CarRegisSedList.First(x => x.SedNo == value.TagRev.SedNo);
+                    sed.Status = SedStatus.Received;
+                    ctx.Entry(sed).State = EntityState.Modified;
+                    ctx.SaveChanges();
+
                     value.TagConList.ForEach(item =>
                     {
                         item.UpdateDate = DateTime.Now;
@@ -51,7 +56,6 @@ namespace KKHondaBackend.Controllers.Ris
                         ctx.CarRegisListItemDoc.AddRange(value.TagListItemDoc);
                         ctx.SaveChanges();
                     }
-
                     transaction.Commit();
                 }
                 catch (DbUpdateConcurrencyException ex)
