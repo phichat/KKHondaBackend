@@ -58,7 +58,8 @@ namespace KKHondaBackend.Controllers.Ris
                     CreateDate = rev.CreateDate,
                     UpdateBy = rev.UpdateBy,
                     UpdateName = upd.Fullname,
-                    UpdateDate = rev.UpdateDate
+                    UpdateDate = rev.UpdateDate,
+                    Reason = rev.Reason
                 });
         }
 
@@ -140,40 +141,57 @@ namespace KKHondaBackend.Controllers.Ris
         [HttpPost("Cancel")]
         public IActionResult Cancel([FromBody]CarRegisRevList rev)
         {
-            var sed = ctx.CarRegisSedList.First(x => x.SedNo == rev.SedNo);
-            var conList = sed.ConList.Split(',');
-            foreach (string con in conList)
+            using (var transaction = ctx.Database.BeginTransaction())
             {
-                var ris = ctx.CarRegisList.FirstOrDefault(x => x.BookingNo == con);
-                ris.CutBalance = ris.Price1;
-                ris.BookingStatus = ConStatus.Sending; // สรุปส่งเรื่ิองดำเนินการ
-                ctx.Entry(ris).State = EntityState.Modified;
+                try
+                {
+                    rev.Status = 0;
+                    ctx.Entry(rev).State = EntityState.Modified;
+                    ctx.SaveChanges();
 
-                var ris_item = ctx.CarRegisListItem.Where(x => x.BookingId == ris.BookingId);
-                foreach (var item in ris_item)
-                {
-                    item.ItemCutBalance = item.ItemPrice1;
-                    item.State = null;
-                    item.DateReceipt = null;
-                    item.Remark = null;
-                    ctx.Entry(item).State = EntityState.Modified;
+                    var sed = ctx.CarRegisSedList.First(x => x.SedNo == rev.SedNo);
+                    var al = ctx.CarRegisAlList.FirstOrDefault(x => x.SedNo == rev.SedNo);
+
+                    sed.Status = al == null ? SedStatus.Normal : SedStatus.Borrowed;
+                    ctx.Entry(sed).State = EntityState.Modified;
+                    ctx.SaveChanges();
+
+                    var conList = sed.ConList.Split(',');
+                    foreach (string con in conList)
+                    {
+                        var ris = ctx.CarRegisList.FirstOrDefault(x => x.BookingNo == con);
+                        ris.CutBalance = ris.Price1;
+                        ris.BookingStatus = ConStatus.Sending; // สรุปส่งเรื่ิองดำเนินการ
+                        ris.State1 = null;
+                        ris.State2 = null;
+                        ctx.Entry(ris).State = EntityState.Modified;
+
+
+                        var ris_item = ctx.CarRegisListItem.Where(x => x.BookingId == ris.BookingId);
+                        foreach (var item in ris_item)
+                        {
+                            item.ItemCutBalance = item.ItemPrice1;
+                            item.State = null;
+                            item.DateReceipt = null;
+                            item.Remark = null;
+                            ctx.Entry(item).State = EntityState.Modified;
+                        }
+
+                        var doc_item = ctx.CarRegisListItemDoc.Where(x => x.BookingNo == con);
+                        foreach (var item in doc_item)
+                        {
+                            ctx.Entry(item).State = EntityState.Deleted;
+                        }
+                    }
+                    ctx.SaveChanges();
+                    transaction.Commit();
                 }
-            
-                var doc_item = ctx.CarRegisListItemDoc.Where(x => x.BookingNo == con);
-                foreach (var item in doc_item)
+                catch (DbUpdateConcurrencyException ex)
                 {
-                    item.IsReceive = default(bool);
-                    item.ReceiveBy = default(int);
-                    item.ReceiveDate = default(DateTime);
-                    item.IsSend = default(bool?);
-                    item.SendBy = default(int?);
-                    item.SendDate = default(DateTime?);
-                    item.Remark = null;
-                    ctx.Entry(item).State = EntityState.Modified;
+                    transaction.Rollback();
+                    return StatusCode(500, ex.Message);
                 }
             }
-            ctx.SaveChanges();
-
             return NoContent();
         }
     }
