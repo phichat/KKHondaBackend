@@ -20,6 +20,7 @@ namespace KKHondaBackend.Models
         public decimal TotalExpenses { get; set; }
         public decimal TotalAccruedExpense { get; set; }
         public string Remark { get; set; }
+        public string ReasonCode { get; set; }
         public int Status { get; set; }
         public int CreateBy { get; set; }
         public DateTime CreateDate { get; set; }
@@ -32,7 +33,7 @@ namespace KKHondaBackend.Models
         public int RevId { get; set; }
         public string RevNo { get; set; }
         public string SedNo { get; set; }
-        public string SedCreateName {get;set;}
+        public string SedCreateName { get; set; }
         public int BranchId { get; set; }
         public string BranchName { get; set; }
         public decimal TotalPrice1 { get; set; }
@@ -46,6 +47,7 @@ namespace KKHondaBackend.Models
         public decimal TotalExpenses { get; set; }
         public decimal TotalAccruedExpense { get; set; }
         public string Remark { get; set; }
+        public string ReasonCode { get; set; }
         public int Status { get; set; }
         public string StatusDesc { get; set; }
         public int CreateBy { get; set; }

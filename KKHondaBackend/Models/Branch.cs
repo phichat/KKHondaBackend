@@ -32,4 +32,6 @@ namespace KKHondaBackend.Models
         public int? UpdateBy { get; set; }
         public DateTime? UpdateDate { get; set; }
     }
+
+
 }

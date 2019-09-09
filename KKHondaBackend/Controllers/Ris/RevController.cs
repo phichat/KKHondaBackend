@@ -82,10 +82,18 @@ namespace KKHondaBackend.Controllers.Ris
             {
                 try
                 {
-                    value.TagRev.RevNo = iSysParamService.GenerateRegisRevNo(value.TagRev.BranchId);
-                    value.TagRev.Status = RevStatus.Normal;
-                    value.TagRev.CreateDate = DateTime.Now;
-                    ctx.CarRegisRevList.Add(value.TagRev);
+                    if (value.TagRev.RevId > 0)
+                    {
+                        value.TagRev.UpdateDate = DateTime.Now;
+                        ctx.Entry(value.TagRev).State = EntityState.Modified;
+                    }
+                    else
+                    {
+                        value.TagRev.RevNo = iSysParamService.GenerateRegisRevNo(value.TagRev.BranchId);
+                        value.TagRev.Status = RevStatus.Normal;
+                        value.TagRev.CreateDate = DateTime.Now;
+                        ctx.CarRegisRevList.Add(value.TagRev);
+                    }
                     ctx.SaveChanges();
 
                     var sed = ctx.CarRegisSedList.First(x => x.SedNo == value.TagRev.SedNo);
@@ -126,6 +134,46 @@ namespace KKHondaBackend.Controllers.Ris
                     return StatusCode(500, ex.Message);
                 }
             }
+            return NoContent();
+        }
+
+        [HttpPost("Cancel")]
+        public IActionResult Cancel([FromBody]CarRegisRevList rev)
+        {
+            var sed = ctx.CarRegisSedList.First(x => x.SedNo == rev.SedNo);
+            var conList = sed.ConList.Split(',');
+            foreach (string con in conList)
+            {
+                var ris = ctx.CarRegisList.FirstOrDefault(x => x.BookingNo == con);
+                ris.CutBalance = ris.Price1;
+                ris.BookingStatus = ConStatus.Sending; // สรุปส่งเรื่ิองดำเนินการ
+                ctx.Entry(ris).State = EntityState.Modified;
+
+                var ris_item = ctx.CarRegisListItem.Where(x => x.BookingId == ris.BookingId);
+                foreach (var item in ris_item)
+                {
+                    item.ItemCutBalance = item.ItemPrice1;
+                    item.State = null;
+                    item.DateReceipt = null;
+                    item.Remark = null;
+                    ctx.Entry(item).State = EntityState.Modified;
+                }
+            
+                var doc_item = ctx.CarRegisListItemDoc.Where(x => x.BookingNo == con);
+                foreach (var item in doc_item)
+                {
+                    item.IsReceive = default(bool);
+                    item.ReceiveBy = default(int);
+                    item.ReceiveDate = default(DateTime);
+                    item.IsSend = default(bool?);
+                    item.SendBy = default(int?);
+                    item.SendDate = default(DateTime?);
+                    item.Remark = null;
+                    ctx.Entry(item).State = EntityState.Modified;
+                }
+            }
+            ctx.SaveChanges();
+
             return NoContent();
         }
     }
