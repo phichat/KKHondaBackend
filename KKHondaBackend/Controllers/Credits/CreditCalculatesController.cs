@@ -153,7 +153,9 @@ namespace KKHondaBackend.Controllers.Credits
         [HttpPost("Create")] 
         public IActionResult Create([FromBody] Credit credit)
         {
+        // [FromBody] Credit credit
             return Created(credit);
+            // return Ok(credit);
         }
 
         [HttpPost("Edit")]
@@ -200,9 +202,10 @@ namespace KKHondaBackend.Controllers.Credits
                         item.ContractId = contract.ContractId;
                         item.RefNo = contract.RefNo;
 
-                        //item.PayPrice = item.Balance;
-                        //item.PayVatPrice = item.BalanceVatPrice;
-                        //item.PayNetPrice = item.BalanceNetPrice;
+                        item.PayPrice = item.Balance;
+                        item.PayVatPrice = item.BalanceVatPrice;
+                        item.PayNetPrice = item.BalanceNetPrice;
+
                         item.Status = 13; // สถานะยังไม่ชำระ
 
                         item.CreateBy = contract.CreateBy;

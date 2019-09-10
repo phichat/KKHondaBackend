@@ -37,7 +37,8 @@ namespace KKHondaBackend.Services
 
         public string GenerateInstalmentTaxInvoiceNo(int branchId)
         {
-            var invNo = (from db in ctx.CreditContractPayment
+            // ctx.CreditContractPayment
+            var invNo = (from db in ctx.CreditContractItem
                          orderby db.TaxInvoiceNo descending
                          where db.TaxInvoiceBranchId == branchId
                          select db.TaxInvoiceNo).FirstOrDefault();
@@ -47,7 +48,8 @@ namespace KKHondaBackend.Services
 
         public string GenerateReceiptNo(int branchId)
         {
-            var receiptNo = (from db in ctx.CreditContractPayment
+            // ctx.CreditContractPayment
+            var receiptNo = (from db in ctx.CreditContractItem
                              orderby db.ReceiptNo descending
                              where db.TaxInvoiceBranchId == branchId
                              select db.ReceiptNo).FirstOrDefault();
@@ -77,7 +79,8 @@ namespace KKHondaBackend.Services
             return SetRunningCode("MC", branchId, vatNo);
         }
 
-        public string GenerateHistoryCarNo(int branchId) {
+        public string GenerateHistoryCarNo(int branchId)
+        {
             var no = (from db in ctx.CarHistory
                       orderby db.CarId descending
                       where db.BranchId == branchId
@@ -86,7 +89,8 @@ namespace KKHondaBackend.Services
             return SetRunningCode("PRB", branchId, no);
         }
 
-        public string GenerateConNo(int branchId){
+        public string GenerateConNo(int branchId)
+        {
             var no = (from db in ctx.CarRegisList
                       orderby db.BookingId descending
                       where db.BranchId == branchId
