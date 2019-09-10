@@ -164,19 +164,20 @@ namespace KKHondaBackend.Controllers.Credits
                                    DepositIsOutstanding = deposit.Status == 13 ? deposit.RemainNetPrice : 0,
                                }).FirstOrDefault();
 
-                // var isPay = _contractItem.Where(x => x.InstalmentNo > 0 && x.Status != 13)
-                //                .GroupBy(o => new { o.ContractId })
-                //                .Select(g => new
-                //                {
-                //                    IsPayPrice = g.Sum(x => x.PayNetPrice),
-                //                    IsPayTerm = g.Count()
-                //                }).FirstOrDefault();
-                var isPay = ctx.CreditContractPayment.Where(x => x.ContractId == id && x.InstalmentNo > 0)
-                    .GroupBy(x => x.ContractId)
-                    .Select(x => new {
-                        IsPayPrice = x.Sum(o => o.PayNetPrice),
-                        IsPayTerm = x.Count()
-                    }).FirstOrDefault();
+                var isPay = _contractItem.Where(x => x.InstalmentNo > 0 && x.Status != 13)
+                               .GroupBy(o => new { o.ContractId })
+                               .Select(g => new
+                               {
+                                   IsPayPrice = g.Sum(x => x.PayNetPrice),
+                                   IsPayTerm = g.Count()
+                               }).FirstOrDefault();
+
+                // var isPay = ctx.CreditContractPayment.Where(x => x.ContractId == id && x.InstalmentNo > 0)
+                //     .GroupBy(x => x.ContractId)
+                //     .Select(x => new {
+                //         IsPayPrice = x.Sum(o => o.PayNetPrice),
+                //         IsPayTerm = x.Count()
+                //     }).FirstOrDefault();
 
 
                 var isOutstanding = _contractItem.Where(x => x.InstalmentNo > 0)
@@ -320,6 +321,8 @@ namespace KKHondaBackend.Controllers.Credits
                         var PayPrice = Item.Balance - remainNetPriceExVat;
                         var PayVatPrice = Item.BalanceVatPrice - (_PayNetPrice - remainNetPriceExVat);
                         var __PayNetPrice = Item.BalanceNetPrice - _PayNetPrice;
+
+                        Item.RevenueStamp = payment.RevenueStamp;
 
                         Item.PayPrice = PayPrice;
                         Item.PayVatPrice = PayVatPrice;
@@ -484,6 +487,7 @@ namespace KKHondaBackend.Controllers.Credits
             public decimal? PayNetPrice { get; set; }
             public decimal? DisCountPrice { get; set; }
             public decimal? DiscountRate { get; set; }
+            public decimal? RevenueStamp { get; set; }
             public int PaymentType { get; set; }
             public string BankCode { get; set; }
             public string DocumentRef { get; set; }
