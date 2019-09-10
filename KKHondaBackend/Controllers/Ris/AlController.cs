@@ -98,7 +98,11 @@ namespace KKHondaBackend.Controllers.Ris
         public IActionResult GetByAlNo(string alNo) => Ok(AlListRes.FirstOrDefault(x => x.AlNo == alNo));
 
         [HttpGet("GetBySedNo")]
-        public IActionResult GetBySedNo(string sedNo) => Ok(AlListRes.Where(x => x.SedNo == sedNo).ToList());
+        public IActionResult GetBySedNo(string sedNo)
+        {
+            var res = AlListRes.Where(x => x.SedNo == sedNo && x.Status != AlStatus.Cancel).ToList();
+            return Ok(res);
+        }
 
 
         [HttpPost]
