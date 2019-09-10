@@ -38,7 +38,7 @@ namespace KKHondaReport.Contracts
                 if (Boolean.Parse(Request.QueryString["formInstalmentTerm"]) == true)
                     ExportFormInstalmentTerm(contractId);
             }
-http://localhost:58874/Credits/index.aspx.cs
+//http://localhost:58874/Credits/index.aspx.cs
             // -------- Report Sum -------- //
 
             if (Request.QueryString["sumCutOffCash"] != null)
@@ -214,7 +214,7 @@ http://localhost:58874/Credits/index.aspx.cs
         {
             Log.ConnectionInfo.ServerName = server;
             Log.ConnectionInfo.UserID = "sa";
-            Log.ConnectionInfo.Password = "sql@2012";
+            Log.ConnectionInfo.Password = "Krirkkai@2012";
             Log.ConnectionInfo.DatabaseName = "";
         }
 
