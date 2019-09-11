@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 
-namespace KKHondaBackend.Models {
-    public class DelayedInterest {
+namespace KKHondaBackend.Models
+{
+    public class DelayedInterest
+    {
         public Int64 Id { get; set; }
         public int InstalmentNo { get; set; }
         public DateTime? DueDate { get; set; }
@@ -12,5 +14,6 @@ namespace KKHondaBackend.Models {
         public decimal? Outstanding { get; set; }
         public int? DelayDueDate { get; set; }
         public string Remark { get; set; }
+        public int? ContractId { get; set; }
     }
 }
