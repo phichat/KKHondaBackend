@@ -14,6 +14,6 @@ namespace KKHondaBackend.Models
         public decimal? Outstanding { get; set; }
         public int? DelayDueDate { get; set; }
         public string Remark { get; set; }
-        public int? ContractId { get; set; }
+        public int?  ContractId { get; set; }
     }
 }

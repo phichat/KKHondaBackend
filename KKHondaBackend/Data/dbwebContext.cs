@@ -35,6 +35,7 @@ namespace KKHondaBackend.Data
         public virtual DbSet<CarRegisClList> CarRegisClList { get; set; }
         public virtual DbSet<CampaignH> CampaignH { get; set; }
         public virtual DbSet<Company> Company { get; set; }
+        public virtual DbSet<CompanyInsurance> CompanyInsurance { get; set; }
         public virtual DbSet<ContractH> ContractH { get; set; }
         public virtual DbSet<CreditCalculate> CreditCalculate { get; set; }
         public virtual DbSet<CreditContract> CreditContract { get; set; }
@@ -774,6 +775,17 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.UpdateDate)
                                     .HasColumnName("update_date")
                                     .HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<CompanyInsurance>(entity =>
+            {
+                entity.HasKey(e => e.CompanyId);
+                entity.ToTable("_company_insurance");
+                entity.Property(e => e.CompanyId).HasColumnName("company_id");
+                entity.Property(e => e.CompanyCode).HasColumnName("company_code").HasMaxLength(4);
+                entity.Property(e => e.CompanyName).HasColumnName("company_name").HasMaxLength(150);
+                entity.Property(e => e.CompanyAddress).HasColumnName("company_address").HasMaxLength(300);
+                entity.Property(e => e.CompanyTel).HasColumnName("company_tel").HasMaxLength(50);
             });
 
             modelBuilder.Entity<ContractH>(entity =>

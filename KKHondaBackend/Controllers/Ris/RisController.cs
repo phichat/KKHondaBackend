@@ -94,7 +94,7 @@ namespace KKHondaBackend.Controllers.Ris
                         from fi in f1.DefaultIfEmpty()
 
                         where bi.LogReceiveId > 0 &&
-                        (bk.FreeAct == 1 || bk.FreeTag == 1 || bk.FreeTag == 1) &&
+                        // (bk.FreeAct == 1 || bk.FreeTag == 1 || bk.FreeTag == 1) &&
                         (!carExcepts.Contains($"{tl.EngineNo}{tl.FrameNo}"))
 
                         select new CarRegisWaitingTagRes
