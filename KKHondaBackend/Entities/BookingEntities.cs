@@ -17,4 +17,16 @@ namespace KKHondaBackend.Entities
             new Status { Id = 4, Desc = "ขายเชื่อ" }
         };
     }
+
+    public class BookingStatus
+    {
+        public const int Booking = 1;
+        public const int Sell = 2;
+        public const int Cancel = 9;
+        public static List<Status> Status = new List<Status> {
+            new Status { Id = 1, Desc = "จอง" },
+            new Status { Id = 2, Desc = "ขาย" },
+            new Status { Id = 9, Desc = "ยกเลิก" },
+        };
+    }
 }
