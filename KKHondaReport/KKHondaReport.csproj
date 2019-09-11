@@ -97,6 +97,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Credits\index.aspx" />
+    <Content Include="RIS\index.aspx" />
     <Content Include="Web.config" />
     <Content Include="MCS\indexMCS2.aspx" />
     <Content Include="เจ4..jpg" />
@@ -179,29 +180,83 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="MCS\BookingReport.cs" />
-    <Compile Include="MCS\formBookingReport.cs" />
-    <Compile Include="MCS\formCreditNote.cs" />
-    <Compile Include="MCS\formSummarySaleReport.cs" />
-    <Compile Include="MCS\formSummaryStockBalance.cs" />
+    <Compile Include="MCS\BookingReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MCS\formBookingReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MCS\formCreditNote.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MCS\formSummarySaleReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MCS\formSummaryStockBalance.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="MCS\indexMCS2.aspx.designer.cs">
       <DependentUpon>indexMCS2.aspx</DependentUpon>
     </Compile>
     <Compile Include="MCS\indexMCS2.aspx.cs">
       <DependentUpon>indexMCS2.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="MCS\subBookingReport.cs" />
-    <Compile Include="MCS\subCreditNote.cs" />
-    <Compile Include="MCS\subSummarySaleReport.cs" />
-    <Compile Include="MCS\subSummaryStockBalance.cs" />
-    <Compile Include="MCS\testReport.cs" />
-    <Compile Include="OTH\CreditNoteDetailsReport.cs" />
-    <Compile Include="OTH\StockBalanceMainReport.cs" />
-    <Compile Include="PSS\formProductSellingProfitReport.cs" />
-    <Compile Include="PSS\formServiceCheckReport.cs" />
-    <Compile Include="PSS\subProductSellingProfitReport.cs" />
-    <Compile Include="PSS\subServiceCheckReport.cs" />
-    <Compile Include="PSS\SummaryDepositReport.cs" />
+    <Compile Include="MCS\subBookingReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MCS\subCreditNote.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MCS\subSummarySaleReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MCS\subSummaryStockBalance.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MCS\testReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="OTH\CreditNoteDetailsReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="OTH\StockBalanceMainReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="PSS\formProductSellingProfitReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="PSS\formServiceCheckReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="PSS\subProductSellingProfitReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="PSS\subServiceCheckReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="PSS\SummaryDepositReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="RIS\index.aspx.cs">
+      <DependentUpon>index.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="RIS\index.aspx.designer.cs">
+      <DependentUpon>index.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="RIS\RegisSED.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>RegisSED.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="RIS\SED.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SED.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Credits\formContract.rpt">
@@ -247,6 +302,14 @@
     <EmbeddedResource Include="MCS\SaleReport.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>SaleReport.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="RIS\RegisSED.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>RegisSED.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="RIS\SED.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>SED.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

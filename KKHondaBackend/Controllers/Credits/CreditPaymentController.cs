@@ -196,13 +196,13 @@ namespace KKHondaBackend.Controllers.Credits
                                     select new
                                     {
                                         db.ContractItemId,
-                                        // db.TaxInvoiceNo,
+                                        db.TaxInvoiceNo,
                                         db.InstalmentNo,
                                         db.DueDate,
-                                        // db.PayDate,
+                                        db.PayDate,
                                         db.BalanceNetPrice,
-                                        // db.PayNetPrice,
-                                        // db.PaymentType,
+                                        db.PayNetPrice,
+                                        db.PaymentType,
                                         db.FineSum,
                                         db.FineSumRemain,
                                         db.Remark,
@@ -295,7 +295,7 @@ namespace KKHondaBackend.Controllers.Credits
                             Item.FineSumStatus = 11;
                         }
 
-                        // if (payment.FineSumOther > 0) Item.FineSumOther = payment.FineSumOther;
+                        if (payment.FineSumOther > 0) Item.FineSumOther = payment.FineSumOther;
 
                         // ถ้า ยอดรับชำระ น้อยกว่า ยอดคงเหลือ
                         // true = ชำระบางส่วน
@@ -321,29 +321,29 @@ namespace KKHondaBackend.Controllers.Credits
                         var PayVatPrice = Item.BalanceVatPrice - (_PayNetPrice - remainNetPriceExVat);
                         var __PayNetPrice = Item.BalanceNetPrice - _PayNetPrice;
 
-                        // Item.PayPrice = PayPrice;
-                        // Item.PayVatPrice = PayVatPrice;
-                        // Item.PayNetPrice = __PayNetPrice;
+                        Item.PayPrice = PayPrice;
+                        Item.PayVatPrice = PayVatPrice;
+                        Item.PayNetPrice = __PayNetPrice;
 
                         CreditTransItem.PayPrice = PayPrice;
                         CreditTransItem.PayVatPrice = PayVatPrice;
                         CreditTransItem.PayNetPrice = __PayNetPrice;
                         CreditTransList.Add(CreditTransItem);
 
-                        // Item.Remain = remainNetPriceExVat;
-                        // Item.RemainVatPrice = _PayNetPrice - remainNetPriceExVat;
-                        // Item.RemainNetPrice = _PayNetPrice;
+                        Item.Remain = remainNetPriceExVat;
+                        Item.RemainVatPrice = _PayNetPrice - remainNetPriceExVat;
+                        Item.RemainNetPrice = _PayNetPrice;
 
-                        // Item.Payeer = payment.UpdateBy;
-                        // Item.PayDate = payment.PayDate;
-                        // Item.PaymentType = payment.PaymentType;
+                        Item.Payeer = payment.UpdateBy;
+                        Item.PayDate = payment.PayDate;
+                        Item.PaymentType = payment.PaymentType;
 
-                        // Item.BankCode = payment.BankCode;
-                        // Item.TaxInvoiceBranchId = payment.BranchId;
-                        // if (Item.TaxInvoiceNo == null) Item.TaxInvoiceNo = TaxInvoiceNo;
-                        // if (Item.ReceiptNo == null) Item.ReceiptNo = ReceiptNo;
-                        // Item.Remark = payment.Remark;
-                        // Item.DocumentRef = payment.DocumentRef;
+                        Item.BankCode = payment.BankCode;
+                        Item.TaxInvoiceBranchId = payment.BranchId;
+                        if (Item.TaxInvoiceNo == null) Item.TaxInvoiceNo = TaxInvoiceNo;
+                        if (Item.ReceiptNo == null) Item.ReceiptNo = ReceiptNo;
+                        Item.Remark = payment.Remark;
+                        Item.DocumentRef = payment.DocumentRef;
 
                         Item.UpdateBy = payment.UpdateBy;
                         Item.UpdateDate = DateTime.Now;
@@ -400,22 +400,22 @@ namespace KKHondaBackend.Controllers.Credits
             try
             {
                 var item = ctx.CreditContractItem.SingleOrDefault(_item => _item.ContractItemId == cencel.ContractItemId);
-                // item.PayDate = null;
-                // item.PaymentType = null;
-                // item.PayPrice = null;
-                // item.PayVatPrice = null;
-                // item.PayNetPrice = null;
-                // item.Payeer = null;
+                item.PayDate = null;
+                item.PaymentType = null;
+                item.PayPrice = null;
+                item.PayVatPrice = null;
+                item.PayNetPrice = null;
+                item.Payeer = null;
                 item.Remain = item.Balance;
                 item.RemainVatPrice = item.BalanceVatPrice;
                 item.RemainNetPrice = item.BalanceNetPrice;
-                // item.FineSumRemain = item.FineSum;
-                // item.FineSumOther = 0;
+                item.FineSumRemain = item.FineSum;
+                item.FineSumOther = 0;
                 if (item.FineSumStatus != null) item.FineSumStatus = 13;
                 item.Status = 13;
-                // item.BankCode = null;
-                // item.TaxInvoiceNo = null;
-                // item.ReceiptNo = null;
+                item.BankCode = null;
+                item.TaxInvoiceNo = null;
+                item.ReceiptNo = null;
                 item.CancelRemark = cencel.CancelRemark;
                 item.UpdateBy = cencel.UpdateBy;
                 item.UpdateDate = DateTime.Now;
