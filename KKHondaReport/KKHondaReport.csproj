@@ -245,6 +245,18 @@
     <Compile Include="RIS\index.aspx.designer.cs">
       <DependentUpon>index.aspx</DependentUpon>
     </Compile>
+    <Compile Include="RIS\RegisAL.cs">
+      <DependentUpon>RegisAL.rpt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <SubType>Component</SubType>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="RIS\RegisCL.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>RegisCL.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="RIS\RegisSED.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -302,6 +314,14 @@
     <EmbeddedResource Include="MCS\SaleReport.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>SaleReport.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="RIS\RegisAL.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>RegisAL.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="RIS\RegisCL.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>RegisCL.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="RIS\RegisSED.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
