@@ -24,7 +24,7 @@ namespace KKHondaBackend.Entities
         {
             new Status { Id = 0, Desc = "ยกเลิก" },
             new Status { Id = 1, Desc = "รับเอกสารเข้าระบบ" },
-            new Status { Id = 2, Desc = "สรุปเรื่องส่งดำเนินการ" },
+            new Status { Id = 2, Desc = "ส่งเรื่องดำเนินการ" },
             new Status { Id = 3, Desc = "ส่งมอบ (บางส่วน)" },
             new Status { Id = 4, Desc = "ส่งมอบ (ครบ)" },
         };
