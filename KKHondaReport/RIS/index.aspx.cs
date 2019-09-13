@@ -204,7 +204,7 @@ namespace KKHondaReport.RIS
                 var pass = connection.Password;
                 var database = connection.InitialCatalog;
 
-                var file = "./RegisRegisVehicleTax.rpt";
+                var file = "./RegisVehicleTax.rpt";
                 rptDoc.Load(Server.MapPath(file));
                 rptDoc.Refresh();
 
