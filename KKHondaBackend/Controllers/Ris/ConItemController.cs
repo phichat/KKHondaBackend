@@ -37,8 +37,10 @@ namespace KKHondaBackend.Controllers.Ris
                         ItemName = list.ItemName,
                         ItemPrice1 = list.ItemPrice1,
                         ItemVatPrice1 = list.ItemVatPrice1,
+                        ItemNetPrice1 = list.ItemNetPrice1,
                         ItemCutBalance = list.ItemCutBalance,
                         ItemPrice2 = list.ItemPrice2,
+                        ItemPrice3 = list.ItemPrice3,
                         ItemPriceTotal = list.ItemPriceTotal,
                         State = list.State,
                         DateReceipt = list.DateReceipt,
@@ -125,10 +127,10 @@ namespace KKHondaBackend.Controllers.Ris
                                IsReceive = doc != null ? doc.IsReceive : default(bool?),
                                ReceiveDate = doc != null ? doc.ReceiveDate : default(DateTime?),
                                ReceiveBy = doc != null ? doc.ReceiveBy : default(int?),
-                               ReceiveName = rec != null ? rec.Fullname : null,
+                               ReceiveName = rec != null ? rec.FullName : null,
                                IsSend = doc != null ? doc.IsSend : default(bool?),
                                SendBy = doc != null ? doc.SendBy : default(int?),
-                               SendName = sed != null ? sed.Fullname : null,
+                               SendName = sed != null ? sed.FullName : null,
                                SendDate = doc != null ? doc.SendDate : default(DateTime?),
                                Remark = doc != null ? doc.Remark : null
                            }).ToList();

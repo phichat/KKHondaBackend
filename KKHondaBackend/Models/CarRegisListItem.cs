@@ -9,8 +9,10 @@ namespace KKHondaBackend.Models
         public string ItemName { get; set; }
         public decimal? ItemPrice1 { get; set; }
         public decimal? ItemVatPrice1 { get; set; }
+        public decimal? ItemNetPrice1 { get; set; }
         public decimal? ItemCutBalance { get; set; }
         public decimal? ItemPrice2 { get; set; }
+        public decimal? ItemPrice3 { get; set; }
         public decimal? ItemPriceTotal { get; set; }
         public int? State { get; set; }
         public DateTime? DateReceipt { get; set; }
@@ -25,8 +27,10 @@ namespace KKHondaBackend.Models
         public string ItemName { get; set; }
         public decimal? ItemPrice1 { get; set; }
         public decimal? ItemVatPrice1 { get; set; }
+        public decimal? ItemNetPrice1 { get; set; }
         public decimal? ItemCutBalance { get; set; }
         public decimal? ItemPrice2 { get; set; }
+        public decimal? ItemPrice3 { get; set; }
         public decimal? ItemPriceTotal { get; set; }
         public int? State { get; set; }
         public DateTime? DateReceipt { get; set; }

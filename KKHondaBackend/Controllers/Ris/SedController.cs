@@ -51,10 +51,10 @@ namespace KKHondaBackend.Controllers.Ris
                         BranchId = sed.BranchId,
                         BranchName = brh.BranchName,
                         CreateBy = sed.CreateBy,
-                        CreateName = usr.Fullname,
+                        CreateName = usr.FullName,
                         CreateDate = sed.CreateDate,
                         UpdateBy = sed.UpdateBy,
-                        UpdateName = upd.Fullname,
+                        UpdateName = upd.FullName,
                         UpdateDate = sed.UpdateDate,
                         Reason = sed.Reason,
                         Remark = sed.Remark

@@ -54,10 +54,10 @@ namespace KKHondaBackend.Controllers.Ris
                     Status = rev.Status,
                     StatusDesc = RevStatus.Status.First(x => x.Id == rev.Status).Desc,
                     CreateBy = rev.CreateBy,
-                    CreateName = cre.Fullname,
+                    CreateName = cre.FullName,
                     CreateDate = rev.CreateDate,
                     UpdateBy = rev.UpdateBy,
-                    UpdateName = upd.Fullname,
+                    UpdateName = upd.FullName,
                     UpdateDate = rev.UpdateDate,
                     Reason = rev.Reason
                 });

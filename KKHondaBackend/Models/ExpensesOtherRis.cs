@@ -10,6 +10,7 @@ namespace KKHondaBackend.Models
         public string ExpensesDescription { get; set; }
         public decimal ExpensesAmount { get; set; }
         public int ExpensesType { get; set; }
+        public string ExpensesTag {get;set;}
         public bool Status { get; set; }
         public int CreateBy { get; set; }
         public DateTime DateCreate { get; set; }
@@ -25,6 +26,7 @@ namespace KKHondaBackend.Models
         public decimal ExpensesAmount { get; set; }
         public int ExpensesType { get; set; }
         public string ExpensesTypeDesc { get; set; }
+        public string ExpensesTag {get;set;}
         public bool Status { get; set; }
         public string StatusDesc { get; set; }
         public int CreateBy { get; set; }

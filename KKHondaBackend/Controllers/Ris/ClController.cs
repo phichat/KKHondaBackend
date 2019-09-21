@@ -53,14 +53,14 @@ namespace KKHondaBackend.Controllers.Ris
                         Status = cl.Status,
                         StatusDesc = ClStatus.Status.FirstOrDefault(x => x.Id == cl.Status).Desc,
                         RefundId = cl.RefundId,
-                        RefundName = usRf.Fullname,
+                        RefundName = usRf.FullName,
                         BranchId = cl.BranchId,
                         BranchName = brh.BranchName,
                         CreateBy = cl.CreateBy,
-                        CreateName = usr.Fullname,
+                        CreateName = usr.FullName,
                         CreateDate = cl.CreateDate,
                         UpdateBy = cl.UpdateBy,
-                        UpdateName = upd.Fullname,
+                        UpdateName = upd.FullName,
                         UpdateDate = cl.UpdateDate
                     });
         }

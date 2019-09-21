@@ -181,7 +181,7 @@ namespace KKHondaBackend.Services
                             Deposit = book.BookDeposit,
                             OutStandingPrice = book.BookOutstandingPrice,
                             CreateDate = book.CreateDate,
-                            CreateBy = user.Fullname
+                            CreateBy = user.FullName
                         }).ToArray();
 
             return bookingLists;

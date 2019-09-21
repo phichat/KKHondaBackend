@@ -58,7 +58,7 @@ namespace KKHondaBackend.Controllers.Ris
                         AlId = al.AlId,
                         AlNo = al.AlNo,
                         SedNo = al.SedNo,
-                        BorrowerName = brow.Fullname,
+                        BorrowerName = brow.FullName,
                         BalancePrice = cl.NetPrice > 0 ? cl.NetPrice - cl.ReceivePrice : al.PaymentPrice,
                         ReceivePrice = cl.NetPrice > 0 ? cl.ReceivePrice : 0,
                         NetPrice = cl.NetPrice > 0 ? cl.NetPrice : al.PaymentPrice,
@@ -74,10 +74,10 @@ namespace KKHondaBackend.Controllers.Ris
                         BranchId = al.BranchId,
                         BranchName = brh.BranchName,
                         CreateBy = al.CreateBy,
-                        CreateName = usr.Fullname,
+                        CreateName = usr.FullName,
                         CreateDate = al.CreateDate,
                         UpdateBy = al.UpdateBy,
-                        UpdateName = upd.Fullname,
+                        UpdateName = upd.FullName,
                         UpdateDate = al.UpdateDate
                     });
         }
