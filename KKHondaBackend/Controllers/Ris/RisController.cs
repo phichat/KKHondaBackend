@@ -35,7 +35,8 @@ namespace KKHondaBackend.Controllers.Ris
                     select new CarRegisListRes
                     {
                         BookingNo = crl.BookingNo,
-                        BookingStatus = crl.BookingStatus,
+                        Status1 = crl.Status1,
+                        Status2 = crl.Status2,
                         BookingDate = crl.BookingDate,
                         BranchId = crl.BranchId,
                         BranchName = brh.BranchName,
@@ -52,7 +53,8 @@ namespace KKHondaBackend.Controllers.Ris
                         Province = his.Province,
                         Reason = crl.Reason,
                         Remark = crl.Remark,
-                        StatusDesc = ConStatus.Status.FirstOrDefault(x => x.Id == crl.BookingStatus).Desc,
+                        Status1Desc = ConStatus1.Status.FirstOrDefault(x => x.Id == crl.Status1).Desc,
+                        Status2Desc = ConStatus2.Status.FirstOrDefault(x => x.Id == crl.Status2).Desc,
                         State1 = crl.State1,
                         State2 = crl.State2,
                         TagNo = his.TagNo,
@@ -84,7 +86,7 @@ namespace KKHondaBackend.Controllers.Ris
         public IActionResult WaitingTag()
         {
             var carExcepts = ctx.CarRegisList
-                .Where(x => x.BookingStatus != ConStatus.Cancel)
+                .Where(x => x.Status1 != ConStatus1.Cancel)
                 .Select(x => $"{x.ENo}{x.FNo}");
 
             var list = (from bk in ctx.Booking
@@ -129,14 +131,18 @@ namespace KKHondaBackend.Controllers.Ris
             return Ok(list.ToList());
         }
 
-        [HttpGet("CarRegisList")]
-        public IActionResult CarRegisList() => Ok(RegisList.Where(x => x.BookingId != ConStatus.CompleteDelivery).ToList());
+        // [HttpGet("CarRegisList")]
+        // public IActionResult CarRegisList() => 
+        //     Ok(RegisList.Where(x => x.BookingId != ConStatus.CompleteDelivery).ToList());
 
-        [HttpGet("CarRegisDeliver")]
-        public IActionResult CarRegisDeliver() => Ok(RegisList.Where(x => x.BookingId == ConStatus.CompleteDelivery).ToList());
+        // [HttpGet("CarRegisDeliver")]
+        // public IActionResult CarRegisDeliver() => 
+        //     Ok(RegisList.Where(x => x.BookingId == ConStatus.CompleteDelivery).ToList());
 
         [HttpGet("CarRegisReceive")]
-        public IActionResult CarRegisReceive() => Ok(RegisList.Where(x => x.BookingStatus == ConStatus.Received).ToList());
+        public IActionResult CarRegisReceive() =>
+            Ok(RegisList.Where(x => x.State1 != ConStatus1.Cancel && x.Status2 == null).ToList());
+
 
         [HttpGet("GetByConNo")]
         public IActionResult GetByConNo(string conNo)
@@ -183,7 +189,7 @@ namespace KKHondaBackend.Controllers.Ris
                     var tagRegisList = value.TagRegis;
                     tagRegisList.BookingNo = iSysParamService.GenerateConNo((int)tagRegisList.BranchId);
                     tagRegisList.CreateDate = DateTime.Now;
-                    tagRegisList.BookingStatus = ConStatus.Received; // ปกติ | รับเรื่อง
+                    tagRegisList.Status1 = ConStatus1.Received; // ปกติ | รับเรื่อง
                     ctx.Entry(tagRegisList).State = EntityState.Added;
                     ctx.SaveChanges();
 
@@ -220,6 +226,44 @@ namespace KKHondaBackend.Controllers.Ris
                 try
                 {
                     var tagRegisList = value.TagRegis;
+                    var con = ctx.CarRegisList
+                        .AsNoTracking()
+                        .Single(x => x.BookingId == tagRegisList.BookingId);
+
+                    var sed = ctx.CarRegisSedList
+                        .FirstOrDefault(x =>
+                            x.Status != SedStatus.Cancel &&
+                            x.ConList.Contains(con.BookingNo)
+                        );
+
+                    var newP3 = tagRegisList.Price3 > 0 ? tagRegisList.Price3 : 0;
+                    var oldP3 = con.Price3 > 0 ? con.Price3 : 0;
+
+                    // กรณีเบิกเงินค่าใช้จ่ายเพิ่ม หรือ แก้ไขเงินค่าใช้จ่าย 
+                    // ต้องไปอัพเดทค่าใช้จ่ายที่ ใบส่งเรื่องด้วย
+                    if (sed != null && newP3 > oldP3)
+                    {
+                        var price3 = newP3 - oldP3;
+                        sed.Price3 = (sed.Price3 > 0) ? sed.Price3 += price3 : price3;
+                        sed.Status = SedStatus.Normal;
+                        ctx.Entry(sed).State = EntityState.Modified;
+                    }
+                    else if (sed != null && newP3 < oldP3)
+                    {
+                        var price3 = oldP3 - newP3;
+                        sed.Price3 = (sed.Price3 > 0) ? sed.Price3 -= price3 : price3;
+                        ctx.Entry(sed).State = EntityState.Modified;
+                    }
+
+                    if (tagRegisList.Price2 > 0 && newP3 == 0)
+                    {
+                        tagRegisList.Status1 = ConStatus1.Withdraw1;
+                    }
+                    else if (newP3 > 0)
+                    {
+                        tagRegisList.Status1 = ConStatus1.Withdraw2;
+                    }
+
                     tagRegisList.UpdateDate = DateTime.Now;
                     ctx.Entry(tagRegisList).State = EntityState.Modified;
                     ctx.SaveChanges();
@@ -269,7 +313,7 @@ namespace KKHondaBackend.Controllers.Ris
             {
                 var item = ctx.CarRegisList.FirstOrDefault(x => x.BookingNo == value.BookingNo);
                 item.Reason = value.Reason;
-                item.BookingStatus = ConStatus.Cancel;
+                item.Status1 = ConStatus1.Cancel;
                 item.UpdateDate = DateTime.Now;
                 ctx.CarRegisList.Update(item);
                 ctx.SaveChanges();

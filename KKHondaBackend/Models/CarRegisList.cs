@@ -7,7 +7,9 @@ namespace KKHondaBackend.Models
     {
         public int BookingId { get; set; }
         public string BookingNo { get; set; }
-        public int BookingStatus { get; set; }
+        public string RevNo { get; set; }
+        public int? Status1 { get; set; }
+        public int? Status2 { get; set; }
         public DateTime BookingDate { get; set; }
         public int? State1 { get; set; }
         public int? State2 { get; set; }
@@ -35,8 +37,10 @@ namespace KKHondaBackend.Models
     {
         public int BookingId { get; set; }
         public string BookingNo { get; set; }
-        public int BookingStatus { get; set; }
-        public string StatusDesc { get; set; }
+        public int? Status1 { get; set; }
+        public int? Status2 { get; set; }
+        public string Status1Desc { get; set; }
+        public string Status2Desc { get; set; }
         public DateTime BookingDate { get; set; }
         public int? State1 { get; set; }
         public int? State2 { get; set; }

@@ -13,20 +13,36 @@ namespace KKHondaBackend.Entities
             new Status { Id = 2, Desc = "เงินโอน" }
         };
     }
-    public class ConStatus
+    public class ConStatus1
     {
         public const int Cancel = 0;
         public const int Received = 1;
-        public const int Sending = 2;
-        public const int PartialDelivery = 3;
-        public const int CompleteDelivery = 4;
+        public const int Withdraw1 = 2;
+        public const int Withdraw2 = 3;
+        // public const int Sending = 4;
+        // public const int PartialDelivery = 5;
+        // public const int CompleteDelivery = 6;
         public static List<Status> Status = new List<Status>
         {
             new Status { Id = 0, Desc = "ยกเลิก" },
             new Status { Id = 1, Desc = "รับเอกสารเข้าระบบ" },
-            new Status { Id = 2, Desc = "ส่งเรื่องดำเนินการ" },
-            new Status { Id = 3, Desc = "ส่งมอบ (บางส่วน)" },
-            new Status { Id = 4, Desc = "ส่งมอบ (ครบ)" },
+            new Status { Id = 2, Desc = "เบิกเงินครั้งที่ 1" },
+            new Status { Id = 3, Desc = "เบิกเงินครั้งที่ 2" },
+            // new Status { Id = 4, Desc = "ส่งเรื่องดำเนินการ" },
+            // new Status { Id = 5, Desc = "ส่งมอบ (บางส่วน)" },
+            // new Status { Id = 6, Desc = "ส่งมอบ (ครบ)" },
+        };
+    }
+
+    public class ConStatus2 {
+        public const int Send1 = 1;
+        public const int Send2 = 2;
+        public const int REV = 3;
+        public static List<Status> Status = new List<Status>
+        {
+            new Status { Id = 1, Desc = "ส่งเรื่องครั้งที่ 1" },
+            new Status { Id = 2, Desc = "ส่งเรื่องครั้งที่ 2" },
+            new Status { Id = 3, Desc = "บันทึกรับคืนเรื่อง" }
         };
     }
 

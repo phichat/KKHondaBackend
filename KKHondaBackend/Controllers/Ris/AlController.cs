@@ -108,26 +108,44 @@ namespace KKHondaBackend.Controllers.Ris
         [HttpPost]
         public IActionResult Post([FromBody] CarRegisAlList value)
         {
-            try
+            using (var transaction = ctx.Database.BeginTransaction())
             {
-                value.AlNo = iSysParamService.GenerateAlNo(value.BranchId);
-                value.CreateDate = DateTime.Now;
-                value.Status = AlStatus.Normal; // ปกติ
-                ctx.Entry(value).State = EntityState.Added;
-                ctx.SaveChanges();
+                try
+                {
+                    value.AlNo = iSysParamService.GenerateAlNo(value.BranchId);
+                    value.CreateDate = DateTime.Now;
+                    value.Status = AlStatus.Normal; // ปกติ
+                    ctx.Entry(value).State = EntityState.Added;
+                    ctx.SaveChanges();
 
-                var sed = ctx.CarRegisSedList.FirstOrDefault(x => x.SedNo == value.SedNo);
-                sed.Price2Remain = sed.Price2Remain - value.PaymentPrice;
-                if (sed.Price2Remain == 0)
-                    sed.Status = SedStatus.Borrowed; // บันทึกยืมเงิน
-                ctx.Entry(sed).State = EntityState.Modified;
-                ctx.SaveChanges();
+                    var sed = ctx.CarRegisSedList.FirstOrDefault(x => x.SedNo == value.SedNo);
+                    sed.Price2Remain = sed.Price2Remain - value.PaymentPrice;
+                    if (sed.Price2Remain == 0)
+                        sed.Status = SedStatus.Borrowed; // บันทึกยืมเงิน
+                    ctx.Entry(sed).State = EntityState.Modified;
+                    ctx.SaveChanges();
+
+                    var conList = sed.ConList.Split(',');
+                    foreach (string con in conList)
+                    {
+                        var ris = ctx.CarRegisList.FirstOrDefault(x => x.BookingNo == con);
+                        // กรณี Status2
+                        // null  => อัพเดทเป็นส่งเรื่องดำเนินการครั้งที่ 1
+                        // Send1 => อัพเดทเป็นส่งเรื่องดำเนินการครั้งที่ 2
+                        ris.Status2 = ris.Status2 == null ? ConStatus2.Send1 : ConStatus2.Send2;
+                        ctx.Entry(ris).State = EntityState.Modified;
+                    }
+                    ctx.SaveChanges();
+
+                    transaction.Commit();
+                }
+                catch (DbUpdateConcurrencyException ex)
+                {
+                    transaction.Rollback();
+                    return StatusCode(500, ex.Message);
+                }
+                return NoContent();
             }
-            catch (DbUpdateConcurrencyException ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-            return NoContent();
         }
 
         [HttpPost("Cancel")]

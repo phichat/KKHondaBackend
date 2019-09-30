@@ -513,7 +513,9 @@ namespace KKHondaBackend.Data
                 entity.HasKey(e => e.BookingId);
                 entity.Property(e => e.BookingId).HasColumnName("booking_id");
                 entity.Property(e => e.BookingNo).HasColumnName("booking_no").HasMaxLength(250);
-                entity.Property(e => e.BookingStatus).HasColumnName("booking_status");
+                entity.Property(e => e.RevNo).HasColumnName("rev_no").HasMaxLength(50);
+                entity.Property(e => e.Status1).HasColumnName("status_1");
+                entity.Property(e => e.Status2).HasColumnName("status_2");
                 entity.Property(e => e.BookingDate).HasColumnName("booking_date").HasColumnType("datetime");
                 entity.Property(e => e.State1).HasColumnName("state_1");
                 entity.Property(e => e.State2).HasColumnName("state_2");
@@ -632,6 +634,7 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.VatPrice1).HasColumnName("vat_price1").HasColumnType("decimal(18,2)").HasDefaultValue(0).IsRequired();
                 entity.Property(e => e.NetPrice1).HasColumnName("net_price1").HasColumnType("decimal(18,2)").HasDefaultValue(0).IsRequired();
                 entity.Property(e => e.Price2).HasColumnName("price2").HasColumnType("decimal(18,2)").IsRequired();
+                entity.Property(e => e.Price3).HasColumnName("price3").HasColumnType("decimal(18,2)");
                 entity.Property(e => e.Price2Remain).HasColumnName("price2_remain").HasColumnType("decimal(18,2)").IsRequired();
                 entity.Property(e => e.TotalPrice).HasColumnName("total_price").HasColumnType("decimal(18,2)").IsRequired();
                 entity.Property(e => e.BorrowMoney).HasColumnName("borrow_money").HasColumnType("decimal(18,2)").IsRequired();

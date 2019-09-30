@@ -40,6 +40,7 @@ namespace KKHondaBackend.Controllers.Ris
                         // .Split(new string[] { "," }, StringSplitOptions.None),
                         Price1 = sed.Price1,
                         Price2 = sed.Price2,
+                        Price3 = sed.Price3,
                         VatPrice1 = sed.VatPrice1,
                         NetPrice1 = sed.NetPrice1,
                         BorrowMoney = sed.BorrowMoney,
@@ -107,7 +108,7 @@ namespace KKHondaBackend.Controllers.Ris
                 foreach (string con in conList)
                 {
                     var ris = ctx.CarRegisList.FirstOrDefault(x => x.BookingNo == con);
-                    ris.BookingStatus = ConStatus.Sending; // สรุปส่งเรื่ิองดำเนินการ
+                    ris.Status2 = ConStatus2.Send1;
                     ctx.Entry(ris).State = EntityState.Modified;
                 }
                 ctx.SaveChanges();
@@ -133,15 +134,14 @@ namespace KKHondaBackend.Controllers.Ris
                 value.Status = SedStatus.Cancel;
                 value.UpdateDate = DateTime.Now;
                 value.Reason = c.Reason;
-                // ctx.Entry(value).State = EntityState.Modified;
-                ctx.CarRegisSedList.Update(value);
+                ctx.Entry(value).State = EntityState.Modified;
                 ctx.SaveChanges();
 
                 var conList = value.ConList.Split(',');
                 foreach (string con in conList)
                 {
                     var ris = ctx.CarRegisList.FirstOrDefault(x => x.BookingNo == con);
-                    ris.BookingStatus = ConStatus.Received; // รับเรื่อง
+                    ris.Status2 = null;
                     ctx.Entry(ris).State = EntityState.Modified;
                 }
                 ctx.SaveChanges();

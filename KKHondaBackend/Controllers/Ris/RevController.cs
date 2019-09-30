@@ -105,6 +105,8 @@ namespace KKHondaBackend.Controllers.Ris
                     value.TagConList.ForEach(item =>
                     {
                         item.UpdateDate = DateTime.Now;
+                        item.Status2 = ConStatus2.REV;
+                        item.RevNo = value.TagRev.RevNo;
                         ctx.Entry(item).State = EntityState.Modified;
                     });
                     ctx.SaveChanges();
@@ -161,7 +163,8 @@ namespace KKHondaBackend.Controllers.Ris
                     {
                         var ris = ctx.CarRegisList.FirstOrDefault(x => x.BookingNo == con);
                         ris.CutBalance = ris.Price1;
-                        ris.BookingStatus = ConStatus.Sending; // สรุปส่งเรื่ิองดำเนินการ
+                        // ris.Status1
+                        // ris.Status2
                         ris.State1 = null;
                         ris.State2 = null;
                         ctx.Entry(ris).State = EntityState.Modified;
