@@ -564,8 +564,8 @@ namespace KKHondaBackend.Controllers.Credits
                     Models.Booking booking = new Models.Booking();
                     booking = ctx.Booking.SingleOrDefault(b => b.BookingId == creditContract.BookingId);
 
-                    // ค้นหาชื่อเช่าซื้อด้วยรหัส
-                    var customer = iCustService.GetCustomerByCode(creditContract.ContractHire);
+                    // // ค้นหาชื่อเช่าซื้อด้วยรหัส
+                    // var customer = iCustService.GetCustomerByCode(creditContract.ContractHire);
 
                     if (booking.SellDate == null)
                         booking.SellDate = DateTime.Now;

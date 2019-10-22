@@ -60,7 +60,7 @@ namespace KKHondaBackend.Controllers.Ris
                     UpdateName = upd.FullName,
                     UpdateDate = rev.UpdateDate,
                     Reason = rev.Reason
-                });
+                }).AsNoTracking();
         }
 
         [HttpGet("All")]

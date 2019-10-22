@@ -62,7 +62,7 @@ namespace KKHondaBackend.Controllers.Ris
                         UpdateBy = cl.UpdateBy,
                         UpdateName = upd.FullName,
                         UpdateDate = cl.UpdateDate
-                    });
+                    }).AsNoTracking();
         }
 
         [HttpGet("All")]
@@ -88,7 +88,7 @@ namespace KKHondaBackend.Controllers.Ris
                 if (value.BalancePrice == 0)
                 {
                     var sed = ctx.CarRegisAlList.FirstOrDefault(x => x.AlNo == value.AlNo);
-                    sed.Status = AlStatus.Normal; // บันทึกคืนเงิน
+                    sed.Status = AlStatus.CashBack; // บันทึกคืนเงิน
                     ctx.Entry(sed).State = EntityState.Modified;
                     ctx.SaveChanges();
                 }

@@ -505,6 +505,9 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.WarCompany).HasColumnName("war_company").HasMaxLength(250);
                 entity.Property(e => e.WarRegis).HasColumnName("war_regis").HasColumnType("datetime");
                 entity.Property(e => e.WarExpire).HasColumnName("war_expire").HasColumnType("datetime");
+                entity.Property(e => e.OwnerCode).HasColumnName("owner_code").HasMaxLength(50);
+                entity.Property(e => e.VisitorCode).HasColumnName("visitor_code").HasMaxLength(50);
+
             });
 
             modelBuilder.Entity<CarRegisList>(entity =>
@@ -547,6 +550,7 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.BookingId).HasColumnName("booking_id");
                 entity.Property(e => e.ItemCode).HasColumnName("item_code").HasMaxLength(8);
                 entity.Property(e => e.ItemName).HasColumnName("item_name").HasMaxLength(250);
+                entity.Property(e => e.ItemTag).HasColumnName("item_tag").HasMaxLength(8);
                 entity.Property(e => e.ItemPrice1).HasColumnName("item_price_1").HasColumnType("numeric(18,2)");
                 entity.Property(e => e.ItemVatPrice1).HasColumnName("item_vat_price_1").HasColumnType("numeric(18,2)");
                 entity.Property(e => e.ItemNetPrice1).HasColumnName("item_net_price_1").HasColumnType("numeric(18,2)");
@@ -1762,6 +1766,8 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.TypeSupplier)
                                     .HasColumnName("type_supplier")
                                     .HasMaxLength(50);
+
+                entity.Property(e => e.IdCard).HasColumnName("idcard").HasColumnType("nvarchar(MAX)");
 
                 entity.Property(e => e.UpdateBy)
                                     .HasColumnName("update_by")

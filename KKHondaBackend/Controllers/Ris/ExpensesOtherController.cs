@@ -45,7 +45,7 @@ namespace KKHondaBackend.Controllers.Ris
                         UpdateBy = exp.UpdateBy,
                         UpdateName = upd.FullName,
                         DateUpdate = exp.DateUpdate
-                    });
+                    }).AsNoTracking();
         }
 
         private IEnumerable<ExpensesOtherRisRes> ActiveList

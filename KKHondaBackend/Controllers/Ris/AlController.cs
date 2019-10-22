@@ -34,7 +34,7 @@ namespace KKHondaBackend.Controllers.Ris
                     BalancePrice = x.Where(o => o.AlNo == x.Key.AlNo).OrderByDescending(o => o.ClId).FirstOrDefault().BalancePrice,
                     ReceivePrice = x.Sum(o => o.ReceivePrice),
                     NetPrice = x.Where(o => o.AlNo == x.Key.AlNo).OrderByDescending(o => o.ClId).FirstOrDefault().NetPrice
-                });
+                }).AsNoTracking();
         }
 
         private IEnumerable<CarRegisAlListRes> AlListRes
@@ -79,7 +79,7 @@ namespace KKHondaBackend.Controllers.Ris
                         UpdateBy = al.UpdateBy,
                         UpdateName = upd.FullName,
                         UpdateDate = al.UpdateDate
-                    });
+                    }).AsNoTracking();
         }
 
         [HttpGet("NormalList")]
@@ -129,10 +129,19 @@ namespace KKHondaBackend.Controllers.Ris
                     foreach (string con in conList)
                     {
                         var ris = ctx.CarRegisList.FirstOrDefault(x => x.BookingNo == con);
-                        // กรณี Status2
-                        // null  => อัพเดทเป็นส่งเรื่องดำเนินการครั้งที่ 1
-                        // Send1 => อัพเดทเป็นส่งเรื่องดำเนินการครั้งที่ 2
-                        ris.Status2 = ris.Status2 == null ? ConStatus2.Send1 : ConStatus2.Send2;
+                        // กรณี Status1
+                        // Withdraw1 => อัพเดทเป็นส่งเรื่องดำเนินการครั้งที่ 1
+                        // Withdraw2 => อัพเดทเป็นส่งเรื่องดำเนินการครั้งที่ 2
+                        switch (ris.Status1)
+                        {
+                            case ConStatus1.Withdraw1:
+                                 ris.Status2 = ConStatus2.Send1;
+                                break;
+
+                            case ConStatus1.Withdraw2:
+                                ris.Status2 = ConStatus2.Send2;
+                                break;
+                        }
                         ctx.Entry(ris).State = EntityState.Modified;
                     }
                     ctx.SaveChanges();

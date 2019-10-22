@@ -59,7 +59,7 @@ namespace KKHondaBackend.Controllers.Ris
                         UpdateDate = sed.UpdateDate,
                         Reason = sed.Reason,
                         Remark = sed.Remark
-                    });
+                    }).AsNoTracking();
         }
 
         [HttpGet("All")]
