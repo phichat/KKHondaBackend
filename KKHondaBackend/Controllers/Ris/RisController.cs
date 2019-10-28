@@ -79,6 +79,27 @@ namespace KKHondaBackend.Controllers.Ris
               .AsNoTracking();
     }
 
+    public IEnumerable<CarRegisListItemSummary> RegisListItem(string itemTag)
+    {
+      return (from d in ctx.CarRegisListItem
+              join h in ctx.CarRegisList on (int)d.BookingId equals h.BookingId
+              where d.ItemTag == itemTag &&
+                   h.Status1 != ConStatus1.Cancel &&
+                   h.Status2 == null
+              group d by h.BookingId into g
+              select new CarRegisListItemSummary
+              {
+                BookingId = g.Key,
+                ItemPrice1 = g.Sum(o => o.ItemPrice1),
+                ItemPrice2 = g.Sum(o => o.ItemPrice2),
+                ItemPrice3 = g.Sum(o => o.ItemPrice3),
+                ItemVatPrice1 = g.Sum(o => o.ItemVatPrice1),
+                ItemNetPrice1 = g.Sum(o => o.ItemNetPrice1),
+                ItemCutBalance = g.Sum(o => o.ItemCutBalance),
+                ItemPriceTotal = g.Sum(o => o.ItemPriceTotal)
+              }).ToList();
+    }
+
     [HttpGet("All")]
     public IActionResult All() => Ok(RegisList.ToList());
 
@@ -149,6 +170,74 @@ namespace KKHondaBackend.Controllers.Ris
     public IActionResult CarRegisReceive() =>
         Ok(RegisList.Where(x => x.State1 != ConStatus1.Cancel && x.Status2 == null).ToList());
 
+    [HttpGet("CarRegisReceiveTag")]
+    public IActionResult CarRegisReceiveTag()
+    {
+      var tag = (from crl in ctx.CarRegisList
+                 join crli in RegisListItem(ExpensesTag.EXP10001) on crl.BookingId equals crli.BookingId
+                 join his in ctx.CarHistory on crl.BookingId equals his.BookingId
+                 join brh in ctx.Branch on crl.BranchId equals brh.BranchId
+                 join _cr in ctx.User on crl.CreateBy equals _cr.Id into cr1
+                 join _up in ctx.User on crl.UpdateBy equals _up.Id into up1
+                 from cre in cr1.DefaultIfEmpty()
+                 from upd in up1.DefaultIfEmpty()
+
+                 where crl.Status1 != ConStatus1.Cancel && crl.Status2 == null
+
+                 select new CarRegisListRes
+                 {
+                   BookingNo = crl.BookingNo,
+                   Status1 = crl.Status1,
+                   Status2 = crl.Status2,
+                   BookingDate = crl.BookingDate,
+                   BranchId = crl.BranchId,
+                   BranchName = brh.BranchName,
+                   BranchProvince = brh.BranchProvince,
+                   CreateBy = crl.CreateBy,
+                   CreateDate = crl.CreateDate,
+                   CreateName = cre.FullName,
+                   ENo = crl.ENo,
+                   FNo = crl.FNo,
+                   Price1 = crli.ItemPrice1,
+                   Price2 = crli.ItemPrice2,
+                   Price3 = crli.ItemPrice3,
+                   VatPrice1 = crli.ItemVatPrice1,
+                   NetPrice1 = crli.ItemNetPrice1,
+                   CutBalance = crli.ItemCutBalance,
+                   Province = his.Province,
+                   Reason = crl.Reason,
+                   Remark = crl.Remark,
+                   Status1Desc = ConStatus1.Status.FirstOrDefault(x => x.Id == crl.Status1).Desc,
+                   Status2Desc = ConStatus2.Status.FirstOrDefault(x => x.Id == crl.Status2).Desc,
+                   State1 = crl.State1,
+                   State2 = crl.State2,
+                   TagNo = his.TagNo,
+                   TagRegis = his.TagRegis,
+                   TotalPrice = crl.TotalPrice,
+                   TransportReceiptDate = crl.TransportReceiptDate,
+                   TransportServiceCharge = crl.TransportServiceCharge,
+                   UpdateBy = crl.UpdateBy,
+                   UpdateDate = crl.UpdateDate,
+                   UpdateName = upd.FullName,
+                   BookingId = crl.BookingId,
+                   RevNo = crl.RevNo,
+                   OwnerCode = his.OwnerCode,
+                   VisitorCode = his.VisitorCode,
+                 }).ToList();
+      return Ok(tag);
+    }
+
+    [HttpGet("CarRegisReceiveWaranty")]
+    public IActionResult CarRegisReceiveWaranty()
+    {
+      return Ok();
+    }
+
+    [HttpGet("CarRegisReceiveAct")]
+    public IActionResult CarRegisReceiveAct()
+    {
+      return Ok();
+    }
 
     [HttpGet("GetByConNo")]
     public IActionResult GetByConNo(string conNo)
