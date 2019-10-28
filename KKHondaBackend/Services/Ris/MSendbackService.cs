@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using KKHondaBackend.Data;
 using KKHondaBackend.Models;
 
@@ -24,7 +25,7 @@ namespace KKHondaBackend.Services.Ris
 
         public IEnumerable<CarRegisMSendback> Active
         {
-            get => ctx.CarRegisMSendback.Where(x => x.Status == true);
+            get => ctx.CarRegisMSendback.Where(x => x.Status == true).AsNoTracking();
         }
     }
 }

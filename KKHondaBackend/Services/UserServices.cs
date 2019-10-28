@@ -27,7 +27,7 @@ namespace KKHondaBackend.Services
                              select new Dropdown
                         {
                             Value = db.Id.ToString(),
-                            Text = db.Fullname
+                            Text = db.FullName
                         }).ToArray();
 
             return userDropdowns.ToArray();

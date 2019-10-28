@@ -23,8 +23,10 @@ namespace KKHondaBackend.Controllers.Ris
         private IEnumerable<ExpensesOtherRisRes> AllList
         {
             get => (from exp in ctx.ExpensesOtherRis
+                    join _ty in ctx.ExpensesTypeOtherRis on exp.ExpensesType equals _ty.TypeId into _typ
                     join _cr in ctx.User on exp.CreateBy equals _cr.Id into _cr1
                     join _up in ctx.User on exp.UpdateBy equals _up.Id into _up1
+                    from typ in _typ.DefaultIfEmpty()
                     from cre in _cr1.DefaultIfEmpty()
                     from upd in _up1.DefaultIfEmpty()
                     select new ExpensesOtherRisRes
@@ -34,16 +36,16 @@ namespace KKHondaBackend.Controllers.Ris
                         ExpensesDescription = exp.ExpensesDescription,
                         ExpensesAmount = exp.ExpensesAmount,
                         ExpensesType = exp.ExpensesType,
-                        ExpensesTypeDesc = ExpensesType.Status.FirstOrDefault(x => x.Id == exp.ExpensesType).Desc,
+                        ExpensesTypeDesc = typ.TypeName,
                         Status = exp.Status,
                         StatusDesc = ExpensesStatus.Status.FirstOrDefault(x => x.Id == (exp.Status ? 1 : 0)).Desc,
                         CreateBy = exp.CreateBy,
-                        CreateName = cre.Fullname,
+                        CreateName = cre.FullName,
                         DateCreate = exp.DateCreate,
                         UpdateBy = exp.UpdateBy,
-                        UpdateName = upd.Fullname,
+                        UpdateName = upd.FullName,
                         DateUpdate = exp.DateUpdate
-                    });
+                    }).AsNoTracking();
         }
 
         private IEnumerable<ExpensesOtherRisRes> ActiveList

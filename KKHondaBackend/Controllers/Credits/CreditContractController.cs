@@ -366,10 +366,10 @@ namespace KKHondaBackend.Controllers.Credits
                                   GurantorRelation1 = relation1.RelationDesc,
                                   ContractGurantor2 = $"{gurantor2.CustomerPrename}{gurantor2.CustomerName} {gurantor2.CustomerSurname}",
                                   GurantorRelation2 = relation2.RelationDesc,
-                                  CreatedBy = created.Fullname,
-                                  CheckedBy = checkedBy.Fullname,
-                                  ApprovedBy = approve.Fullname,
-                                  KeeperBy = keeper.Fullname,
+                                  CreatedBy = created.FullName,
+                                  CheckedBy = checkedBy.FullName,
+                                  ApprovedBy = approve.FullName,
+                                  KeeperBy = keeper.FullName,
                                   StatusDesc = status.StatusDesc,
                                   Remark = db.Remark
 
@@ -564,8 +564,8 @@ namespace KKHondaBackend.Controllers.Credits
                     Models.Booking booking = new Models.Booking();
                     booking = ctx.Booking.SingleOrDefault(b => b.BookingId == creditContract.BookingId);
 
-                    // ค้นหาชื่อเช่าซื้อด้วยรหัส
-                    var customer = iCustService.GetCustomerByCode(creditContract.ContractHire);
+                    // // ค้นหาชื่อเช่าซื้อด้วยรหัส
+                    // var customer = iCustService.GetCustomerByCode(creditContract.ContractHire);
 
                     if (booking.SellDate == null)
                         booking.SellDate = DateTime.Now;

@@ -10,6 +10,7 @@ namespace KKHondaBackend.Models
         public decimal VatPrice1 { get; set; }
         public decimal NetPrice1 { get; set; }
         public decimal Price2 { get; set; }
+        public decimal? Price3 { get; set; }
         public decimal Price2Remain { get; set; }
         public decimal TotalPrice { get; set; }
         public decimal BorrowMoney { get; set; }
@@ -32,6 +33,7 @@ namespace KKHondaBackend.Models
         public decimal VatPrice1 { get; set; }
         public decimal NetPrice1 { get; set; }
         public decimal Price2 { get; set; }
+        public decimal? Price3 { get; set; }
         public decimal Price2Remain { get; set; }
         public decimal TotalPrice { get; set; }
         public decimal BorrowMoney { get; set; }

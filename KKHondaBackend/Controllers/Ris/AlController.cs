@@ -34,7 +34,7 @@ namespace KKHondaBackend.Controllers.Ris
                     BalancePrice = x.Where(o => o.AlNo == x.Key.AlNo).OrderByDescending(o => o.ClId).FirstOrDefault().BalancePrice,
                     ReceivePrice = x.Sum(o => o.ReceivePrice),
                     NetPrice = x.Where(o => o.AlNo == x.Key.AlNo).OrderByDescending(o => o.ClId).FirstOrDefault().NetPrice
-                });
+                }).AsNoTracking();
         }
 
         private IEnumerable<CarRegisAlListRes> AlListRes
@@ -58,7 +58,7 @@ namespace KKHondaBackend.Controllers.Ris
                         AlId = al.AlId,
                         AlNo = al.AlNo,
                         SedNo = al.SedNo,
-                        BorrowerName = brow.Fullname,
+                        BorrowerName = brow.FullName,
                         BalancePrice = cl.NetPrice > 0 ? cl.NetPrice - cl.ReceivePrice : al.PaymentPrice,
                         ReceivePrice = cl.NetPrice > 0 ? cl.ReceivePrice : 0,
                         NetPrice = cl.NetPrice > 0 ? cl.NetPrice : al.PaymentPrice,
@@ -74,12 +74,12 @@ namespace KKHondaBackend.Controllers.Ris
                         BranchId = al.BranchId,
                         BranchName = brh.BranchName,
                         CreateBy = al.CreateBy,
-                        CreateName = usr.Fullname,
+                        CreateName = usr.FullName,
                         CreateDate = al.CreateDate,
                         UpdateBy = al.UpdateBy,
-                        UpdateName = upd.Fullname,
+                        UpdateName = upd.FullName,
                         UpdateDate = al.UpdateDate
-                    });
+                    }).AsNoTracking();
         }
 
         [HttpGet("NormalList")]
@@ -108,26 +108,53 @@ namespace KKHondaBackend.Controllers.Ris
         [HttpPost]
         public IActionResult Post([FromBody] CarRegisAlList value)
         {
-            try
+            using (var transaction = ctx.Database.BeginTransaction())
             {
-                value.AlNo = iSysParamService.GenerateAlNo(value.BranchId);
-                value.CreateDate = DateTime.Now;
-                value.Status = AlStatus.Normal; // ปกติ
-                ctx.Entry(value).State = EntityState.Added;
-                ctx.SaveChanges();
+                try
+                {
+                    value.AlNo = iSysParamService.GenerateAlNo(value.BranchId);
+                    value.CreateDate = DateTime.Now;
+                    value.Status = AlStatus.Normal; // ปกติ
+                    ctx.Entry(value).State = EntityState.Added;
+                    ctx.SaveChanges();
 
-                var sed = ctx.CarRegisSedList.FirstOrDefault(x => x.SedNo == value.SedNo);
-                sed.Price2Remain = sed.Price2Remain - value.PaymentPrice;
-                if (sed.Price2Remain == 0)
-                    sed.Status = SedStatus.Borrowed; // บันทึกยืมเงิน
-                ctx.Entry(sed).State = EntityState.Modified;
-                ctx.SaveChanges();
+                    var sed = ctx.CarRegisSedList.FirstOrDefault(x => x.SedNo == value.SedNo);
+                    sed.Price2Remain = sed.Price2Remain - value.PaymentPrice;
+                    if (sed.Price2Remain == 0)
+                        sed.Status = SedStatus.Borrowed; // บันทึกยืมเงิน
+                    ctx.Entry(sed).State = EntityState.Modified;
+                    ctx.SaveChanges();
+
+                    var conList = sed.ConList.Split(',');
+                    foreach (string con in conList)
+                    {
+                        var ris = ctx.CarRegisList.FirstOrDefault(x => x.BookingNo == con);
+                        // กรณี Status1
+                        // Withdraw1 => อัพเดทเป็นส่งเรื่องดำเนินการครั้งที่ 1
+                        // Withdraw2 => อัพเดทเป็นส่งเรื่องดำเนินการครั้งที่ 2
+                        switch (ris.Status1)
+                        {
+                            case ConStatus1.Withdraw1:
+                                 ris.Status2 = ConStatus2.Send1;
+                                break;
+
+                            case ConStatus1.Withdraw2:
+                                ris.Status2 = ConStatus2.Send2;
+                                break;
+                        }
+                        ctx.Entry(ris).State = EntityState.Modified;
+                    }
+                    ctx.SaveChanges();
+
+                    transaction.Commit();
+                }
+                catch (DbUpdateConcurrencyException ex)
+                {
+                    transaction.Rollback();
+                    return StatusCode(500, ex.Message);
+                }
+                return NoContent();
             }
-            catch (DbUpdateConcurrencyException ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-            return NoContent();
         }
 
         [HttpPost("Cancel")]

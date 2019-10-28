@@ -71,7 +71,7 @@ namespace KKHondaBackend.Controllers.Credits
                                     db.ContractDate,
                                     status.StatusDesc,
                                     ContractHire = contrachHire.CustomerPrename + contrachHire.CustomerName + " " + contrachHire.CustomerSurname,
-                                    SaleName = sale.Fullname,
+                                    SaleName = sale.FullName,
                                     db.Remark
                                 }).FirstOrDefault();
 

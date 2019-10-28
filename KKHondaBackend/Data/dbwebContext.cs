@@ -47,10 +47,13 @@ namespace KKHondaBackend.Data
         public virtual DbSet<CyclecountLocationItem> CyclecountLocationItem { get; set; }
         public virtual DbSet<CyclecountScan> CyclecountScan { get; set; }
         public virtual DbSet<ExpensesOtherRis> ExpensesOtherRis { get; set; }
+        public virtual DbSet<ExpensesTypeOtherRis> ExpensesTypeOtherRis { get; set; }
         public virtual DbSet<FinanceComList> FinanceComList { get; set; }
         public virtual DbSet<FinanceIntList> FinanceIntList { get; set; }
         public virtual DbSet<FinanceList> FinanceList { get; set; }
         public virtual DbSet<GroupPage> GroupPage { get; set; }
+        public virtual DbSet<GroupPagePermission> GroupPagePermission { get; set; }
+        public virtual DbSet<PageList> PageList { get; set; }
         public virtual DbSet<LogAdmin> LogAdmin { get; set; }
         public virtual DbSet<MAmphor> MAmphor { get; set; }
         public virtual DbSet<MBranch> MBranch { get; set; }
@@ -502,6 +505,9 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.WarCompany).HasColumnName("war_company").HasMaxLength(250);
                 entity.Property(e => e.WarRegis).HasColumnName("war_regis").HasColumnType("datetime");
                 entity.Property(e => e.WarExpire).HasColumnName("war_expire").HasColumnType("datetime");
+                entity.Property(e => e.OwnerCode).HasColumnName("owner_code").HasMaxLength(50);
+                entity.Property(e => e.VisitorCode).HasColumnName("visitor_code").HasMaxLength(50);
+
             });
 
             modelBuilder.Entity<CarRegisList>(entity =>
@@ -510,15 +516,20 @@ namespace KKHondaBackend.Data
                 entity.HasKey(e => e.BookingId);
                 entity.Property(e => e.BookingId).HasColumnName("booking_id");
                 entity.Property(e => e.BookingNo).HasColumnName("booking_no").HasMaxLength(250);
-                entity.Property(e => e.BookingStatus).HasColumnName("booking_status");
+                entity.Property(e => e.RevNo).HasColumnName("rev_no").HasMaxLength(50);
+                entity.Property(e => e.Status1).HasColumnName("status_1");
+                entity.Property(e => e.Status2).HasColumnName("status_2");
+                entity.Property(e => e.BookingDate).HasColumnName("booking_date").HasColumnType("datetime");
                 entity.Property(e => e.State1).HasColumnName("state_1");
                 entity.Property(e => e.State2).HasColumnName("state_2");
                 entity.Property(e => e.ENo).HasColumnName("e_no").HasMaxLength(250);
                 entity.Property(e => e.FNo).HasColumnName("f_no").HasMaxLength(250);
                 entity.Property(e => e.Price1).HasColumnName("price_1").HasColumnType("numeric(18,2)");
                 entity.Property(e => e.VatPrice1).HasColumnName("vat_price_1").HasColumnType("numeric(18,2)");
+                entity.Property(e => e.NetPrice1).HasColumnName("net_price_1").HasColumnType("numeric(18,2)");
                 entity.Property(e => e.CutBalance).HasColumnName("cut_balance").HasColumnType("numeric(18,2)");
                 entity.Property(e => e.Price2).HasColumnName("price_2").HasColumnType("numeric(18,2)");
+                entity.Property(e => e.Price3).HasColumnName("price_3").HasColumnType("numeric(18,2)");
                 entity.Property(e => e.TotalPrice).HasColumnName("total_price").HasColumnType("numeric(18,2)");
                 entity.Property(e => e.CreateBy).HasColumnName("create_by");
                 entity.Property(e => e.CreateDate).HasColumnName("create_date").HasColumnType("datetime");
@@ -539,10 +550,13 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.BookingId).HasColumnName("booking_id");
                 entity.Property(e => e.ItemCode).HasColumnName("item_code").HasMaxLength(8);
                 entity.Property(e => e.ItemName).HasColumnName("item_name").HasMaxLength(250);
+                entity.Property(e => e.ItemTag).HasColumnName("item_tag").HasMaxLength(8);
                 entity.Property(e => e.ItemPrice1).HasColumnName("item_price_1").HasColumnType("numeric(18,2)");
                 entity.Property(e => e.ItemVatPrice1).HasColumnName("item_vat_price_1").HasColumnType("numeric(18,2)");
+                entity.Property(e => e.ItemNetPrice1).HasColumnName("item_net_price_1").HasColumnType("numeric(18,2)");
                 entity.Property(e => e.ItemCutBalance).HasColumnName("item_cut_balance").HasColumnType("numeric(18,2)");
                 entity.Property(e => e.ItemPrice2).HasColumnName("item_price_2").HasColumnType("numeric(18,2)");
+                entity.Property(e => e.ItemPrice3).HasColumnName("item_price_3").HasColumnType("numeric(18,2)");
                 entity.Property(e => e.ItemPriceTotal).HasColumnName("item_price_total").HasColumnType("numeric(18,2)");
                 entity.Property(e => e.State).HasColumnName("state");
                 entity.Property(e => e.DateReceipt).HasColumnName("date_receipt").HasColumnType("datetime");
@@ -624,6 +638,7 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.VatPrice1).HasColumnName("vat_price1").HasColumnType("decimal(18,2)").HasDefaultValue(0).IsRequired();
                 entity.Property(e => e.NetPrice1).HasColumnName("net_price1").HasColumnType("decimal(18,2)").HasDefaultValue(0).IsRequired();
                 entity.Property(e => e.Price2).HasColumnName("price2").HasColumnType("decimal(18,2)").IsRequired();
+                entity.Property(e => e.Price3).HasColumnName("price3").HasColumnType("decimal(18,2)");
                 entity.Property(e => e.Price2Remain).HasColumnName("price2_remain").HasColumnType("decimal(18,2)").IsRequired();
                 entity.Property(e => e.TotalPrice).HasColumnName("total_price").HasColumnType("decimal(18,2)").IsRequired();
                 entity.Property(e => e.BorrowMoney).HasColumnName("borrow_money").HasColumnType("decimal(18,2)").IsRequired();
@@ -1412,11 +1427,26 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.ExpensesDescription).HasColumnName("Expenses_Description").HasMaxLength(200).IsRequired();
                 entity.Property(e => e.ExpensesAmount).HasColumnName("Expenses_Amount").HasColumnType("money");
                 entity.Property(e => e.ExpensesType).HasColumnName("Expenses_Type").IsRequired().HasDefaultValue(2);
+                entity.Property(e => e.ExpensesTag).HasColumnName("Expenses_Tag").HasMaxLength(255);
                 entity.Property(e => e.Status).HasColumnType("bit").IsRequired();
                 entity.Property(e => e.CreateBy).IsRequired();
                 entity.Property(e => e.DateCreate).HasColumnType("datetime").IsRequired();
                 entity.Property(e => e.UpdateBy);
                 entity.Property(e => e.DateUpdate).HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<ExpensesTypeOtherRis>(entity =>
+            {
+                entity.HasKey(e => e.TypeId);
+                entity.ToTable("_ExpensesTypeOther_RIS");
+                entity.Property(e => e.TypeId).HasColumnName("Type_Id");
+                entity.Property(e => e.TypeCode).HasMaxLength(20).HasColumnName("Type_Code").IsRequired();
+                entity.Property(e => e.TypeName).HasMaxLength(50).HasColumnName("Type_Name").IsRequired();
+                entity.Property(e => e.Status).HasColumnType("bit").HasDefaultValue(1).IsRequired();
+                entity.Property(e => e.CreateBy).HasColumnName("Create_By").IsRequired();
+                entity.Property(e => e.CreateDate).HasColumnType("datetime").HasColumnName("Create_Date").IsRequired();
+                entity.Property(e => e.UpdateBy).HasColumnName("Update_By");
+                entity.Property(e => e.UpdateDate).HasColumnType("datetime").HasColumnName("Update_Date");
             });
 
             modelBuilder.Entity<FinanceComList>(entity =>
@@ -1439,163 +1469,91 @@ namespace KKHondaBackend.Data
             modelBuilder.Entity<FinanceIntList>(entity =>
             {
                 entity.HasKey(e => e.FiintId);
-
                 entity.ToTable("_finance_int_list");
-
-                entity.HasIndex(e => e.FiId)
-                    .HasName("I_fi_id");
-
+                entity.HasIndex(e => e.FiId).HasName("I_fi_id");
                 entity.Property(e => e.FiintId).HasColumnName("fiint_id");
-
                 entity.Property(e => e.FiId).HasColumnName("fi_id");
-
-                entity.Property(e => e.FiintNo)
-                                    .HasColumnName("fiint_no")
-                                    .HasColumnType("numeric(18, 2)");
+                entity.Property(e => e.FiintNo).HasColumnName("fiint_no").HasColumnType("numeric(18, 2)");
             });
 
             modelBuilder.Entity<FinanceList>(entity =>
             {
                 entity.HasKey(e => e.FiId);
-
                 entity.ToTable("_finance_list");
-
-                entity.HasIndex(e => e.BranchId)
-                    .HasName("I_branch");
-
-                entity.HasIndex(e => e.CreateBy)
-                                    .HasName("I_create_by");
-
-                entity.HasIndex(e => e.UpdateBy)
-                                    .HasName("I_update_by");
-
+                entity.HasIndex(e => e.BranchId).HasName("I_branch");
+                entity.HasIndex(e => e.CreateBy).HasName("I_create_by");
+                entity.HasIndex(e => e.UpdateBy).HasName("I_update_by");
                 entity.Property(e => e.FiId).HasColumnName("fi_id");
-
                 entity.Property(e => e.BranchId).HasColumnName("branch_id");
-
                 entity.Property(e => e.CreateBy).HasColumnName("create_by");
-
-                entity.Property(e => e.CreateDate)
-                                    .HasColumnName("create_date")
-                                    .HasColumnType("datetime");
-
+                entity.Property(e => e.CreateDate).HasColumnName("create_date").HasColumnType("datetime");
                 entity.Property(e => e.FiFix).HasColumnName("fi_fix");
-
-                entity.Property(e => e.FiName)
-                                    .HasColumnName("fi_name")
-                                    .HasMaxLength(250);
-
+                entity.Property(e => e.FiName).HasColumnName("fi_name").HasMaxLength(250);
                 entity.Property(e => e.FiStatus).HasColumnName("fi_status");
-
                 entity.Property(e => e.UpdateBy).HasColumnName("update_by");
-
-                entity.Property(e => e.UpdateDate)
-                                    .HasColumnName("update_date")
-                                    .HasColumnType("datetime");
+                entity.Property(e => e.UpdateDate).HasColumnName("update_date").HasColumnType("datetime");
             });
 
             modelBuilder.Entity<GroupPage>(entity =>
             {
                 entity.HasKey(e => e.GId);
-
                 entity.ToTable("_group_page");
-
-                entity.HasIndex(e => e.BranchId)
-                    .HasName("I_branch");
-
-                entity.HasIndex(e => e.CreateBy)
-                                    .HasName("I_create_by");
-
-                entity.HasIndex(e => e.UpdateBy)
-                                    .HasName("I_update_by");
-
+                entity.HasIndex(e => e.BranchId).HasName("I_branch");
+                entity.HasIndex(e => e.CreateBy).HasName("I_create_by");
+                entity.HasIndex(e => e.UpdateBy).HasName("I_update_by");
                 entity.Property(e => e.GId).HasColumnName("g_id");
-
                 entity.Property(e => e.BranchId).HasColumnName("branch_id");
-
                 entity.Property(e => e.CreateBy).HasColumnName("create_by");
-
-                entity.Property(e => e.CreateDate)
-                                    .HasColumnName("create_date")
-                                    .HasColumnType("datetime");
-
-                entity.Property(e => e.GName)
-                                    .HasColumnName("g_name")
-                                    .HasMaxLength(250);
-
+                entity.Property(e => e.CreateDate).HasColumnName("create_date").HasColumnType("datetime");
+                entity.Property(e => e.GName).HasColumnName("g_name").HasMaxLength(250);
                 entity.Property(e => e.UpdateBy).HasColumnName("update_by");
+                entity.Property(e => e.UpdateDate).HasColumnName("update_date").HasColumnType("datetime");
+            });
 
-                entity.Property(e => e.UpdateDate)
-                                    .HasColumnName("update_date")
-                                    .HasColumnType("datetime");
+            modelBuilder.Entity<GroupPagePermission>(entity => {
+                entity.HasKey(e => e.GPPId);
+                entity.ToTable("_group_page_permission");
+                entity.Property(e => e.GPPId).HasColumnName("gpp_id");
+                entity.Property(e => e.GId).HasColumnName("g_id");
+                entity.Property(e => e.PageId).HasColumnName("page_id");
+                entity.Property(e => e.Status).HasColumnName("status");
+            });
+
+            modelBuilder.Entity<PageList>(entity => {
+                entity.HasKey(e => e.PageId);
+                entity.ToTable("_pagelist");
+                entity.Property(e => e.PageId).HasColumnName("page_id");
+                entity.Property(e => e.PageName).HasMaxLength(255).HasColumnName("page_name");
+                entity.Property(e => e.PageType).HasColumnName("page_type");
+                entity.Property(e => e.PagePos).HasColumnName("page_pos");
+                entity.Property(e => e.PageMaster).HasColumnName("page_master");
             });
 
             modelBuilder.Entity<LogAdmin>(entity =>
             {
                 entity.HasKey(e => e.LogId);
-
                 entity.ToTable("_log_admin");
-
-                entity.HasIndex(e => e.LogUserid)
-                    .HasName("index_log_userid");
-
+                entity.HasIndex(e => e.LogUserid).HasName("index_log_userid");
                 entity.Property(e => e.LogId).HasColumnName("log_id");
-
                 entity.Property(e => e.LogBrowser).HasColumnName("log_browser");
-
-                entity.Property(e => e.LogDate)
-                                    .HasColumnName("log_date")
-                                    .HasColumnType("datetime");
-
-                entity.Property(e => e.LogIp)
-                                    .HasColumnName("log_ip")
-                                    .HasMaxLength(100);
-
+                entity.Property(e => e.LogDate).HasColumnName("log_date").HasColumnType("datetime");
+                entity.Property(e => e.LogIp).HasColumnName("log_ip").HasMaxLength(100);
                 entity.Property(e => e.LogUserid).HasColumnName("log_userid");
             });
 
             modelBuilder.Entity<MAmphor>(entity =>
             {
                 entity.HasKey(e => new { e.ProvinceCode, e.AmphorCode });
-
                 entity.ToTable("m_amphor");
-
-                entity.Property(e => e.ProvinceCode)
-                    .HasColumnName("province_code")
-                    .HasMaxLength(50);
-
-                entity.Property(e => e.AmphorCode)
-                                    .HasColumnName("amphor_code")
-                                    .HasMaxLength(50);
-
-                entity.Property(e => e.AmphorName)
-                                    .HasColumnName("amphor_name")
-                                    .HasMaxLength(100);
-
-                entity.Property(e => e.AmphorZone)
-                                    .HasColumnName("amphor_zone")
-                                    .HasMaxLength(50);
-
-                entity.Property(e => e.CreateBy)
-                                    .HasColumnName("create_by")
-                                    .HasMaxLength(50);
-
-                entity.Property(e => e.CreateDate)
-                                    .HasColumnName("create_date")
-                                    .HasColumnType("datetime");
-
-                entity.Property(e => e.UpdateBy)
-                                    .HasColumnName("update_by")
-                                    .HasMaxLength(50);
-
-                entity.Property(e => e.UpdateDate)
-                                    .HasColumnName("update_date")
-                                    .HasColumnType("datetime");
-
-                entity.Property(e => e.Zipcode)
-                                    .HasColumnName("zipcode")
-                                    .HasMaxLength(50);
-
+                entity.Property(e => e.ProvinceCode).HasColumnName("province_code").HasMaxLength(50);
+                entity.Property(e => e.AmphorCode).HasColumnName("amphor_code").HasMaxLength(50);
+                entity.Property(e => e.AmphorName).HasColumnName("amphor_name").HasMaxLength(100);
+                entity.Property(e => e.AmphorZone).HasColumnName("amphor_zone").HasMaxLength(50);
+                entity.Property(e => e.CreateBy).HasColumnName("create_by").HasMaxLength(50);
+                entity.Property(e => e.CreateDate).HasColumnName("create_date").HasColumnType("datetime");
+                entity.Property(e => e.UpdateBy).HasColumnName("update_by").HasMaxLength(50);
+                entity.Property(e => e.UpdateDate).HasColumnName("update_date").HasColumnType("datetime");
+                entity.Property(e => e.Zipcode).HasColumnName("zipcode").HasMaxLength(50);
                 entity.HasOne(d => d.ProvinceCodeNavigation)
                                     .WithMany(p => p.MAmphor)
                                     .HasForeignKey(d => d.ProvinceCode)
@@ -1808,6 +1766,8 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.TypeSupplier)
                                     .HasColumnName("type_supplier")
                                     .HasMaxLength(50);
+
+                entity.Property(e => e.IdCard).HasColumnName("idcard").HasColumnType("nvarchar(MAX)");
 
                 entity.Property(e => e.UpdateBy)
                                     .HasColumnName("update_by")
@@ -4644,81 +4604,29 @@ namespace KKHondaBackend.Data
             {
                 entity.ToTable("_user");
 
-                entity.HasIndex(e => e.CreateBy)
-                    .HasName("I_create_by");
-
-                entity.HasIndex(e => e.GId)
-                                    .HasName("I_gid");
-
-                entity.HasIndex(e => e.UpdateBy)
-                                    .HasName("I_update_by");
-
-                entity.HasIndex(e => e.Username)
-                                    .HasName("unique_username")
-                                    .IsUnique();
+                entity.HasIndex(e => e.CreateBy).HasName("I_create_by");
+                entity.HasIndex(e => e.GId).HasName("I_gid");
+                entity.HasIndex(e => e.UpdateBy).HasName("I_update_by");
+                entity.HasIndex(e => e.Username).HasName("unique_username").IsUnique();
 
                 entity.Property(e => e.Id).HasColumnName("id");
-
-                entity.Property(e => e.BranchId)
-                                    .HasColumnName("branch_id")
-                                    .HasDefaultValueSql("((0))");
-
+                entity.Property(e => e.BranchId).HasColumnName("branch_id").HasDefaultValueSql("((0))");
                 entity.Property(e => e.CreateBy).HasColumnName("create_by");
-
-                entity.Property(e => e.CreateDate)
-                                    .HasColumnName("create_date")
-                                    .HasColumnType("datetime");
-
-                entity.Property(e => e.Department)
-                                    .HasColumnName("department")
-                                    .HasMaxLength(250);
-
-                entity.Property(e => e.Email)
-                                    .HasColumnName("email")
-                                    .HasMaxLength(250);
-
-                entity.Property(e => e.Enable)
-                                    .HasColumnName("enable")
-                                    .HasDefaultValueSql("((1))");
-
-                entity.Property(e => e.FName)
-                                    .HasColumnName("f_name")
-                                    .HasMaxLength(250);
-
-                entity.Property(e => e.Fullname)
-                                    .HasColumnName("fullname")
-                                    .HasMaxLength(250);
-
+                entity.Property(e => e.CreateDate).HasColumnName("create_date").HasColumnType("datetime");
+                entity.Property(e => e.Department).HasColumnName("department").HasMaxLength(250);
+                entity.Property(e => e.Email).HasColumnName("email").HasMaxLength(250);
+                entity.Property(e => e.Enable).HasColumnName("enable").HasDefaultValueSql("((1))");
+                entity.Property(e => e.FName).HasColumnName("f_name").HasMaxLength(250);
+                entity.Property(e => e.FullName).HasColumnName("fullname").HasMaxLength(250);
                 entity.Property(e => e.GId).HasColumnName("g_id");
-
-                entity.Property(e => e.LName)
-                                    .HasColumnName("l_name")
-                                    .HasMaxLength(250);
-
-                entity.Property(e => e.Mobile)
-                                    .HasColumnName("mobile")
-                                    .HasMaxLength(250);
-
-                entity.Property(e => e.Password)
-                                    .HasColumnName("password")
-                                    .HasMaxLength(250);
-
-                entity.Property(e => e.TitleName)
-                                    .HasColumnName("title_name")
-                                    .HasMaxLength(250);
-
+                entity.Property(e => e.LName).HasColumnName("l_name").HasMaxLength(250);
+                entity.Property(e => e.Mobile).HasColumnName("mobile").HasMaxLength(250);
+                entity.Property(e => e.Password).HasColumnName("password").HasMaxLength(250);
+                entity.Property(e => e.TitleName).HasColumnName("title_name").HasMaxLength(250);
                 entity.Property(e => e.UpdateBy).HasColumnName("update_by");
-
-                entity.Property(e => e.UpdateDate)
-                                    .HasColumnName("update_date")
-                                    .HasColumnType("datetime");
-
+                entity.Property(e => e.UpdateDate).HasColumnName("update_date").HasColumnType("datetime");
                 entity.Property(e => e.UserType).HasColumnName("user_type");
-
-                entity.Property(e => e.Username)
-                                    .IsRequired()
-                                    .HasColumnName("username")
-                                    .HasMaxLength(250);
+                entity.Property(e => e.Username).IsRequired().HasColumnName("username").HasMaxLength(250);
             });
 
             modelBuilder.Entity<Warehouse>(entity =>

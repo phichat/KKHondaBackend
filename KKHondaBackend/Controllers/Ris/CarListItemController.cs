@@ -4,6 +4,7 @@ using KKHondaBackend.Services.Ris;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace KKHondaBackend.Controllers.Ris
 {
@@ -25,7 +26,7 @@ namespace KKHondaBackend.Controllers.Ris
         [HttpGet("GetByBookingId")]
         public IActionResult GetByBookingId(int bookingId)
         {
-            var list = ctx.CarRegisListItem.Where(x => x.BookingId == bookingId);
+            var list = ctx.CarRegisListItem.Where(x => x.BookingId == bookingId).AsNoTracking();
             
             return Ok(list.ToList());
         }
