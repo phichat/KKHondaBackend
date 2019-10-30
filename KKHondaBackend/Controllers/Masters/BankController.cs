@@ -2,10 +2,10 @@ using KKHondaBackend.Data;
 using KKHondaBackend.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace KKHondaBackend.Controllers.Bank
+namespace KKHondaBackend.Controllers.Master
 {
     [Produces("application/json")]
-    [Route("api/Bank")]
+    [Route("api/Master/[controller]")]
     public class BankController : Controller
     {
         private readonly dbwebContext ctx;
@@ -26,8 +26,8 @@ namespace KKHondaBackend.Controllers.Bank
             return Ok(iBankingService.GetDropdowns());
         }
 
-        [HttpGet("GetBankingAndDetail")]
-        public IActionResult GetBankingAndDetail() {
+        [HttpGet("GetBookBank")]
+        public IActionResult GetBookBank() {
             return Ok(iBankingService.GetBankingAndDetail());
         }
     }
