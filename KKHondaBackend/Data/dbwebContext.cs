@@ -20,6 +20,7 @@ namespace KKHondaBackend.Data
         public virtual DbSet<SpDashboardBookingDetail> SpDashboardBookingDetail { get; set; }
 
         public virtual DbSet<Banking> Bankings { get; set; }
+        public virtual DbSet<BankingAcc> BankingAcc { get; set; }
         public virtual DbSet<BookingReasonCode> BookingReasonCode { get; set; }
         public virtual DbSet<Booking> Booking { get; set; }
         public virtual DbSet<BookingItem> BookingItem { get; set; }
@@ -142,6 +143,21 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.UpdateDate)
                     .HasColumnName("update_date")
                     .HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<BankingAcc>(entity => {
+                entity.ToTable("_banking_acc");
+                entity.HasKey(e => e.AccBankId);
+                entity.Property(e => e.AccBankId).HasColumnName("AccBank_id");
+                entity.Property(e => e.AccBankCode).HasColumnName("AccBank_code");
+                entity.Property(e => e.AccBankNumber).HasColumnName("AccBank_number");
+                entity.Property(e => e.AccBankName).HasColumnName("AccBank_name");
+                entity.Property(e => e.AccBankType).HasColumnName("AccBank_type");
+                entity.Property(e => e.AccountType).HasColumnName("Account_type");
+                entity.Property(e => e.CreateBy).HasColumnName("create_by");
+                entity.Property(e => e.CreateDate).HasColumnName("create_date");
+                entity.Property(e => e.UpdateBy).HasColumnName("update_by");
+                entity.Property(e => e.UpdateDate).HasColumnName("update_date");
             });
 
             modelBuilder.Entity<BookingReasonCode>(entity =>
@@ -559,6 +575,8 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.ItemPrice3).HasColumnName("item_price_3").HasColumnType("numeric(18,2)");
                 entity.Property(e => e.ItemPriceTotal).HasColumnName("item_price_total").HasColumnType("numeric(18,2)");
                 entity.Property(e => e.State).HasColumnName("state");
+                entity.Property(e => e.PaymentStatus).HasColumnName("payment_status");
+                entity.Property(e => e.PaymentPrice).HasColumnName("payment_price").HasColumnType("numeric(18,2)");
                 entity.Property(e => e.DateReceipt).HasColumnName("date_receipt").HasColumnType("datetime");
                 entity.Property(e => e.Remark).HasColumnName("remark").HasMaxLength(255);
             });

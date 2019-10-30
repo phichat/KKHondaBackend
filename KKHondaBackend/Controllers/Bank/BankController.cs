@@ -25,5 +25,10 @@ namespace KKHondaBackend.Controllers.Bank
         {
             return Ok(iBankingService.GetDropdowns());
         }
+
+        [HttpGet("GetBankingAndDetail")]
+        public IActionResult GetBankingAndDetail() {
+            return Ok(iBankingService.GetBankingAndDetail());
+        }
     }
 }

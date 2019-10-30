@@ -66,16 +66,15 @@ namespace KKHondaBackend.Models
     public string BranchProvince { get; set; }
     public string TagNo { get; set; }
     public string Province { get; set; }
-    public string OwnerCode {get;set;}
-    public string OwnerName {get;set;}
-    public string VisitorCode {get;set;}
-    public string VisitorName {get;set;}
+    public string OwnerCode { get; set; }
+    public string OwnerName { get; set; }
+    public string VisitorCode { get; set; }
+    public string VisitorName { get; set; }
     public DateTime? TagRegis { get; set; }
     public string Reason { get; set; }
     public string Remark { get; set; }
     public string RevNo { get; set; }
   }
-
   public partial class CarRegisWaitingTagRes
   {
     public int? BookingPaymentType { get; set; }
@@ -100,7 +99,6 @@ namespace KKHondaBackend.Models
     public string FNo { get; set; }
     public int? FiId { get; set; }
   }
-
   public partial class CreateConFormBody
   {
     public CarRegisList TagRegis { get; set; }
@@ -118,7 +116,6 @@ namespace KKHondaBackend.Models
   {
     public string Car { get; set; }
   }
-
   public partial class CarRegisListCancel
   {
     public string BookingNo { get; set; }
@@ -130,6 +127,16 @@ namespace KKHondaBackend.Models
   {
     public IEnumerable<CarRegisListItemRes> CarRegisListItemRes { get; set; }
     public IEnumerable<CarRegisListItemDocRes> CarRegisListItemDocRes { get; set; }
+  }
+
+  public partial class CarRegisReceiveDeposit
+  {
+    public int BookingId { get; set; }
+    public string BookingNo { get; set; }
+    public DateTime BookingDate { get; set; }
+    public decimal NetPrice1 { get; set; }
+    public decimal Expense { get; set; }
+    public decimal PaymentPrice { get; set; }
   }
 
 }
