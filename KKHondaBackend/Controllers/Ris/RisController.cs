@@ -78,25 +78,29 @@ namespace KKHondaBackend.Controllers.Ris
               .OrderByDescending(x => x.BookingId)
               .AsNoTracking();
     }
-
-    public IEnumerable<CarRegisListItemSummary> RegisListItem(string itemTag)
+    public IEnumerable<CarRegisListItemSummary> RegisListItem(List<string> itemTag)
     {
+      
       return (from d in ctx.CarRegisListItem
               join h in ctx.CarRegisList on (int)d.BookingId equals h.BookingId
-              where d.ItemTag == itemTag &&
+              where itemTag.Contains(d.ItemTag) &&
                    h.Status1 != ConStatus1.Cancel &&
-                   h.Status2 == null
-              group d by h.BookingId into g
+                   h.Status2 == null &&
+                   d.PaymentStatus == null
+              group d by new { h.BookingId, h.BookingNo, h.BookingDate } into g
               select new CarRegisListItemSummary
               {
-                BookingId = g.Key,
-                ItemPrice1 = g.Sum(o => o.ItemPrice1),
-                ItemPrice2 = g.Sum(o => o.ItemPrice2),
-                ItemPrice3 = g.Sum(o => o.ItemPrice3),
-                ItemVatPrice1 = g.Sum(o => o.ItemVatPrice1),
-                ItemNetPrice1 = g.Sum(o => o.ItemNetPrice1),
-                ItemCutBalance = g.Sum(o => o.ItemCutBalance),
-                ItemPriceTotal = g.Sum(o => o.ItemPriceTotal)
+                BookingId = g.Key.BookingId,
+                BookingNo = g.Key.BookingNo,
+                BookingDate = g.Key.BookingDate,
+                ItemPrice1 = g.Sum(o => o.ItemPrice1 == null ? 0 : o.ItemPrice1),
+                ItemPrice2 = g.Sum(o => o.ItemPrice2 == null ? 0 : o.ItemPrice2),
+                ItemPrice3 = g.Sum(o => o.ItemPrice3 == null ? 0 : o.ItemPrice3),
+                ItemVatPrice1 = g.Sum(o => o.ItemVatPrice1 == null ? 0 : o.ItemVatPrice1),
+                ItemNetPrice1 = g.Sum(o => o.ItemNetPrice1 == null ? 0 : o.ItemNetPrice1),
+                ItemCutBalance = g.Sum(o => o.ItemCutBalance == null ? 0 : o.ItemCutBalance),
+                ItemPriceTotal = g.Sum(o => o.ItemPriceTotal == null ? 0 : o.ItemPriceTotal),
+                PaymentPrice = g.Sum(o => o.PaymentPrice == null ? 0 : o.PaymentPrice)
               }).ToList();
     }
 
@@ -173,70 +177,90 @@ namespace KKHondaBackend.Controllers.Ris
     [HttpGet("CarRegisReceiveTag")]
     public IActionResult CarRegisReceiveTag()
     {
-      var tag = (from crl in ctx.CarRegisList
-                 join crli in RegisListItem(ExpensesTag.EXP10001) on crl.BookingId equals crli.BookingId
-                 join his in ctx.CarHistory on crl.BookingId equals his.BookingId
-                 join brh in ctx.Branch on crl.BranchId equals brh.BranchId
-                 join _cr in ctx.User on crl.CreateBy equals _cr.Id into cr1
-                 join _up in ctx.User on crl.UpdateBy equals _up.Id into up1
-                 from cre in cr1.DefaultIfEmpty()
-                 from upd in up1.DefaultIfEmpty()
+      var tag = new List<string> {
+        ExpensesTag.EXP10001,
+        ExpensesTag.EXP10002
+      };
+      var list = (from crl in ctx.CarRegisList
+                  join crli in RegisListItem(tag) on crl.BookingId equals crli.BookingId
+                  join his in ctx.CarHistory on crl.BookingId equals his.BookingId
+                  join brh in ctx.Branch on crl.BranchId equals brh.BranchId
+                  join _cr in ctx.User on crl.CreateBy equals _cr.Id into cr1
+                  join _up in ctx.User on crl.UpdateBy equals _up.Id into up1
+                  from cre in cr1.DefaultIfEmpty()
+                  from upd in up1.DefaultIfEmpty()
 
-                 where crl.Status1 != ConStatus1.Cancel && crl.Status2 == null
+                  where crl.Status1 != ConStatus1.Cancel && crl.Status2 == null
 
-                 select new CarRegisListRes
-                 {
-                   BookingNo = crl.BookingNo,
-                   Status1 = crl.Status1,
-                   Status2 = crl.Status2,
-                   BookingDate = crl.BookingDate,
-                   BranchId = crl.BranchId,
-                   BranchName = brh.BranchName,
-                   BranchProvince = brh.BranchProvince,
-                   CreateBy = crl.CreateBy,
-                   CreateDate = crl.CreateDate,
-                   CreateName = cre.FullName,
-                   ENo = crl.ENo,
-                   FNo = crl.FNo,
-                   Price1 = crli.ItemPrice1,
-                   Price2 = crli.ItemPrice2,
-                   Price3 = crli.ItemPrice3,
-                   VatPrice1 = crli.ItemVatPrice1,
-                   NetPrice1 = crli.ItemNetPrice1,
-                   CutBalance = crli.ItemCutBalance,
-                   Province = his.Province,
-                   Reason = crl.Reason,
-                   Remark = crl.Remark,
-                   Status1Desc = ConStatus1.Status.FirstOrDefault(x => x.Id == crl.Status1).Desc,
-                   Status2Desc = ConStatus2.Status.FirstOrDefault(x => x.Id == crl.Status2).Desc,
-                   State1 = crl.State1,
-                   State2 = crl.State2,
-                   TagNo = his.TagNo,
-                   TagRegis = his.TagRegis,
-                   TotalPrice = crl.TotalPrice,
-                   TransportReceiptDate = crl.TransportReceiptDate,
-                   TransportServiceCharge = crl.TransportServiceCharge,
-                   UpdateBy = crl.UpdateBy,
-                   UpdateDate = crl.UpdateDate,
-                   UpdateName = upd.FullName,
-                   BookingId = crl.BookingId,
-                   RevNo = crl.RevNo,
-                   OwnerCode = his.OwnerCode,
-                   VisitorCode = his.VisitorCode,
-                 }).ToList();
-      return Ok(tag);
+                  select new CarRegisListRes
+                  {
+                    BookingNo = crl.BookingNo,
+                    Status1 = crl.Status1,
+                    Status2 = crl.Status2,
+                    BookingDate = crl.BookingDate,
+                    BranchId = crl.BranchId,
+                    BranchName = brh.BranchName,
+                    BranchProvince = brh.BranchProvince,
+                    CreateBy = crl.CreateBy,
+                    CreateDate = crl.CreateDate,
+                    CreateName = cre.FullName,
+                    ENo = crl.ENo,
+                    FNo = crl.FNo,
+                    Price1 = crli.ItemPrice1,
+                    Price2 = crli.ItemPrice2,
+                    Price3 = crli.ItemPrice3,
+                    VatPrice1 = crli.ItemVatPrice1,
+                    NetPrice1 = crli.ItemNetPrice1,
+                    CutBalance = crli.ItemCutBalance,
+                    Province = his.Province,
+                    Reason = crl.Reason,
+                    Remark = crl.Remark,
+                    Status1Desc = ConStatus1.Status.FirstOrDefault(x => x.Id == crl.Status1).Desc,
+                    Status2Desc = ConStatus2.Status.FirstOrDefault(x => x.Id == crl.Status2).Desc,
+                    State1 = crl.State1,
+                    State2 = crl.State2,
+                    TagNo = his.TagNo,
+                    TagRegis = his.TagRegis,
+                    TotalPrice = crl.TotalPrice,
+                    TransportReceiptDate = crl.TransportReceiptDate,
+                    TransportServiceCharge = crl.TransportServiceCharge,
+                    UpdateBy = crl.UpdateBy,
+                    UpdateDate = crl.UpdateDate,
+                    UpdateName = upd.FullName,
+                    BookingId = crl.BookingId,
+                    RevNo = crl.RevNo,
+                    OwnerCode = his.OwnerCode,
+                    VisitorCode = his.VisitorCode,
+                  }).ToList();
+      return Ok(list);
+    }
+
+
+    public IEnumerable<CarRegisReceiveDeposit> RegisReceiveDeposits(string itemTag)
+    {
+      var tag = new List<string> { itemTag };
+      return RegisListItem(tag)
+      .Select(o => new CarRegisReceiveDeposit
+      {
+        BookingId = o.BookingId,
+        BookingNo = o.BookingNo,
+        BookingDate = o.BookingDate,
+        NetPrice1 = (decimal)o.ItemNetPrice1,
+        Expense = (decimal)(o.ItemPrice2 + o.ItemPrice3),
+        PaymentPrice = (decimal)o.PaymentPrice
+      });
     }
 
     [HttpGet("CarRegisReceiveWaranty")]
     public IActionResult CarRegisReceiveWaranty()
     {
-      return Ok();
+      return Ok(RegisReceiveDeposits(ExpensesTag.EXP10004));
     }
 
     [HttpGet("CarRegisReceiveAct")]
     public IActionResult CarRegisReceiveAct()
     {
-      return Ok();
+      return Ok(RegisReceiveDeposits(ExpensesTag.EXP10003));
     }
 
     [HttpGet("GetByConNo")]
