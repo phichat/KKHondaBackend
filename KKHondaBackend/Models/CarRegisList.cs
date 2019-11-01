@@ -129,14 +129,5 @@ namespace KKHondaBackend.Models
     public IEnumerable<CarRegisListItemDocRes> CarRegisListItemDocRes { get; set; }
   }
 
-  public partial class CarRegisReceiveDeposit
-  {
-    public int BookingId { get; set; }
-    public string BookingNo { get; set; }
-    public DateTime BookingDate { get; set; }
-    public decimal NetPrice1 { get; set; }
-    public decimal Expense { get; set; }
-    public decimal PaymentPrice { get; set; }
-  }
 
 }

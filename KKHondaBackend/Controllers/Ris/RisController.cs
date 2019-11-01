@@ -86,7 +86,7 @@ namespace KKHondaBackend.Controllers.Ris
               where itemTag.Contains(d.ItemTag) &&
                    h.Status1 != ConStatus1.Cancel &&
                    h.Status2 == null &&
-                   d.PaymentStatus == null
+                   d.PaymentStatus != PaymentStatus.IsPayment
               group d by new { h.BookingId, h.BookingNo, h.BookingDate } into g
               select new CarRegisListItemSummary
               {
@@ -236,11 +236,11 @@ namespace KKHondaBackend.Controllers.Ris
     }
 
 
-    public IEnumerable<CarRegisReceiveDeposit> RegisReceiveDeposits(string itemTag)
+    public IEnumerable<CarRegisClDepositDeposit> RegisReceiveDeposits(string itemTag)
     {
       var tag = new List<string> { itemTag };
       return RegisListItem(tag)
-      .Select(o => new CarRegisReceiveDeposit
+      .Select(o => new CarRegisClDepositDeposit
       {
         BookingId = o.BookingId,
         BookingNo = o.BookingNo,

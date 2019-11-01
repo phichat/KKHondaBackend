@@ -41,7 +41,6 @@ namespace KKHondaBackend.Models
     public DateTime? DateReceipt { get; set; }
     public string Remark { get; set; }
   }
-
   public partial class CarRegisListItemSummary
   {
     public int BookingId { get; set; }

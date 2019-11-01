@@ -29,17 +29,17 @@ namespace KKHondaBackend.Services
     public IEnumerable<BankingDetail> GetBankingAndDetail()
     {
       var list = (from h in ctx.Bankings
-                  join d in ctx.BankingAcc on h.BankCode equals d.AccBankCode into r
-                  from result in r.DefaultIfEmpty()
+                  join d in ctx.BankingAcc on h.BankCode equals d.AccBankCode
                   where h.Status == true
                   select new BankingDetail
                   {
                     BankCode = h.BankCode,
                     BankName = h.BankName,
-                    AccBankNumber = result.AccBankNumber,
-                    AccBankName = result.AccBankName,
-                    AccBankType = result.AccBankType,
-                    AccountType = result.AccountType,
+                    AccBankId = d.AccBankId,
+                    AccBankNumber = d.AccBankNumber,
+                    AccBankName = d.AccBankName,
+                    AccBankType = d.AccBankType,
+                    AccountType = d.AccountType,
                   }).ToList();
       return list;
     }

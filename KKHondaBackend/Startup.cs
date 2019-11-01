@@ -12,6 +12,8 @@ using Microsoft.EntityFrameworkCore;
 using KKHondaBackend.Data;
 using KKHondaBackend.Services;
 using KKHondaBackend.Services.Ris;
+using Swashbuckle.AspNetCore.Swagger;
+using System.IO;
 
 namespace KKHondaBackend
 {
@@ -40,6 +42,14 @@ namespace KKHondaBackend
             services.AddDbContext<dbwebContext>(options => options
                 .EnableSensitiveDataLogging()
                 .UseSqlServer(connection));
+            
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info { Title = "KK Honda API", Version = "v1" });
+                // var basePath = AppContext.BaseDirectory;
+                // var xmlPath = Path.Combine(basePath, "KKHondaBackend.xml"); 
+                // c.IncludeXmlComments(xmlPath);
+            });
 
             services.AddMvc();
 
@@ -73,6 +83,12 @@ namespace KKHondaBackend
             }
 
             app.UseMvc();
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "KK Honda API V1");
+            });
         }
     }
 }

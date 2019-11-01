@@ -8,10 +8,21 @@ namespace KKHondaBackend.Entities
   {
     public const int Cash = 1;
     public const int Transfer = 2;
+    public const int Cheque = 2;
     public static List<Status> Status = new List<Status> {
-            new Status { Id = 1, Desc = "เงินสด" },
-            new Status { Id = 2, Desc = "เงินโอน" }
-        };
+      new Status { Id = 1, Desc = "เงินสด" },
+      new Status { Id = 2, Desc = "เงินโอน" },
+      new Status { Id = 3, Desc = "เช็ค" }
+    };
+  }
+  public class PaymentStatus
+  {
+    public const int Cancel = 0;
+    public const int IsPayment = 1;
+    public static List<Status> Status = new List<Status> {
+      new Status { Id = Cancel, Desc = "ยกเลิก" },
+      new Status { Id = IsPayment, Desc = "ชำระแล้ว" },
+    };
   }
   public class ConStatus1
   {
@@ -82,8 +93,19 @@ namespace KKHondaBackend.Entities
     public const int Normal = 1;
     public static List<Status> Status = new List<Status>
         {
-            new Status { Id = 0, Desc = "ยกเลิก"},
-            new Status { Id = 1, Desc = "ปกติ"}
+            new Status { Id = Cancel, Desc = "ยกเลิก"},
+            new Status { Id = Normal, Desc = "ปกติ"}
+        };
+  }
+
+  public class ReceiveClStatus
+  {
+    public const int Cancel = 0;
+    public const int Normal = 1;
+    public static List<Status> Status = new List<Status>
+        {
+            new Status { Id = Cancel, Desc = "ยกเลิก"},
+            new Status { Id = Normal, Desc = "ปกติ"}
         };
   }
 
@@ -127,6 +149,18 @@ namespace KKHondaBackend.Entities
     public const string EXP10002 = "EXP10002";
     public const string EXP10003 = "EXP10003";
     public const string EXP10004 = "EXP10004";
+    public class ExpenseStatus
+    {
+      public string Id { get; set; }
+      public string Desc { get; set; }
+    };
+    public static List<ExpenseStatus> Status = new List<ExpenseStatus>
+    {
+        new ExpenseStatus { Id = EXP10001, Desc = "จดทะเบียนรถใหม่"},
+        new ExpenseStatus { Id = EXP10002, Desc = "ต่อทะเบียน"},
+        new ExpenseStatus { Id = EXP10003, Desc = "พ.ร.บ."},
+        new ExpenseStatus { Id = EXP10004, Desc = "ประกันภัย"}
+    };
   }
 
 }

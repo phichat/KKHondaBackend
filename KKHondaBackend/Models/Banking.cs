@@ -17,6 +17,7 @@ namespace KKHondaBackend.Models
   {
     public string BankCode { get; set; }
     public string BankName { get; set; }
+    public int AccBankId { get; set; }
     public string AccBankNumber { get; set; }
     public string AccBankName { get; set; }
     public string AccBankType { get; set; }
