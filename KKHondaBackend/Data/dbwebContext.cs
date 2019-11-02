@@ -678,10 +678,13 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.AlId).HasColumnName("al_id");
                 entity.Property(e => e.AlNo).IsRequired().HasColumnName("al_no").HasMaxLength(50);
                 entity.Property(e => e.SedNo).IsRequired().HasColumnName("sed_no").HasMaxLength(50);
-                entity.Property(e => e.PaymentPrice).IsRequired().HasColumnName("payment_price");
                 entity.Property(e => e.Price2Remain).IsRequired().HasColumnName("price2_remain");
                 entity.Property(e => e.PaymentType).HasColumnName("payment_type");
-                entity.Property(e => e.BankCode).HasColumnName("bank_code").HasMaxLength(10);
+                entity.Property(e => e.PaymentPrice).IsRequired().HasColumnName("payment_price");
+                entity.Property(e => e.DiscountPrice).HasColumnName("discount_price");
+                entity.Property(e => e.TotalPaymentPrice).IsRequired().HasColumnName("total_payment_price");
+                entity.Property(e => e.AccBankId);
+                entity.Property(e => e.PaymentDate).IsRequired().HasColumnName("payment_date").HasColumnType("datetime");
                 entity.Property(e => e.DocumentRef).HasColumnName("document_ref").HasMaxLength(255);
                 entity.Property(e => e.Remark).HasColumnName("remark").HasMaxLength(255);
                 entity.Property(e => e.Status).HasDefaultValue(0).HasColumnName("status");

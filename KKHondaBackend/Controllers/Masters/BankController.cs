@@ -34,16 +34,13 @@ namespace KKHondaBackend.Controllers.Master
       return Ok(iBankingService.GetBankingAndDetail());
     }
 
-    [HttpGet("GetBookBankByBankCode")]
-    public IActionResult GetBookBankByBankCode(string bankCode)
+    [HttpGet("GetBookBankById")]
+    public IActionResult GetBookBankById(int accBankId)
     {
-      if (bankCode == null)
-        return NotFound();
-
       var result = iBankingService
-      .GetBankingAndDetail()
-      .Where(o => o.BankCode == bankCode)
-      .FirstOrDefault();
+        .GetBankingAndDetail()
+        .Where(o => o.AccBankId == accBankId)
+        .Single();
 
       return Ok(result);
     }

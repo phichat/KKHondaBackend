@@ -51,7 +51,9 @@ namespace KKHondaBackend.Controllers.Ris
                     from upd in _upd.DefaultIfEmpty()
                     join bro in ctx.User on sd.CreateBy equals bro.Id into _bro
                     from brow in _bro.DefaultIfEmpty()
-                    join bak in ctx.Bankings on al.BankCode equals bak.BankCode into _bk
+                    join bkac in ctx.BankingAcc on al.AccBankId equals bkac.AccBankId into bkac1
+                    from bka in bkac1.DefaultIfEmpty()
+                    join bak in ctx.Bankings on bka.AccBankCode equals bak.BankCode into _bk
                     from bk in _bk.DefaultIfEmpty()
                     select new CarRegisAlListRes
                     {
@@ -64,9 +66,14 @@ namespace KKHondaBackend.Controllers.Ris
                         NetPrice = cl.NetPrice > 0 ? cl.NetPrice : al.PaymentPrice,
                         Price2Remain = al.Price2Remain,
                         PaymentPrice = al.PaymentPrice,
+                        DiscountPrice = al.DiscountPrice,
+                        TotalPaymentPrice = al.TotalPaymentPrice,
                         PaymentType = al.PaymentType,
-                        BankCode = al.BankCode,
+                        AccBankId = al.AccBankId,
                         BankName = bk.BankName,
+                        AccBankName = bka.AccBankName,
+                        AccBankNumber = bka.AccBankNumber,
+                        PaymentDate = al.PaymentDate,
                         DocumentRef = al.DocumentRef,
                         Remark = al.Remark,
                         Status = al.Status,
@@ -113,7 +120,7 @@ namespace KKHondaBackend.Controllers.Ris
                 try
                 {
                     value.AlNo = iSysParamService.GenerateAlNo(value.BranchId);
-                    value.CreateDate = DateTime.Now;
+                    value.UpdateDate = DateTime.Now;
                     value.Status = AlStatus.Normal; // ปกติ
                     ctx.Entry(value).State = EntityState.Added;
                     ctx.SaveChanges();
