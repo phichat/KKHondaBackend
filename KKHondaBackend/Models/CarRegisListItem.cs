@@ -28,6 +28,7 @@ namespace KKHondaBackend.Models
     public string BookingNo { get; set; }
     public string ItemCode { get; set; }
     public string ItemName { get; set; }
+    public string ItemTag { get; set; }
     public decimal? ItemPrice1 { get; set; }
     public decimal? ItemVatPrice1 { get; set; }
     public decimal? ItemNetPrice1 { get; set; }

@@ -26,66 +26,70 @@ namespace KKHondaBackend.Controllers.Ris
       iCustomer = _iCustomer;
     }
 
-    public IEnumerable<CarRegisListRes> RegisList
+    public IEnumerable<CarRegisListRes> RegisList(List<string> tag)
     {
-      get => (from crl in ctx.CarRegisList
-              join his in ctx.CarHistory on crl.BookingId equals his.BookingId
-              join brh in ctx.Branch on crl.BranchId equals brh.BranchId
-              join _cr in ctx.User on crl.CreateBy equals _cr.Id into cr1
-              join _up in ctx.User on crl.UpdateBy equals _up.Id into up1
-              from cre in cr1.DefaultIfEmpty()
-              from upd in up1.DefaultIfEmpty()
-              select new CarRegisListRes
-              {
-                BookingNo = crl.BookingNo,
-                Status1 = crl.Status1,
-                Status2 = crl.Status2,
-                BookingDate = crl.BookingDate,
-                BranchId = crl.BranchId,
-                BranchName = brh.BranchName,
-                BranchProvince = brh.BranchProvince,
-                CreateBy = crl.CreateBy,
-                CreateDate = crl.CreateDate,
-                CreateName = cre.FullName,
-                CutBalance = crl.CutBalance,
-                ENo = crl.ENo,
-                FNo = crl.FNo,
-                Price1 = crl.Price1,
-                Price2 = crl.Price2,
-                Price3 = crl.Price3,
-                Province = his.Province,
-                Reason = crl.Reason,
-                Remark = crl.Remark,
-                Status1Desc = ConStatus1.Status.FirstOrDefault(x => x.Id == crl.Status1).Desc,
-                Status2Desc = ConStatus2.Status.FirstOrDefault(x => x.Id == crl.Status2).Desc,
-                State1 = crl.State1,
-                State2 = crl.State2,
-                TagNo = his.TagNo,
-                TagRegis = his.TagRegis,
-                TotalPrice = crl.TotalPrice,
-                TransportReceiptDate = crl.TransportReceiptDate,
-                TransportServiceCharge = crl.TransportServiceCharge,
-                UpdateBy = crl.UpdateBy,
-                UpdateDate = crl.UpdateDate,
-                UpdateName = upd.FullName,
-                VatPrice1 = crl.VatPrice1,
-                NetPrice1 = crl.NetPrice1,
-                BookingId = crl.BookingId,
-                RevNo = crl.RevNo,
-                OwnerCode = his.OwnerCode,
-                VisitorCode = his.VisitorCode,
-              })
-              .OrderByDescending(x => x.BookingId)
-              .AsNoTracking();
+      var list = (from crl in ctx.CarRegisList
+                  join crli in RegisListItem(tag) on crl.BookingId equals crli.BookingId
+                  join his in ctx.CarHistory on crl.BookingId equals his.BookingId
+                  join brh in ctx.Branch on crl.BranchId equals brh.BranchId
+                  join _cr in ctx.User on crl.CreateBy equals _cr.Id into cr1
+                  join _up in ctx.User on crl.UpdateBy equals _up.Id into up1
+                  from cre in cr1.DefaultIfEmpty()
+                  from upd in up1.DefaultIfEmpty()
+
+                  select new CarRegisListRes
+                  {
+                    BookingNo = crl.BookingNo,
+                    Status1 = crl.Status1,
+                    Status2 = crl.Status2,
+                    BookingDate = crl.BookingDate,
+                    BranchId = crl.BranchId,
+                    BranchName = brh.BranchName,
+                    BranchProvince = brh.BranchProvince,
+                    CreateBy = crl.CreateBy,
+                    CreateDate = crl.CreateDate,
+                    CreateName = cre.FullName,
+                    ENo = crl.ENo,
+                    FNo = crl.FNo,
+                    Price1 = crli.ItemPrice1,
+                    Price2 = crli.ItemPrice2,
+                    Price3 = crli.ItemPrice3,
+                    VatPrice1 = crli.ItemVatPrice1,
+                    NetPrice1 = crli.ItemNetPrice1,
+                    CutBalance = crli.ItemCutBalance,
+                    Province = his.Province,
+                    Reason = crl.Reason,
+                    Remark = crl.Remark,
+                    Status1Desc = ConStatus1.Status.FirstOrDefault(x => x.Id == crl.Status1).Desc,
+                    Status2Desc = ConStatus2.Status.FirstOrDefault(x => x.Id == crl.Status2).Desc,
+                    State1 = crl.State1,
+                    State2 = crl.State2,
+                    TagNo = his.TagNo,
+                    TagRegis = his.TagRegis,
+                    TotalPrice = crl.TotalPrice,
+                    TransportReceiptDate = crl.TransportReceiptDate,
+                    TransportServiceCharge = crl.TransportServiceCharge,
+                    UpdateBy = crl.UpdateBy,
+                    UpdateDate = crl.UpdateDate,
+                    UpdateName = upd.FullName,
+                    BookingId = crl.BookingId,
+                    RevNo = crl.RevNo,
+                    OwnerCode = his.OwnerCode,
+                    VisitorCode = his.VisitorCode,
+                  }).OrderByDescending(x => x.BookingId);
+      return list;
+      ;
     }
+
+
     public IEnumerable<CarRegisListItemSummary> RegisListItem(List<string> itemTag)
     {
-      
+
       return (from d in ctx.CarRegisListItem
               join h in ctx.CarRegisList on (int)d.BookingId equals h.BookingId
               where itemTag.Contains(d.ItemTag) &&
                    h.Status1 != ConStatus1.Cancel &&
-                   h.Status2 == null &&
+                   //  h.Status2 == null &&
                    d.PaymentStatus != PaymentStatus.IsPayment
               group d by new { h.BookingId, h.BookingNo, h.BookingDate } into g
               select new CarRegisListItemSummary
@@ -105,13 +109,22 @@ namespace KKHondaBackend.Controllers.Ris
     }
 
     [HttpGet("All")]
-    public IActionResult All() => Ok(RegisList.ToList());
-
-    [HttpGet("GetAllByBranch")]
-    public IActionResult GetAllByBranch(int branchId)
+    public IActionResult All()
     {
-      return Ok(RegisList.Where(x => x.BranchId == branchId).ToList());
+      var tag = new List<string> {
+        ExpensesTag.EXP10001,
+        ExpensesTag.EXP10002,
+        ExpensesTag.EXP10003,
+        ExpensesTag.EXP10004
+      };
+      return Ok(RegisList(tag));
     }
+
+    // [HttpGet("GetAllByBranch")]
+    // public IActionResult GetAllByBranch(int branchId)
+    // {
+    //   return Ok(RegisList.Where(x => x.BranchId == branchId).ToList());
+    // }
 
     [HttpGet("WaitingTag")]
     public IActionResult WaitingTag()
@@ -162,17 +175,18 @@ namespace KKHondaBackend.Controllers.Ris
       return Ok(list.ToList());
     }
 
-    // [HttpGet("CarRegisList")]
-    // public IActionResult CarRegisList() => 
-    //     Ok(RegisList.Where(x => x.BookingId != ConStatus.CompleteDelivery).ToList());
-
-    // [HttpGet("CarRegisDeliver")]
-    // public IActionResult CarRegisDeliver() => 
-    //     Ok(RegisList.Where(x => x.BookingId == ConStatus.CompleteDelivery).ToList());
-
     [HttpGet("CarRegisReceive")]
-    public IActionResult CarRegisReceive() =>
-        Ok(RegisList.Where(x => x.State1 != ConStatus1.Cancel && x.Status2 == null).ToList());
+    public IActionResult CarRegisReceive()
+    {
+      var tag = new List<string> {
+        ExpensesTag.EXP10001,
+        ExpensesTag.EXP10002,
+        ExpensesTag.EXP10003,
+        ExpensesTag.EXP10004
+      };
+      var list = RegisList(tag).Where(x => x.State1 != ConStatus1.Cancel && x.Status2 == null);
+      return Ok(list.ToList());
+    }
 
     [HttpGet("CarRegisReceiveTag")]
     public IActionResult CarRegisReceiveTag()
@@ -266,7 +280,13 @@ namespace KKHondaBackend.Controllers.Ris
     [HttpGet("GetByConNo")]
     public IActionResult GetByConNo(string conNo)
     {
-      var ris = RegisList.FirstOrDefault(x => x.BookingNo == conNo);
+      var tag = new List<string> {
+        ExpensesTag.EXP10001,
+        ExpensesTag.EXP10002,
+        ExpensesTag.EXP10003,
+        ExpensesTag.EXP10004
+      };
+      var ris = RegisList(tag).FirstOrDefault(x => x.BookingNo == conNo);
       if (ris.VisitorCode != null)
       {
         var v = iCustomer.GetCustomerByCode(ris.VisitorCode);
@@ -281,12 +301,16 @@ namespace KKHondaBackend.Controllers.Ris
       return Ok(ris);
     }
 
-    [HttpGet("GetByConNoList")]
-    public IActionResult GetByConNoList(string conListNo)
+    [HttpGet("GetByConNoListReceiveTag")]
+    public IActionResult GetByConNoListReceiveTag(List<string> conListNo)
     {
-      var value = conListNo.Split(new string[] { "," }, StringSplitOptions.None);
-      var a = RegisList.Where(x => value.Contains(x.BookingNo)).ToList();
-      return Ok(a);
+      // var value = conListNo.Split(new string[] { "," }, StringSplitOptions.None);
+      var tag = new List<string> {
+        ExpensesTag.EXP10001,
+        ExpensesTag.EXP10002
+      };
+      var list = RegisList(tag).Where(x => conListNo.Contains(x.BookingNo));
+      return Ok(list.ToList());
     }
 
     [HttpGet("GetCarBySellNo")]

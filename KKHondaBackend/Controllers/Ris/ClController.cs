@@ -33,7 +33,7 @@ namespace KKHondaBackend.Controllers.Ris
                     from upd in _upd.DefaultIfEmpty()
                     join usRef in ctx.User on cl.RefundId equals usRef.Id into _usRf
                     from usRf in _usRf.DefaultIfEmpty()
-                    join bak in ctx.Bankings on cl.BankCode equals bak.BankCode into _bk
+                    join bak in ctx.BankingAcc on cl.AccBankId equals bak.AccBankId into _bk
                     from bk in _bk.DefaultIfEmpty()
                     select new CarRegisClListRes
                     {
@@ -42,14 +42,17 @@ namespace KKHondaBackend.Controllers.Ris
                         AlNo = cl.AlNo,
                         ClNo = cl.ClNo,
                         BalancePrice = cl.BalancePrice,
-                        ReceivePrice = cl.ReceivePrice,
+                        PaymentPrice = cl.PaymentPrice,
+                        DiscountPrice = cl.DiscountPrice,
+                        TotalPaymentPrice = cl.TotalPaymentPrice,
                         NetPrice = cl.NetPrice,
+                        PaymentDate = cl.PaymentDate,
                         PaymentType = cl.PaymentType,
                         PaymentDesc = PaymentType.Status.FirstOrDefault(x => x.Id == cl.PaymentType).Desc,
-                        BankCode = cl.BankCode,
-                        BankName = bk.BankName,
+                        AccBankId = cl.AccBankId,
                         DocumentRef = cl.DocumentRef,
                         Remark = cl.Remark,
+                        Reason = cl.Reason,
                         Status = cl.Status,
                         StatusDesc = ClStatus.Status.FirstOrDefault(x => x.Id == cl.Status).Desc,
                         RefundId = cl.RefundId,

@@ -32,7 +32,7 @@ namespace KKHondaBackend.Controllers.Ris
                 {
                     AlNo = x.Key.AlNo,
                     BalancePrice = x.Where(o => o.AlNo == x.Key.AlNo).OrderByDescending(o => o.ClId).FirstOrDefault().BalancePrice,
-                    ReceivePrice = x.Sum(o => o.ReceivePrice),
+                    TotalPaymentPrice = x.Sum(o => o.TotalPaymentPrice),
                     NetPrice = x.Where(o => o.AlNo == x.Key.AlNo).OrderByDescending(o => o.ClId).FirstOrDefault().NetPrice
                 }).AsNoTracking();
         }
@@ -61,8 +61,8 @@ namespace KKHondaBackend.Controllers.Ris
                         AlNo = al.AlNo,
                         SedNo = al.SedNo,
                         BorrowerName = brow.FullName,
-                        BalancePrice = cl.NetPrice > 0 ? cl.NetPrice - cl.ReceivePrice : al.PaymentPrice,
-                        ReceivePrice = cl.NetPrice > 0 ? cl.ReceivePrice : 0,
+                        BalancePrice = cl.NetPrice > 0 ? cl.NetPrice - cl.TotalPaymentPrice : al.PaymentPrice,
+                        ReceivePrice = cl.NetPrice > 0 ? cl.TotalPaymentPrice : 0,
                         NetPrice = cl.NetPrice > 0 ? cl.NetPrice : al.PaymentPrice,
                         Price2Remain = al.Price2Remain,
                         PaymentPrice = al.PaymentPrice,
@@ -76,6 +76,7 @@ namespace KKHondaBackend.Controllers.Ris
                         PaymentDate = al.PaymentDate,
                         DocumentRef = al.DocumentRef,
                         Remark = al.Remark,
+                        Reason = al.Reason,
                         Status = al.Status,
                         StatusDesc = AlStatus.Status.FirstOrDefault(x => x.Id == al.Status).Desc,
                         BranchId = al.BranchId,
