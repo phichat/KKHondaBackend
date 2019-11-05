@@ -568,6 +568,7 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.ItemCode).HasColumnName("item_code").HasMaxLength(8);
                 entity.Property(e => e.ItemName).HasColumnName("item_name").HasMaxLength(250);
                 entity.Property(e => e.ItemTag).HasColumnName("item_tag").HasMaxLength(8);
+                entity.Property(e => e.ItemType).HasColumnName("item_type");
                 entity.Property(e => e.ItemPrice1).HasColumnName("item_price_1").HasColumnType("numeric(18,2)");
                 entity.Property(e => e.ItemVatPrice1).HasColumnName("item_vat_price_1").HasColumnType("numeric(18,2)");
                 entity.Property(e => e.ItemNetPrice1).HasColumnName("item_net_price_1").HasColumnType("numeric(18,2)");

@@ -1,12 +1,11 @@
-using System;
 using KKHondaBackend.Data;
-using KKHondaBackend.Services;
+using KKHondaBackend.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
-using KKHondaBackend.Models;
 using KKHondaBackend.Entities;
+using System;
 
 namespace KKHondaBackend.Controllers.Ris
 {
@@ -181,6 +180,30 @@ namespace KKHondaBackend.Controllers.Ris
           });
           ctx.CarRegisListItem.UpdateRange(carRegisListItem);
           ctx.SaveChanges();
+
+          var carHistory = ctx.CarHistory
+            .Where(o => bookingId.Contains((int)o.BookingId))
+            .OrderByDescending(o => o.CarId)
+            .First();
+
+          switch (value.ExpenseTag)
+          {
+            case ExpensesTag.EXP10003:
+              var act = ctx.CompanyInsurance
+                .Where(o => o.CompanyCode == value.InsuranceCode)
+                .AsNoTracking()
+                .Single();
+              carHistory.PrbCompany = act == null ? null : act.CompanyName;
+              break;
+
+            case ExpensesTag.EXP10004:
+              var war = ctx.CompanyInsurance
+                .Where(o => o.CompanyCode == value.InsuranceCode)
+                .AsNoTracking()
+                .Single();
+              carHistory.WarCompany = war == null ? null : war.CompanyName;
+              break;
+          }
 
           var listBookingId = string.Join(",", bookingId);
           var totalNetPrice1 = value.ConList.Sum(o => o.NetPrice1);

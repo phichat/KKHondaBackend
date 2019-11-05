@@ -45,6 +45,7 @@ namespace KKHondaBackend.Controllers.Ris
                 ItemPrice3 = list.ItemPrice3,
                 ItemPriceTotal = list.ItemPriceTotal,
                 ItemTag = list.ItemTag,
+                ItemType = list.ItemType,
                 State = list.State,
                 DateReceipt = list.DateReceipt,
                 Remark = list.Remark
@@ -59,7 +60,15 @@ namespace KKHondaBackend.Controllers.Ris
                 ExpensesTag.EXP10001,
                 ExpensesTag.EXP10002
             };
-      var list = List.Where(x => x.BookingNo == conNo && expensesTag.Contains(x.ItemTag));
+      var expensesType = new List<int> {
+        ExpensesType.Service,
+        ExpensesType.Expenses
+      };
+      var list = List.Where(x => 
+          x.BookingNo == conNo &&
+          expensesTag.Contains(x.ItemTag) &&
+          expensesType.Contains((int)x.ItemType)
+          );
       var listItemDoc = new List<CarRegisListItemDocRes>();
       var itemSendBack = new CarRegisMSendback();
       CarRegisListItemDocRes itemDoc;

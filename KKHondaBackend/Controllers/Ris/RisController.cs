@@ -40,6 +40,7 @@ namespace KKHondaBackend.Controllers.Ris
                   select new CarRegisListRes
                   {
                     BookingNo = crl.BookingNo,
+                    RevNo = crl.RevNo,
                     Status1 = crl.Status1,
                     Status2 = crl.Status2,
                     BookingDate = crl.BookingDate,
@@ -73,10 +74,9 @@ namespace KKHondaBackend.Controllers.Ris
                     UpdateDate = crl.UpdateDate,
                     UpdateName = upd.FullName,
                     BookingId = crl.BookingId,
-                    RevNo = crl.RevNo,
                     OwnerCode = his.OwnerCode,
                     VisitorCode = his.VisitorCode,
-                  }).OrderByDescending(x => x.BookingId);
+                  }).OrderByDescending(x => x.BookingId).AsNoTracking();
       return list;
       ;
     }
@@ -209,6 +209,7 @@ namespace KKHondaBackend.Controllers.Ris
                   select new CarRegisListRes
                   {
                     BookingNo = crl.BookingNo,
+                    RevNo = crl.RevNo,
                     Status1 = crl.Status1,
                     Status2 = crl.Status2,
                     BookingDate = crl.BookingDate,
@@ -242,7 +243,6 @@ namespace KKHondaBackend.Controllers.Ris
                     UpdateDate = crl.UpdateDate,
                     UpdateName = upd.FullName,
                     BookingId = crl.BookingId,
-                    RevNo = crl.RevNo,
                     OwnerCode = his.OwnerCode,
                     VisitorCode = his.VisitorCode,
                   }).ToList();

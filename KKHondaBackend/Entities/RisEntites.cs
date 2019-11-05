@@ -124,11 +124,13 @@ namespace KKHondaBackend.Entities
   {
     public const int Service = 1;
     public const int Expenses = 2;
+    public const int InternalCost = 3;
 
     public static List<Status> Status = new List<Status>
         {
             new Status { Id = 1, Desc = "บริการ"},
-            new Status { Id = 2, Desc = "ค่าบริการ"}
+            new Status { Id = 2, Desc = "ค่าบริการ"},
+            new Status { Id = 3, Desc = "ค่าใช้จ่ายภายใน"}
         };
   }
 
