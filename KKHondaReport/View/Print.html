@@ -1,0 +1,326 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+    <!-- Bootstrap datepicker-->
+    <link href="../Plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css" rel="stylesheet" />
+
+    <!-- Bootstrap Tagsinput-->
+    <link href="../Plugins/bootstrap-tagsinput/bootstrap-tagsinput.css" rel="stylesheet" />
+    <style type="text/css">
+        .a4-page-print {
+            width: 29.7cm;
+            min-height: 20.5cm;
+            box-sizing: border-box;
+            margin: 0 auto 20px;
+            overflow: hidden;
+            background: #fff;
+            padding: 0in 0.5in 0in 0.5in;
+            position: relative;
+        }
+
+            .a4-page-print .a4-hearder {
+                padding-top: 60px;
+            }
+
+        #a4-onlineview {
+            font-size: 14px;
+        }
+
+        p {
+            margin: 0px;
+            padding: 0px;
+        }
+
+        .text-big {
+            font-weight: 700;
+            font-size: 16px !important;
+        }
+
+        .text-head {
+            font-weight: 700;
+            font-size: 16px !important;
+        }
+
+        .text-left {
+            text-align: left;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .clearFloat {
+            font-size: 0px;
+            line-height: 0px;
+            margin: 0px;
+            padding: 0px;
+            clear: both;
+            height: 0px;
+        }
+
+        .border-top {
+            border-top: 1px solid #c7c7c7;
+        }
+
+        .border-bottom {
+            border-bottom: 1px solid #c7c7c7;
+        }
+
+        .div-border {
+            border-left: 1px solid #c7c7c7;
+            border-right: 1px solid #c7c7c7;
+            border-bottom: 1px solid #c7c7c7;
+            display: flex;
+            display: -webkit-flex;
+            display: -moz-box;
+        }
+
+            .div-border div + div {
+                border-left: 1px solid #c7c7c7;
+            }
+
+        .cell-padding {
+            padding: 3px;
+        }
+
+        .text-red {
+            color: #ff0000;
+        }
+
+        .text-blue {
+            color: #0044ff;
+        }
+
+        .splitPage {
+            background: #ecf0f5;
+            height: 10px;
+            margin-left: -68px;
+            margin-right: -49px;
+            margin-top: 40px;
+            z-index: 9999;
+        }
+
+        @@media print {
+            * {
+                -webkit-print-color-adjust: exact;
+            }
+
+            .splitPage {
+                display: none;
+            }
+
+            @@page {
+                margin-top: 1.5cm;
+            }
+
+            .a4-onlineview {
+                top: 0px;
+                position: relative;
+            }
+
+            .page-break {
+                display: block !important;
+                page-break-before: always;
+            }
+
+            .a4-page-print {
+                width: 29.7cm;
+                box-sizing: border-box;
+                box-shadow: none;
+                margin: 0px auto !important;
+                overflow: hidden;
+                background: #fff;
+                position: relative;
+                box-shadow: 0;
+                background: #fff;
+                border: 0;
+                /*height: 100%;*/
+                page-break-after: always;
+            }
+
+            .text-red {
+                color: #ff0000 !important;
+                -webkit-print-color-adjust: exact;
+            }
+
+            .text-blue {
+                color: #0044ff !important;
+                -webkit-print-color-adjust: exact;
+            }
+        }
+    </style>
+
+</head>
+<body>
+    <input type="button" value="Print" onclick="print()" class="btn btn-flat btn-primary" />
+    <div style="overflow:auto">
+        <div id="a4-onlineview">
+            <div class="a4-page-print">
+                <div class="a4-hearder">
+                    <div class="">
+                        <div class="text-center text-head cell-padding" style="width:100%;float:left;">Quotation Summary Report</div>
+                    </div>
+                    <div class="" style="padding-bottom:10px;">
+                        <div style="width:33.33%;float:left;">
+                            <p><label style="width:120px;" class="text-bold text-right">QUOTATION NO : </label></p>
+                            <p><label style="width:120px;" class="text-bold text-right">PROJECT NAME : </label></p>
+                        </div>
+                        <div style="width:33.33%;float:left;">
+                            <p><label style="width:120px;" class="text-bold text-right">CUSTOMER NAME : </label></p>
+                            <p><label style="width:120px;" class="text-bold text-right">SALES PERSON : </label></p>
+                        </div>
+                        <div style="width:33.33%;float:left;">
+                            <p><label style="width:120px;" class="text-bold text-right">PROJECT TYPE : </label></p>
+                            <p><label style="width:120px;" class="text-bold text-right">ISSUE DATE : </label></p>
+                        </div>
+
+                        <div class="clearFloat"></div>
+                    </div>
+
+                    <div class="div-border border-top">
+                        <div class="text-center  cell-padding" style="width:8%;float:left;font-weight:700;">Issue Date</div>
+                        <div class="text-center  cell-padding" style="width:10%;float:left;font-weight:700;">No.</div>
+                        <div class="text-center  cell-padding" style="width:15%;float:left;font-weight:700;">Customer Name/ Project Name</div>
+                        <div class="text-center  cell-padding" style="width:13%;float:left;font-weight:700;">Sales Person</div>
+                        <div class="text-center  cell-padding" style="width:10%;float:left;font-weight:700;">Subtotal</div>
+                        <div class="text-center  cell-padding" style="width:8%;float:left;font-weight:700;">Commission</div>
+                        <div class="text-center  cell-padding" style="width:10%;float:left;font-weight:700;">Discount</div>
+                        <div class="text-center  cell-padding" style="width:8%;float:left;font-weight:700;">Vat</div>
+                        <div class="text-center  cell-padding" style="width:10%;float:left;font-weight:700;">Net Total</div>
+                        <div class="text-center  cell-padding" style="width:8%;float:left;font-weight:700;">Status</div>
+                    </div>
+
+
+                </div>
+                <!--@{int row = 1;}
+                @{double vat = 0;}
+                @{double amount = 0;}
+                @{double netTotal = 0;}
+                @{double discount = 0;}
+                @{double subtotal = 0;}
+                @{double commission = 0;}
+                @foreach (var item in ViewBag.QuotationLst)
+                {
+                <div class="a4-body">
+                    <div class="div-border">
+                        <div class="text-center  cell-padding" style="width:8%;float:left;">@item.TEXT_QT_ISSUE_DATE</div>
+                        <div class="text-center  cell-padding" style="width:10%;float:left;">@item.QT_CODE</div>
+                        <div class="text-left  cell-padding" style="width:15%;float:left;">
+                            @item.CUSTOMER_NAME
+                            @(string.IsNullOrEmpty(item.QT_PROJECT_NAME) ? "" : "|"  + item.QT_PROJECT_NAME)
+                        </div>
+                        <div class="text-left  cell-padding" style="width:13%;float:left;">@item.SELLER_NAME</div>
+                        <div class="text-right  cell-padding" style="width:10%;float:left;">@String.Format("{0:#,##0.00}", item.QT_SUBTOTAL)</div>
+                        <div class="text-right  cell-padding" style="width:8%;float:left;">@String.Format("{0:#,##0.00}", item.QT_COMMISSION_PRICE)</div>
+                        <div class="text-right  cell-padding" style="width:10%;float:left;">@String.Format("{0:#,##0.00}", item.QT_DISCOUNT_PRICE)</div>
+                        <div class="text-right  cell-padding" style="width:8%;float:left;">@String.Format("{0:#,##0.00}", item.QT_VAT)</div>
+                        <div class="text-right  cell-padding" style="width:10%;float:left;"> @String.Format("{0:#,##0.00}", item.QT_NET_TOTAL)</div>
+                        <div class="text-center  cell-padding" style="width:8%;float:left;">@item.QT_STATUS_NAME</div>
+                    </div>
+
+                </div>
+                {
+                subtotal += Convert.ToDouble(item.QT_SUBTOTAL);
+                commission += Convert.ToDouble(item.QT_COMMISSION_PRICE);
+                discount += Convert.ToDouble(item.QT_DISCOUNT_PRICE);
+                amount += Convert.ToDouble(item.QT_TOTAL_AFTER_DISCOUNT);
+                vat += Convert.ToDouble(item.QT_VAT);
+                netTotal += Convert.ToDouble(item.QT_NET_TOTAL);
+                row++;
+                }
+                }
+                <div class="a4-body">
+                    <div class="div-border">
+                        <div class="text-left  cell-padding" style="width:46%;float:left;"></div>
+                        <div class="text-right  cell-padding" style="width:10%;float:left;">@String.Format("{0:#,##0.00}", subtotal)</div>
+                        <div class="text-right  cell-padding" style="width:8%;float:left;">@String.Format("{0:#,##0.00}", commission)</div>
+                        <div class="text-right  cell-padding" style="width:10%;float:left;">@String.Format("{0:#,##0.00}", discount)</div>
+                        <div class="text-right  cell-padding" style="width:8%;float:left;">@String.Format("{0:#,##0.00}", vat)</div>
+                        <div class="text-right  cell-padding" style="width:10%;float:left;"> @String.Format("{0:#,##0.00}", netTotal)</div>
+                        <div class="text-center  cell-padding" style="width:8%;float:left;"></div>
+                    </div>
+
+                </div>-->
+
+            </div>
+
+
+
+
+        </div>
+    </div>
+
+
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <!-- Bootstrap Datepicker-->
+    <script src="../Plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
+
+    <!-- Bootstrap Typeahead-->
+    <script src="../Plugins/bootstrap-typeahead/bootstrap3-typeahead.min.js"></script>
+    <!-- Bootstrap Tags input-->
+    <script src="../Plugins/bootstrap-tagsinput/bootstrap-tagsinput.min.js"></script>
+    <!-- Jquery PrintArea-->
+    <script src="../Plugins/jQuery.printarea/jquery.PrintArea.js"></script>
+
+    <script>
+
+        $(document).ready(function () {
+            var indexBody = 0;
+            var page = 1;
+            var footerPage = '<div class="text-right" id="page_xx">Page xx of <span class="totalpage"></span></div>';
+            var afterSumHeight = 0;
+
+            var heigthPaper = parseInt($(".a4-page-print").css('min-height'), 10) - (parseInt($(".a4-page-print .a4-hearder").css('padding-top'), 10) * 2);
+            var heightHeader = $(".a4-page-print .a4-hearder").height();
+            var html = $(".a4-page-print .a4-hearder").html();
+            var sumHeight = heightHeader;
+            $(".a4-page-print .a4-body").each(function (index, html) {
+                indexBody = index;
+
+                sumHeight += $(this).height();
+                if (sumHeight > heigthPaper) {
+                    $(".a4-page-print .a4-body:eq(" + indexBody + ")").before(footerPage.replace(/xx/g, page) + "<div class='splitPage'></div><div class='a4-hearder page-break'>" + $(".a4-page-print .a4-hearder").html() + "</div>");
+                    var temp = heigthPaper - (sumHeight - $(this).height());
+                    $('#page_' + page).css('margin-top', temp + 'px');
+
+                    sumHeight = heightHeader + $(this).height();
+                    page++;
+                }
+                afterSumHeight = sumHeight;
+
+            });
+            $(".a4-page-print .a4-body:eq(" + indexBody + ")").after(footerPage.replace(/xx/g, page) + "<div class='splitPage'></div>");
+            var temp = heigthPaper - afterSumHeight;
+            console.log(heigthPaper + " : " + afterSumHeight);
+            console.log(temp);
+            $('#page_' + page).css('margin-top', temp + 'px');
+            $('.totalpage').html(page);
+
+            $(".sidebar-toggle").click();
+        });
+
+        function print() {
+            var mode = 'iframe'; // popup
+            var close = mode == "popup";
+            var options = { mode: mode, popClose: close };
+            $("div#a4-onlineview").printArea(options);
+
+        }
+    </script>
+</body>
+</html>

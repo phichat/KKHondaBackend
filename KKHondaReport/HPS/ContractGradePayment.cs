@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace KKHondaReport.PSS {
+namespace KKHondaReport.HPS {
     using System;
     using System.ComponentModel;
     using CrystalDecisions.Shared;
@@ -16,14 +16,14 @@ namespace KKHondaReport.PSS {
     using CrystalDecisions.CrystalReports.Engine;
     
     
-    public class subProductSellingProfitReport : ReportClass {
+    public class ContractGradePayment : ReportClass {
         
-        public subProductSellingProfitReport() {
+        public ContractGradePayment() {
         }
         
         public override string ResourceName {
             get {
-                return "subProductSellingProfitReport.rpt";
+                return "ContractGradePayment.rpt";
             }
             set {
                 // Do nothing
@@ -41,7 +41,7 @@ namespace KKHondaReport.PSS {
         
         public override string FullResourceName {
             get {
-                return "KKHondaReport.PSS.subProductSellingProfitReport.rpt";
+                return "KKHondaReport.HPS.ContractGradePayment.rpt";
             }
             set {
                 // Do nothing
@@ -106,9 +106,9 @@ namespace KKHondaReport.PSS {
     }
     
     [System.Drawing.ToolboxBitmapAttribute(typeof(CrystalDecisions.Shared.ExportOptions), "report.bmp")]
-    public class CachedsubProductSellingProfitReport : Component, ICachedReport {
+    public class CachedContractGradePayment : Component, ICachedReport {
         
-        public CachedsubProductSellingProfitReport() {
+        public CachedContractGradePayment() {
         }
         
         [Browsable(false)]
@@ -145,7 +145,7 @@ namespace KKHondaReport.PSS {
         }
         
         public virtual CrystalDecisions.CrystalReports.Engine.ReportDocument CreateReport() {
-            subProductSellingProfitReport rpt = new subProductSellingProfitReport();
+            ContractGradePayment rpt = new ContractGradePayment();
             rpt.Site = this.Site;
             return rpt;
         }

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace KKHondaReport.PSS {
+namespace KKHondaReport.ALL {
     using System;
     using System.ComponentModel;
     using CrystalDecisions.Shared;
@@ -16,14 +16,14 @@ namespace KKHondaReport.PSS {
     using CrystalDecisions.CrystalReports.Engine;
     
     
-    public class subServiceCheckReport : ReportClass {
+    public class SummaryDepositByDate : ReportClass {
         
-        public subServiceCheckReport() {
+        public SummaryDepositByDate() {
         }
         
         public override string ResourceName {
             get {
-                return "subServiceCheckReport.rpt";
+                return "SummaryDepositByDate.rpt";
             }
             set {
                 // Do nothing
@@ -41,7 +41,7 @@ namespace KKHondaReport.PSS {
         
         public override string FullResourceName {
             get {
-                return "KKHondaReport.PSS.subServiceCheckReport.rpt";
+                return "KKHondaReport.ALL.SummaryDepositByDate.rpt";
             }
             set {
                 // Do nothing
@@ -106,9 +106,9 @@ namespace KKHondaReport.PSS {
     }
     
     [System.Drawing.ToolboxBitmapAttribute(typeof(CrystalDecisions.Shared.ExportOptions), "report.bmp")]
-    public class CachedsubServiceCheckReport : Component, ICachedReport {
+    public class CachedSummaryDepositByDate : Component, ICachedReport {
         
-        public CachedsubServiceCheckReport() {
+        public CachedSummaryDepositByDate() {
         }
         
         [Browsable(false)]
@@ -145,7 +145,7 @@ namespace KKHondaReport.PSS {
         }
         
         public virtual CrystalDecisions.CrystalReports.Engine.ReportDocument CreateReport() {
-            subServiceCheckReport rpt = new subServiceCheckReport();
+            SummaryDepositByDate rpt = new SummaryDepositByDate();
             rpt.Site = this.Site;
             return rpt;
         }
