@@ -106,6 +106,24 @@
     <Content Include="เจ1.jpg" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ALL\SummaryDepositByDate.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ALL\SummaryDepositByDate1.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SummaryDepositByDate.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ALL\SummarySaleReportByType.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ALL\SummarySaleReportByType1.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SummarySaleReportByType.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Credits\formContract.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -165,6 +183,15 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>sumPaymentHistory.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HPS\ContractGradePayment.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HPS\ContractGradePayment1.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ContractGradePayment.rpt</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="MCS\CreditNote.cs">
@@ -289,6 +316,14 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="ALL\SummaryDepositByDate.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>SummaryDepositByDate1.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ALL\SummarySaleReportByType.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>SummarySaleReportByType1.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="Credits\formContract.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>formContract.cs</LastGenOutput>
@@ -324,6 +359,10 @@
     <EmbeddedResource Include="Credits\sumPaymentHistory.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>sumPaymentHistory.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="HPS\ContractGradePayment.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ContractGradePayment1.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="MCS\CreditNote.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
@@ -365,9 +404,7 @@
   <ItemGroup>
     <Service Include="{C0C07587-41A7-46C8-8FBD-3F9C8EBE2DDC}" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="ALL\" />
-  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
