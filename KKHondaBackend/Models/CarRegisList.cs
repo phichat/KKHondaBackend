@@ -129,5 +129,24 @@ namespace KKHondaBackend.Models
     public IEnumerable<CarRegisListItemDocRes> CarRegisListItemDocRes { get; set; }
   }
 
+  public partial class SearchRegisList
+  {
+    public string BookingNo { get; set; }
+    public string RevNo { get; set; }
+    public int? Status1 { get; set; }
+    public int? Status2 { get; set; }
+    public string ENo { get; set; }
+    public string FNo { get; set; }
+  }
+  public partial class SearchWaitingTag
+  {
+    public int?[] BookingPaymentType { get; set; }
+    public string SellNo { get; set; }
+    public string RegisName { get; set; }
+    public string BookName { get; set; }
+    public string BookIdCard { get; set; }
+    public string ENo { get; set; }
+    public string FNo { get; set; }
+  }
 
 }

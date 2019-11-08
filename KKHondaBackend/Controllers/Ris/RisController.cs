@@ -108,8 +108,8 @@ namespace KKHondaBackend.Controllers.Ris
               }).ToList();
     }
 
-    [HttpGet("All")]
-    public IActionResult All()
+    [HttpGet("SearchRegisList")]
+    public IActionResult SearchRegisList(SearchRegisList value)
     {
       var tag = new List<string> {
         ExpensesTag.EXP10001,
@@ -117,17 +117,21 @@ namespace KKHondaBackend.Controllers.Ris
         ExpensesTag.EXP10003,
         ExpensesTag.EXP10004
       };
-      return Ok(RegisList(tag));
+      var list = RegisList(tag).Where(item =>
+        (item.State1 == value.Status1 || item.Status2 == value.Status2) ||
+        (!string.IsNullOrEmpty(value.BookingNo) && item.BookingNo.IndexOf(value.BookingNo) > -1) ||
+        (!string.IsNullOrEmpty(value.RevNo) && item.RevNo.IndexOf(value.RevNo) > -1) ||
+        (!string.IsNullOrEmpty(value.ENo) && item.ENo.IndexOf(value.ENo) > -1) ||
+        (!string.IsNullOrEmpty(value.FNo) && item.FNo.IndexOf(value.FNo) > -1)
+      );
+
+      return Ok(list.ToList());
     }
 
-    // [HttpGet("GetAllByBranch")]
-    // public IActionResult GetAllByBranch(int branchId)
-    // {
-    //   return Ok(RegisList.Where(x => x.BranchId == branchId).ToList());
-    // }
 
-    [HttpGet("WaitingTag")]
-    public IActionResult WaitingTag()
+
+    [HttpGet("SearchWaitingTag")]
+    public IActionResult SearchWaitingTag(SearchWaitingTag value)
     {
       var carExcepts = ctx.CarRegisList
           .Where(x => x.Status1 != ConStatus1.Cancel)
@@ -144,7 +148,6 @@ namespace KKHondaBackend.Controllers.Ris
 
                   where bi.LogReceiveId > 0 &&
                   bk.BookingStatus == BookingStatus.Sell &&
-                  // (bk.FreeAct == 1 || bk.FreeTag == 1 || bk.FreeTag == 1) &&
                   (!carExcepts.Contains($"{tl.EngineNo}{tl.FrameNo}"))
 
                   select new CarRegisWaitingTagRes
@@ -171,7 +174,32 @@ namespace KKHondaBackend.Controllers.Ris
                     FNo = tl.FrameNo,
                     FiId = bk.FiId
                   }
+      );
+
+      list = list.Where(x =>
+        !string.IsNullOrEmpty(value.SellNo) && x.SellNo.IndexOf(value.SellNo) > -1 ||
+        !string.IsNullOrEmpty(value.RegisName) && x.RegisName.IndexOf(value.RegisName) > -1 ||
+        !string.IsNullOrEmpty(value.BookName) && ($"{x.BookTitleName}{x.BookFName}{x.BookSName}").IndexOf(value.BookName) > -1 ||
+        !string.IsNullOrEmpty(value.BookIdCard) && x.BookIdCard.IndexOf(value.BookIdCard) > -1 ||
+        !string.IsNullOrEmpty(value.ENo) && x.ENo.IndexOf(value.ENo) > -1 ||
+        !string.IsNullOrEmpty(value.FNo) && x.FNo.IndexOf(value.FNo) > -1
       ).OrderBy(x => x.SellDate);
+
+      if (value.BookingPaymentType != null)
+      {
+        list = list.Where(x => value.BookingPaymentType.Contains(x.BookingPaymentType));
+      }
+      // else
+      // {
+      //   var bookType = new List<int>{
+      //     BookingPaymentType.Cash,
+      //     BookingPaymentType.Leasing,
+      //     BookingPaymentType.HierPurchase,
+      //     BookingPaymentType.Credit
+      //   };
+      //   list = list.Where(x => bookType.Contains((int)x.BookingPaymentType));
+      // };
+
       return Ok(list.ToList());
     }
 

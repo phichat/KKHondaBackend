@@ -77,12 +77,12 @@ namespace KKHondaBackend.Services
       List<Dropdown> customerDropdowns = new List<Dropdown>();
 
       customerDropdowns = ctx.MCustomer
-                             .Where(o => o.CustomerCode.Contains(term) || o.CustomerName.Contains(term) ||
-                                    o.CustomerSurname.Contains(term) || o.CustomerPrename.Contains(term))
-                             .Select(o => new Dropdown
+                             .Where(o => o.CustomerCode.Contains(term) || 
+                             ($"{o.CustomerPrename}{o.CustomerName} {o.CustomerSurname}").Contains(term)
+                             ).Select(o => new Dropdown
                              {
                                Value = o.CustomerCode,
-                               Text = o.CustomerPrename + " " + o.CustomerName + " " + o.CustomerSurname
+                               Text = $"{o.CustomerPrename}{o.CustomerName} {o.CustomerSurname}"
                              }).Take(50).ToList();
 
       return customerDropdowns.ToArray();
@@ -96,7 +96,7 @@ namespace KKHondaBackend.Services
                              .Select(o => new Dropdown
                              {
                                Value = o.CustomerCode,
-                               Text = o.CustomerPrename + " " + o.CustomerName + " " + o.CustomerSurname
+                               Text = $"{o.CustomerPrename}{o.CustomerName} {o.CustomerSurname}"
                              }).Take(50).ToList();
 
       return customerDropdowns.ToArray();
@@ -107,7 +107,7 @@ namespace KKHondaBackend.Services
       return ctx.MCustomer.Select(o => new Customer
       {
         CustomerCode = o.CustomerCode,
-        CustomerFullName = o.CustomerPrename + " " + o.CustomerName + " " + o.CustomerSurname
+        CustomerFullName = $"{o.CustomerPrename}{o.CustomerName} {o.CustomerSurname}"
       }).AsNoTracking().ToList();
     }
   }
