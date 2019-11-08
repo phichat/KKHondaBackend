@@ -10,7 +10,7 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using CrystalDecisions.Shared;
-using KKHondaReport.Models;
+//using KKHondaReport.Models;
 using System.Globalization;
 using ClosedXML.Excel;
 
@@ -1384,14 +1384,25 @@ namespace KKHondaReport.MCS
             }
         }
 
+        //private void GetLoginfo(TableLogOnInfo Log, string server)
+        //{
+        //    Log.ConnectionInfo.ServerName = server;
+        //    Log.ConnectionInfo.UserID = "sa_report";
+        //    Log.ConnectionInfo.Password = "1234";
+        //    //Log.ConnectionInfo.UserID = "sa";
+        //    //Log.ConnectionInfo.Password = "sql@1234";
+        //    Log.ConnectionInfo.DatabaseName = "";
+        //}
+
         private void GetLoginfo(TableLogOnInfo Log, string server)
         {
-            Log.ConnectionInfo.ServerName = server;
-            Log.ConnectionInfo.UserID = "sa_report";
-            Log.ConnectionInfo.Password = "1234";
-            //Log.ConnectionInfo.UserID = "sa";
-            //Log.ConnectionInfo.Password = "sql@1234";
+            SqlConnectionStringBuilder connection = new SqlConnectionStringBuilder(conStr);
+
+            Log.ConnectionInfo.ServerName = connection.DataSource;
+            Log.ConnectionInfo.UserID = connection.UserID;
+            Log.ConnectionInfo.Password = connection.Password;
             Log.ConnectionInfo.DatabaseName = "";
         }
+
     }
 }
