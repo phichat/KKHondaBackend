@@ -68,6 +68,14 @@ namespace KKHondaBackend
                            .AllowAnyHeader()
                            .AllowAnyMethod();
                 });
+            } else {
+                app.UseCors(builder =>
+                {
+                    builder.WithOrigins("http://203.154.126.61/KK-Honda")
+                           .AllowAnyOrigin()
+                           .AllowAnyHeader()
+                           .AllowAnyMethod();
+                });
             }
 
             app.UseMvc();
