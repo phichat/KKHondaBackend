@@ -10,6 +10,7 @@ using KKHondaBackend.Entities;
 
 namespace KKHondaBackend.Controllers.Ris
 {
+    [Produces("application/json")]
     [Route("api/Ris/Sed")]
     public class SedController : Controller
     {

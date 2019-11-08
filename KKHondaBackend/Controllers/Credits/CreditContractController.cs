@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace KKHondaBackend.Controllers.Credits
 {
+    [Produces("application/json")]
     [Route("api/Credit/Contract")]
     public class CreditContractController : Controller
     {

@@ -11,6 +11,7 @@ using KKHondaBackend.Services;
 
 namespace KKHondaBackend.Controllers.Customers
 {
+  [Produces("application/json")]
   [Route("api/Customers/[controller]")]
   public class CustomerController : Controller
   {

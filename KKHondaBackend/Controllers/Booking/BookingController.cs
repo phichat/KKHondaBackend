@@ -10,6 +10,7 @@ using KKHondaBackend.Services;
 
 namespace KKHondaBackend.Controllers.Booking
 {
+    [Produces("application/json")]
     [Route("api/Booking")] 
     public class BookingController : Controller
     {

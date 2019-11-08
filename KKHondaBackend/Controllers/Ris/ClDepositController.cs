@@ -9,6 +9,7 @@ using System;
 
 namespace KKHondaBackend.Controllers.Ris
 {
+  [Produces("application/json")]
   [Route("api/Ris/[controller]")]
   public class ClDepositController : Controller
   {

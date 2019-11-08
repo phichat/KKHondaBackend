@@ -10,6 +10,7 @@ using KKHondaBackend.Models;
 
 namespace KKHondaBackend.Controllers.Customers
 {
+    [Produces("application/json")]
     [Route("api/Customers/[controller]")]
     public class PersonalController : Controller
     {
