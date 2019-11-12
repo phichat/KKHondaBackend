@@ -125,4 +125,13 @@ namespace KKHondaBackend.Models
     public int UpdateBy { get; set; }
     public string Reason { get; set; }
   }
+
+  public partial class SearchClDepositList {
+      public string ReceiptNo {get;set;}
+      public DateTime? PaymentDate {get;set;}
+      public string[] ExpenseTag {get;set;}
+      public int?[] PaymentType {get;set;}
+      public string CreateName {get;set;}
+      public int? Status {get;set;}
+  }
 }

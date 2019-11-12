@@ -119,7 +119,8 @@ namespace KKHondaBackend.Controllers.Ris
         ExpensesTag.EXP10004
       };
       var list = RegisList(tag).Where(item =>
-        (item.State1 == value.Status1 || item.Status2 == value.Status2) ||
+        (value.Status1 != null && item.Status1 == value.Status1) ||
+        (value.Status1 != null && item.Status2 == value.Status2) ||
         (!string.IsNullOrEmpty(value.BookingNo) && item.BookingNo.IndexOf(value.BookingNo) > -1) ||
         (!string.IsNullOrEmpty(value.RevNo) && item.RevNo.IndexOf(value.RevNo) > -1) ||
         (!string.IsNullOrEmpty(value.ENo) && item.ENo.IndexOf(value.ENo) > -1) ||
@@ -178,28 +179,14 @@ namespace KKHondaBackend.Controllers.Ris
       );
 
       list = list.Where(x =>
-        !string.IsNullOrEmpty(value.SellNo) && x.SellNo.IndexOf(value.SellNo) > -1 ||
-        !string.IsNullOrEmpty(value.RegisName) && x.RegisName.IndexOf(value.RegisName) > -1 ||
-        !string.IsNullOrEmpty(value.BookName) && ($"{x.BookTitleName}{x.BookFName}{x.BookSName}").IndexOf(value.BookName) > -1 ||
-        !string.IsNullOrEmpty(value.BookIdCard) && x.BookIdCard.IndexOf(value.BookIdCard) > -1 ||
-        !string.IsNullOrEmpty(value.ENo) && x.ENo.IndexOf(value.ENo) > -1 ||
-        !string.IsNullOrEmpty(value.FNo) && x.FNo.IndexOf(value.FNo) > -1
+        (value.BookingPaymentType.Any() && value.BookingPaymentType.Contains(x.BookingPaymentType)) ||
+        (!string.IsNullOrEmpty(value.SellNo) && x.SellNo.IndexOf(value.SellNo) > -1) ||
+        (!string.IsNullOrEmpty(value.RegisName) && x.RegisName.IndexOf(value.RegisName) > -1) ||
+        (!string.IsNullOrEmpty(value.BookName) && ($"{x.BookTitleName}{x.BookFName}{x.BookSName}").IndexOf(value.BookName) > -1) ||
+        (!string.IsNullOrEmpty(value.BookIdCard) && x.BookIdCard.IndexOf(value.BookIdCard) > -1) ||
+        (!string.IsNullOrEmpty(value.ENo) && x.ENo.IndexOf(value.ENo) > -1) ||
+        (!string.IsNullOrEmpty(value.FNo) && x.FNo.IndexOf(value.FNo) > -1)
       ).OrderBy(x => x.SellDate);
-
-      if (value.BookingPaymentType != null)
-      {
-        list = list.Where(x => value.BookingPaymentType.Contains(x.BookingPaymentType));
-      }
-      // else
-      // {
-      //   var bookType = new List<int>{
-      //     BookingPaymentType.Cash,
-      //     BookingPaymentType.Leasing,
-      //     BookingPaymentType.HierPurchase,
-      //     BookingPaymentType.Credit
-      //   };
-      //   list = list.Where(x => bookType.Contains((int)x.BookingPaymentType));
-      // };
 
       return Ok(list.ToList());
     }

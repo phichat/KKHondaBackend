@@ -66,4 +66,13 @@ namespace KKHondaBackend.Models
     public string Remark { get; set; }
     public int UpdateBy { get; set; }
   }
+
+  public partial class SearchAlList {
+     public string SedNo { get; set; }
+     public string AlNo { get; set; }
+    public DateTime? CreateDate { get; set; }
+    public string BorrowerName {get;set;}
+    public string CreateName { get; set; }
+    public int? Status { get; set; }
+  }
 }

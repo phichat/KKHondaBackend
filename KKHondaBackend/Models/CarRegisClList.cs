@@ -40,7 +40,7 @@ namespace KKHondaBackend.Models
     public decimal NetPrice { get; set; }
     // public string BankCode { get; set; }
     // public string BankName { get; set; }
-   public decimal PaymentPrice { get; set; }
+    public decimal PaymentPrice { get; set; }
     public decimal? DiscountPrice { get; set; }
     public decimal TotalPaymentPrice { get; set; } // ReceivePrice
     public DateTime? PaymentDate { get; set; }
@@ -76,5 +76,15 @@ namespace KKHondaBackend.Models
     public string Reason { get; set; }
     public string Remark { get; set; }
     public int UpdateBy { get; set; }
+  }
+  public partial class SearchClList
+  {
+    public string SedNo { get; set; }
+    public string AlNo { get; set; }
+    public string ClNo { get; set; }
+    public DateTime? CreateDate { get; set; }
+    public string RefundName { get; set; }
+    public string CreateName { get; set; }
+    public int? Status { get; set; }
   }
 }

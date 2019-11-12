@@ -91,6 +91,19 @@ namespace KKHondaBackend.Controllers.Ris
               }).AsNoTracking();
     }
 
+    [HttpGet("SearchAlList")]
+    public IActionResult SearchAlList(SearchAlList value) {
+      var list = AlListRes.Where(x => 
+        (!string.IsNullOrEmpty(value.SedNo) && x.SedNo.IndexOf(value.SedNo) > -1) ||
+        (!string.IsNullOrEmpty(value.AlNo) && x.AlNo.IndexOf(value.AlNo) > -1) ||
+        (!string.IsNullOrEmpty(value.CreateName) && x.CreateName.IndexOf(value.CreateName) > -1) ||
+        (!string.IsNullOrEmpty(value.BorrowerName) && x.BorrowerName.IndexOf(value.BorrowerName) > -1) ||
+        (value.CreateDate != null && x.CreateDate.Date == value.CreateDate?.Date) ||
+        (value.Status != null && x.Status == value.Status)
+      );
+      return Ok(list.ToList());
+    }
+
     [HttpGet("NormalList")]
     public IActionResult NormalList() => Ok(AlListRes.Where(x => x.Status == AlStatus.Normal).ToList());
 
