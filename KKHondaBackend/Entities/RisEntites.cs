@@ -8,11 +8,13 @@ namespace KKHondaBackend.Entities
   {
     public const int Cash = 1;
     public const int Transfer = 2;
-    public const int Cheque = 2;
+    public const int Cheque = 3;
+    public const int CreditCard = 4;
     public static List<Status> Status = new List<Status> {
-      new Status { Id = 1, Desc = "เงินสด" },
-      new Status { Id = 2, Desc = "เงินโอน" },
-      new Status { Id = 3, Desc = "เช็ค" }
+      new Status { Id = Cash, Desc = "เงินสด" },
+      new Status { Id = Transfer, Desc = "เงินโอน" },
+      new Status { Id = Cheque, Desc = "เช็ค" },
+      new Status { Id = CreditCard, Desc = "บัตรเครดิต" }
     };
   }
   public class PaymentStatus
