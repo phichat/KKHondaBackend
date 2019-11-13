@@ -138,18 +138,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ALL\SummaryDepositByDate.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="ALL\SummaryDepositByDate1.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>SummaryDepositByDate.rpt</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="ALL\SummarySaleReportByType.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="ALL\SummarySaleReportByType1.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>SummarySaleReportByType.rpt</DependentUpon>
@@ -217,9 +211,6 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="HPS\ContractGradePayment.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HPS\ContractGradePayment1.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>ContractGradePayment.rpt</DependentUpon>
