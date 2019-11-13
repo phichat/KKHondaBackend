@@ -212,9 +212,11 @@ namespace KKHondaReport.Contracts
 
         private void GetLoginfo(TableLogOnInfo Log, string server)
         {
-            Log.ConnectionInfo.ServerName = server;
-            Log.ConnectionInfo.UserID = "sa";
-            Log.ConnectionInfo.Password = "Krirkkai@2012";
+            SqlConnectionStringBuilder connection = new SqlConnectionStringBuilder(conStr);
+
+            Log.ConnectionInfo.ServerName = connection.DataSource;
+            Log.ConnectionInfo.UserID = connection.UserID;
+            Log.ConnectionInfo.Password = connection.Password;
             Log.ConnectionInfo.DatabaseName = "";
         }
 

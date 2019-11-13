@@ -89,7 +89,7 @@ namespace KKHondaReport.RIS
                 rptDoc.Refresh();
 
                 TableLogOnInfo L1 = rptDoc.Database.Tables[0].LogOnInfo;
-                GetLoginfo(L1, server, userid, pass, database);
+                GetLoginfo(L1);
                 rptDoc.SetParameterValue("@sed_no", sedNo);
                 rptDoc.Database.Tables[0].ApplyLogOnInfo(L1);
 
@@ -118,7 +118,7 @@ namespace KKHondaReport.RIS
                 rptDoc.Refresh();
 
                 TableLogOnInfo L1 = rptDoc.Database.Tables[0].LogOnInfo;
-                GetLoginfo(L1, server, userid, pass, database);
+                GetLoginfo(L1);
                 rptDoc.SetParameterValue("@user_id", userId);
                 rptDoc.SetParameterValue("@cl_no", clNo);
                 rptDoc.Database.Tables[0].ApplyLogOnInfo(L1);
@@ -149,7 +149,7 @@ namespace KKHondaReport.RIS
 
                 TableLogOnInfo L1 = rptDoc.Database.Tables[0].LogOnInfo;
 
-                GetLoginfo(L1, server, userid, pass, database);
+                GetLoginfo(L1);
                 rptDoc.SetParameterValue("@user_id", userId);
                 rptDoc.SetParameterValue("@al_no", alNo);
                 rptDoc.Database.Tables[0].ApplyLogOnInfo(L1);
@@ -179,7 +179,7 @@ namespace KKHondaReport.RIS
                 rptDoc.Refresh();
 
                 TableLogOnInfo L1 = rptDoc.Database.Tables[0].LogOnInfo;
-                GetLoginfo(L1, server, userid, pass, database);
+                GetLoginfo(L1);
                 rptDoc.SetParameterValue("@start_sell_date", sdate.ToString("yyyy-MM-dd"));
                 rptDoc.SetParameterValue("@end_sell_date", edate.ToString("yyyy-MM-dd"));
                 rptDoc.Database.Tables[0].ApplyLogOnInfo(L1);
@@ -209,7 +209,7 @@ namespace KKHondaReport.RIS
                 rptDoc.Refresh();
 
                 TableLogOnInfo L1 = rptDoc.Database.Tables[0].LogOnInfo;
-                GetLoginfo(L1, server, userid, pass, database);
+                GetLoginfo(L1);
                 rptDoc.SetParameterValue("@start_receive_date", sdate.ToString("yyyy-MM-dd"));
                 rptDoc.SetParameterValue("@end_receive_date", edate.ToString("yyyy-MM-dd"));
                 rptDoc.Database.Tables[0].ApplyLogOnInfo(L1);
@@ -254,12 +254,14 @@ namespace KKHondaReport.RIS
             }
         }
 
-        private void GetLoginfo(TableLogOnInfo Log, string server, string userId, string password, string database)
+         private void GetLoginfo(TableLogOnInfo Log)
         {
-            Log.ConnectionInfo.ServerName = server;
-            Log.ConnectionInfo.UserID = userId;
-            Log.ConnectionInfo.Password = password;
-            Log.ConnectionInfo.DatabaseName = database;
+            SqlConnectionStringBuilder connection = new SqlConnectionStringBuilder(conStr);
+
+            Log.ConnectionInfo.ServerName = connection.DataSource;
+            Log.ConnectionInfo.UserID = connection.UserID;
+            Log.ConnectionInfo.Password = connection.Password;
+            Log.ConnectionInfo.DatabaseName = "";
         }
     }
 }
