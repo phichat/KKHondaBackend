@@ -31,6 +31,15 @@ namespace KKHondaBackend.Models
     public double? TransportServiceCharge { get; set; }
     public string Reason { get; set; }
     public string Remark { get; set; }
+
+
+    public int PaymentType { get; set; }
+    public decimal PaymentPrice { get; set; }
+    public decimal? DiscountPrice { get; set; }
+    public decimal TotalPaymentPrice { get; set; }
+    public int? AccBankId { get; set; }
+    public DateTime PaymentDate { get; set; }
+    public string DocumentRef { get; set; }
   }
 
   public partial class CarRegisListRes
@@ -74,6 +83,14 @@ namespace KKHondaBackend.Models
     public string Reason { get; set; }
     public string Remark { get; set; }
     public string RevNo { get; set; }
+
+    public int PaymentType { get; set; }
+    public decimal PaymentPrice { get; set; }
+    public decimal? DiscountPrice { get; set; }
+    public decimal TotalPaymentPrice { get; set; }
+    public int? AccBankId { get; set; }
+    public DateTime PaymentDate { get; set; }
+    public string DocumentRef { get; set; }
   }
   public partial class CarRegisWaitingTagRes
   {

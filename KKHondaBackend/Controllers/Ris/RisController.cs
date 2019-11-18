@@ -7,6 +7,7 @@ using System.Linq;
 using KKHondaBackend.Entities;
 using System;
 using KKHondaBackend.Services;
+using System.Threading.Tasks;
 
 namespace KKHondaBackend.Controllers.Ris
 {
@@ -27,59 +28,68 @@ namespace KKHondaBackend.Controllers.Ris
       iCustomer = _iCustomer;
     }
 
-    public IEnumerable<CarRegisListRes> RegisList(List<string> tag)
+    public async Task<IEnumerable<CarRegisListRes>> RegisList(List<string> tag)
     {
-      var list = (from crl in ctx.CarRegisList
-                  join crli in RegisListItem(tag) on crl.BookingId equals crli.BookingId
-                  join his in ctx.CarHistory on crl.BookingId equals his.BookingId
-                  join brh in ctx.Branch on crl.BranchId equals brh.BranchId
-                  join _cr in ctx.User on crl.CreateBy equals _cr.Id into cr1
-                  join _up in ctx.User on crl.UpdateBy equals _up.Id into up1
-                  from cre in cr1.DefaultIfEmpty()
-                  from upd in up1.DefaultIfEmpty()
+      var list = await (from crl in ctx.CarRegisList
+                        join crli in RegisListItem(tag) on crl.BookingId equals crli.BookingId
+                        join his in ctx.CarHistory on crl.BookingId equals his.BookingId
+                        join brh in ctx.Branch on crl.BranchId equals brh.BranchId
+                        join _cr in ctx.User on crl.CreateBy equals _cr.Id into cr1
+                        join _up in ctx.User on crl.UpdateBy equals _up.Id into up1
+                        from cre in cr1.DefaultIfEmpty()
+                        from upd in up1.DefaultIfEmpty()
 
-                  select new CarRegisListRes
-                  {
-                    BookingNo = crl.BookingNo,
-                    RevNo = crl.RevNo,
-                    Status1 = crl.Status1,
-                    Status2 = crl.Status2,
-                    BookingDate = crl.BookingDate,
-                    BranchId = crl.BranchId,
-                    BranchName = brh.BranchName,
-                    BranchProvince = brh.BranchProvince,
-                    CreateBy = crl.CreateBy,
-                    CreateDate = crl.CreateDate,
-                    CreateName = cre.FullName,
-                    ENo = crl.ENo,
-                    FNo = crl.FNo,
-                    Price1 = crli.ItemPrice1,
-                    Price2 = crli.ItemPrice2,
-                    Price3 = crli.ItemPrice3,
-                    VatPrice1 = crli.ItemVatPrice1,
-                    NetPrice1 = crli.ItemNetPrice1,
-                    CutBalance = crli.ItemCutBalance,
-                    Province = his.Province,
-                    Reason = crl.Reason,
-                    Remark = crl.Remark,
-                    Status1Desc = ConStatus1.Status.FirstOrDefault(x => x.Id == crl.Status1).Desc,
-                    Status2Desc = ConStatus2.Status.FirstOrDefault(x => x.Id == crl.Status2).Desc,
-                    State1 = crl.State1,
-                    State2 = crl.State2,
-                    TagNo = his.TagNo,
-                    TagRegis = his.TagRegis,
-                    TotalPrice = crl.TotalPrice,
-                    TransportReceiptDate = crl.TransportReceiptDate,
-                    TransportServiceCharge = crl.TransportServiceCharge,
-                    UpdateBy = crl.UpdateBy,
-                    UpdateDate = crl.UpdateDate,
-                    UpdateName = upd.FullName,
-                    BookingId = crl.BookingId,
-                    OwnerCode = his.OwnerCode,
-                    VisitorCode = his.VisitorCode,
-                  }).OrderByDescending(x => x.BookingId).AsNoTracking();
+                        select new CarRegisListRes
+                        {
+                          BookingNo = crl.BookingNo,
+                          RevNo = crl.RevNo,
+                          Status1 = crl.Status1,
+                          Status2 = crl.Status2,
+                          BookingDate = crl.BookingDate,
+                          BranchId = crl.BranchId,
+                          BranchName = brh.BranchName,
+                          BranchProvince = brh.BranchProvince,
+                          CreateBy = crl.CreateBy,
+                          CreateDate = crl.CreateDate,
+                          CreateName = cre.FullName,
+                          ENo = crl.ENo,
+                          FNo = crl.FNo,
+                          Price1 = crli.ItemPrice1,
+                          Price2 = crli.ItemPrice2,
+                          Price3 = crli.ItemPrice3,
+                          VatPrice1 = crli.ItemVatPrice1,
+                          NetPrice1 = crli.ItemNetPrice1,
+                          CutBalance = crli.ItemCutBalance,
+                          Province = his.Province,
+                          Reason = crl.Reason,
+                          Remark = crl.Remark,
+                          Status1Desc = ConStatus1.Status.FirstOrDefault(x => x.Id == crl.Status1).Desc,
+                          Status2Desc = ConStatus2.Status.FirstOrDefault(x => x.Id == crl.Status2).Desc,
+                          State1 = crl.State1,
+                          State2 = crl.State2,
+                          TagNo = his.TagNo,
+                          TagRegis = his.TagRegis,
+                          TotalPrice = crl.TotalPrice,
+                          TransportReceiptDate = crl.TransportReceiptDate,
+                          TransportServiceCharge = crl.TransportServiceCharge,
+                          UpdateBy = crl.UpdateBy,
+                          UpdateDate = crl.UpdateDate,
+                          UpdateName = upd.FullName,
+                          BookingId = crl.BookingId,
+                          OwnerCode = his.OwnerCode,
+                          VisitorCode = his.VisitorCode,
+                          PaymentType = crl.PaymentType,
+                          PaymentPrice = crl.PaymentPrice,
+                          DiscountPrice = crl.DiscountPrice,
+                          TotalPaymentPrice = crl.TotalPaymentPrice,
+                          AccBankId = crl.AccBankId,
+                          PaymentDate = crl.PaymentDate,
+                          DocumentRef = crl.DocumentRef
+                        })
+                  .OrderByDescending(x => x.BookingId)
+                  .ToListAsync();
       return list;
-      ;
+
     }
 
 
@@ -110,7 +120,7 @@ namespace KKHondaBackend.Controllers.Ris
     }
 
     [HttpGet("SearchRegisList")]
-    public IActionResult SearchRegisList(SearchRegisList value)
+    public async Task<IActionResult> SearchRegisList([FromHeader] SearchRegisList value)
     {
       var tag = new List<string> {
         ExpensesTag.EXP10001,
@@ -118,16 +128,16 @@ namespace KKHondaBackend.Controllers.Ris
         ExpensesTag.EXP10003,
         ExpensesTag.EXP10004
       };
-      var list = RegisList(tag).Where(item =>
+      var list = (await RegisList(tag)).Where(item =>
         (value.Status1 != null && item.Status1 == value.Status1) ||
         (value.Status1 != null && item.Status2 == value.Status2) ||
-        (!string.IsNullOrEmpty(value.BookingNo) && item.BookingNo.IndexOf(value.BookingNo) > -1) ||
+        (!string.IsNullOrEmpty(value.BookingNo) && item.BookingNo.Contains(value.BookingNo)) ||
         (!string.IsNullOrEmpty(value.RevNo) && item.RevNo.IndexOf(value.RevNo) > -1) ||
         (!string.IsNullOrEmpty(value.ENo) && item.ENo.IndexOf(value.ENo) > -1) ||
         (!string.IsNullOrEmpty(value.FNo) && item.FNo.IndexOf(value.FNo) > -1)
       );
 
-      return Ok(list.ToList());
+      return Ok(list);
     }
 
 
@@ -192,7 +202,7 @@ namespace KKHondaBackend.Controllers.Ris
     }
 
     [HttpGet("CarRegisReceive")]
-    public IActionResult CarRegisReceive()
+    public async Task<IActionResult> CarRegisReceive()
     {
       var tag = new List<string> {
         ExpensesTag.EXP10001,
@@ -200,68 +210,76 @@ namespace KKHondaBackend.Controllers.Ris
         ExpensesTag.EXP10003,
         ExpensesTag.EXP10004
       };
-      var list = RegisList(tag).Where(x => x.State1 != ConStatus1.Cancel && x.Status2 == null);
+      var list = (await RegisList(tag)).Where(x => x.State1 != ConStatus1.Cancel && x.Status2 == null);
       return Ok(list.ToList());
     }
 
     [HttpGet("CarRegisReceiveTag")]
-    public IActionResult CarRegisReceiveTag()
+    public async Task<IActionResult> CarRegisReceiveTag()
     {
       var tag = new List<string> {
         ExpensesTag.EXP10001,
         ExpensesTag.EXP10002
       };
-      var list = (from crl in ctx.CarRegisList
-                  join crli in RegisListItem(tag) on crl.BookingId equals crli.BookingId
-                  join his in ctx.CarHistory on crl.BookingId equals his.BookingId
-                  join brh in ctx.Branch on crl.BranchId equals brh.BranchId
-                  join _cr in ctx.User on crl.CreateBy equals _cr.Id into cr1
-                  join _up in ctx.User on crl.UpdateBy equals _up.Id into up1
-                  from cre in cr1.DefaultIfEmpty()
-                  from upd in up1.DefaultIfEmpty()
+      var list = await (from crl in ctx.CarRegisList
+                        join crli in RegisListItem(tag) on crl.BookingId equals crli.BookingId
+                        join his in ctx.CarHistory on crl.BookingId equals his.BookingId
+                        join brh in ctx.Branch on crl.BranchId equals brh.BranchId
+                        join _cr in ctx.User on crl.CreateBy equals _cr.Id into cr1
+                        join _up in ctx.User on crl.UpdateBy equals _up.Id into up1
+                        from cre in cr1.DefaultIfEmpty()
+                        from upd in up1.DefaultIfEmpty()
 
-                  where crl.Status1 != ConStatus1.Cancel && crl.Status2 == null
+                        where crl.Status1 != ConStatus1.Cancel && crl.Status2 == null
 
-                  select new CarRegisListRes
-                  {
-                    BookingNo = crl.BookingNo,
-                    RevNo = crl.RevNo,
-                    Status1 = crl.Status1,
-                    Status2 = crl.Status2,
-                    BookingDate = crl.BookingDate,
-                    BranchId = crl.BranchId,
-                    BranchName = brh.BranchName,
-                    BranchProvince = brh.BranchProvince,
-                    CreateBy = crl.CreateBy,
-                    CreateDate = crl.CreateDate,
-                    CreateName = cre.FullName,
-                    ENo = crl.ENo,
-                    FNo = crl.FNo,
-                    Price1 = crli.ItemPrice1,
-                    Price2 = crli.ItemPrice2,
-                    Price3 = crli.ItemPrice3,
-                    VatPrice1 = crli.ItemVatPrice1,
-                    NetPrice1 = crli.ItemNetPrice1,
-                    CutBalance = crli.ItemCutBalance,
-                    Province = his.Province,
-                    Reason = crl.Reason,
-                    Remark = crl.Remark,
-                    Status1Desc = ConStatus1.Status.FirstOrDefault(x => x.Id == crl.Status1).Desc,
-                    Status2Desc = ConStatus2.Status.FirstOrDefault(x => x.Id == crl.Status2).Desc,
-                    State1 = crl.State1,
-                    State2 = crl.State2,
-                    TagNo = his.TagNo,
-                    TagRegis = his.TagRegis,
-                    TotalPrice = crl.TotalPrice,
-                    TransportReceiptDate = crl.TransportReceiptDate,
-                    TransportServiceCharge = crl.TransportServiceCharge,
-                    UpdateBy = crl.UpdateBy,
-                    UpdateDate = crl.UpdateDate,
-                    UpdateName = upd.FullName,
-                    BookingId = crl.BookingId,
-                    OwnerCode = his.OwnerCode,
-                    VisitorCode = his.VisitorCode,
-                  }).ToList();
+                        select new CarRegisListRes
+                        {
+                          BookingNo = crl.BookingNo,
+                          RevNo = crl.RevNo,
+                          Status1 = crl.Status1,
+                          Status2 = crl.Status2,
+                          BookingDate = crl.BookingDate,
+                          BranchId = crl.BranchId,
+                          BranchName = brh.BranchName,
+                          BranchProvince = brh.BranchProvince,
+                          CreateBy = crl.CreateBy,
+                          CreateDate = crl.CreateDate,
+                          CreateName = cre.FullName,
+                          ENo = crl.ENo,
+                          FNo = crl.FNo,
+                          Price1 = crli.ItemPrice1,
+                          Price2 = crli.ItemPrice2,
+                          Price3 = crli.ItemPrice3,
+                          VatPrice1 = crli.ItemVatPrice1,
+                          NetPrice1 = crli.ItemNetPrice1,
+                          CutBalance = crli.ItemCutBalance,
+                          Province = his.Province,
+                          Reason = crl.Reason,
+                          Remark = crl.Remark,
+                          Status1Desc = ConStatus1.Status.FirstOrDefault(x => x.Id == crl.Status1).Desc,
+                          Status2Desc = ConStatus2.Status.FirstOrDefault(x => x.Id == crl.Status2).Desc,
+                          State1 = crl.State1,
+                          State2 = crl.State2,
+                          TagNo = his.TagNo,
+                          TagRegis = his.TagRegis,
+                          TotalPrice = crl.TotalPrice,
+                          TransportReceiptDate = crl.TransportReceiptDate,
+                          TransportServiceCharge = crl.TransportServiceCharge,
+                          UpdateBy = crl.UpdateBy,
+                          UpdateDate = crl.UpdateDate,
+                          UpdateName = upd.FullName,
+                          BookingId = crl.BookingId,
+                          OwnerCode = his.OwnerCode,
+                          VisitorCode = his.VisitorCode,
+                          PaymentType = crl.PaymentType,
+                          PaymentPrice = crl.PaymentPrice,
+                          DiscountPrice = crl.DiscountPrice,
+                          TotalPaymentPrice = crl.TotalPaymentPrice,
+                          AccBankId = crl.AccBankId,
+                          PaymentDate = crl.PaymentDate,
+                          DocumentRef = crl.DocumentRef
+                        })
+                  .ToListAsync();
       return Ok(list);
     }
 
@@ -270,15 +288,16 @@ namespace KKHondaBackend.Controllers.Ris
     {
       var tag = new List<string> { itemTag };
       return RegisListItem(tag)
-      .Select(o => new CarRegisClDepositDeposit
-      {
-        BookingId = o.BookingId,
-        BookingNo = o.BookingNo,
-        BookingDate = o.BookingDate,
-        NetPrice1 = (decimal)o.ItemNetPrice1,
-        Expense = (decimal)(o.ItemPrice2 + o.ItemPrice3),
-        PaymentPrice = (decimal)o.PaymentPrice
-      });
+        .Select(o => new CarRegisClDepositDeposit
+        {
+          BookingId = o.BookingId,
+          BookingNo = o.BookingNo,
+          BookingDate = o.BookingDate,
+          NetPrice1 = (decimal)o.ItemNetPrice1,
+          Expense = (decimal)(o.ItemPrice2 + o.ItemPrice3),
+          PaymentPrice = (decimal)o.PaymentPrice
+        }).ToList();
+
     }
 
     [HttpGet("CarRegisReceiveWaranty")]
@@ -294,7 +313,7 @@ namespace KKHondaBackend.Controllers.Ris
     }
 
     [HttpGet("GetByConNo")]
-    public IActionResult GetByConNo(string conNo)
+    public async Task<IActionResult> GetByConNo(string conNo)
     {
       var tag = new List<string> {
         ExpensesTag.EXP10001,
@@ -302,49 +321,50 @@ namespace KKHondaBackend.Controllers.Ris
         ExpensesTag.EXP10003,
         ExpensesTag.EXP10004
       };
-      var ris = RegisList(tag).FirstOrDefault(x => x.BookingNo == conNo);
+      var ris = (await RegisList(tag)).FirstOrDefault(x => x.BookingNo == conNo);
       if (ris.VisitorCode != null)
       {
-        var v = iCustomer.GetCustomerByCode(ris.VisitorCode);
+        var v = await iCustomer.GetCustomerByCode(ris.VisitorCode);
         ris.VisitorName = $"{v.CustomerPrename}{v.CustomerName} {v.CustomerSurname}";
       };
 
       if (ris.OwnerCode != null)
       {
-        var o = iCustomer.GetCustomerByCode(ris.OwnerCode);
+        var o = await iCustomer.GetCustomerByCode(ris.OwnerCode);
         ris.OwnerName = $"{o.CustomerPrename}{o.CustomerName} {o.CustomerSurname}";
       };
       return Ok(ris);
     }
 
     [HttpGet("GetByConNoListReceiveTag")]
-    public IActionResult GetByConNoListReceiveTag(List<string> conListNo)
+    public async Task<IActionResult> GetByConNoListReceiveTag(List<string> conListNo)
     {
       // var value = conListNo.Split(new string[] { "," }, StringSplitOptions.None);
       var tag = new List<string> {
         ExpensesTag.EXP10001,
         ExpensesTag.EXP10002
       };
-      var list = RegisList(tag).Where(x => conListNo.Contains(x.BookingNo));
+      var list = (await RegisList(tag)).Where(x => conListNo.Contains(x.BookingNo));
       return Ok(list.ToList());
     }
 
     [HttpGet("GetCarBySellNo")]
-    public IActionResult GetCarBySellNo(string sellNo)
+    public async Task<IActionResult> GetCarBySellNo(string sellNo)
     {
-      var value = (from bi in ctx.BookingItem
-                   join bk in ctx.Booking on bi.BookingId equals bk.BookingId
-                   join tl in ctx.TransferLog on bi.LogReceiveId equals tl.LogId
-                   where bi.LogReceiveId > 0 && bk.SellNo == sellNo
-                   select new
-                   {
-                     LogReceiveId = bi.LogReceiveId,
-                     ENo = tl.EngineNo,
-                     FNo = tl.FrameNo,
-                     FreeAct = bk.FreeAct,
-                     FreeTag = bk.FreeTag,
-                     FreeWarranty = bk.FreeWarranty
-                   }).FirstOrDefault();
+      var value = await (from bi in ctx.BookingItem
+                         join bk in ctx.Booking on bi.BookingId equals bk.BookingId
+                         join tl in ctx.TransferLog on bi.LogReceiveId equals tl.LogId
+                         where bi.LogReceiveId > 0 && bk.SellNo == sellNo
+                         select new
+                         {
+                           LogReceiveId = bi.LogReceiveId,
+                           ENo = tl.EngineNo,
+                           FNo = tl.FrameNo,
+                           FreeAct = bk.FreeAct,
+                           FreeTag = bk.FreeTag,
+                           FreeWarranty = bk.FreeWarranty
+                         })
+                   .FirstOrDefaultAsync();
 
       return Ok(value);
     }

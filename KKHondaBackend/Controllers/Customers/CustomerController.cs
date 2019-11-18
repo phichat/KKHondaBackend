@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using KKHondaBackend.Data;
 using KKHondaBackend.Models;
 using KKHondaBackend.Services;
+using Microsoft.EntityFrameworkCore;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -26,9 +27,9 @@ namespace KKHondaBackend.Controllers.Customers
 
     // GET: api/values
     [HttpGet]
-    public IActionResult GetAction()
+    public async Task<IActionResult> GetAction()
     {
-      var customer = (from h in ctx.MCustomer
+      var customer = await (from h in ctx.MCustomer
                       join c in ctx.MCustomerCard on h.CustomerCode equals c.CustomerCode into a
                       from b in a.DefaultIfEmpty()
                       join ad in ctx.MCustomerAddress on h.CustomerCode equals ad.CustomerCode into a1
@@ -43,28 +44,28 @@ namespace KKHondaBackend.Controllers.Customers
                         custEmail = h.CustomerEmail,
                         custAddress = b1.Address + " " + b1.AmphorCode + " " + b1.ProvinceCode + " " + b1.Zipcode
 
-                      }).ToList();
+                      }).ToListAsync();
 
       return Ok(customer);
     }
 
     // GET
     [HttpGet("GetByKey")]
-    public IActionResult GetByKey(string term)
+    public async Task<IActionResult> GetByKey(string term)
     {
       if (term == null)
         return NoContent();
 
-      return Ok(iCust.GetDropdownByKey(term));
+      return Ok(await iCust.GetDropdownByKey(term));
     }
 
     [HttpGet("GetCustomerByCode")]
-    public IActionResult GetCustomerByCode(string custCode)
+    public async Task<IActionResult> GetCustomerByCode(string custCode)
     {
       if (custCode == null)
         return NoContent();
 
-      return Ok(iCust.GetCustomerByCode(custCode));
+      return Ok(await iCust.GetCustomerByCode(custCode));
     }
 
   }

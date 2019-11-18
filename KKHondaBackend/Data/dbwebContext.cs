@@ -557,6 +557,14 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.TransportServiceCharge).HasColumnName("transport_service_charge").HasColumnType("numeric(18,0)");
                 entity.Property(e => e.Reason).HasColumnName("reason").HasMaxLength(255);
                 entity.Property(e => e.Remark).HasColumnName("remark").HasMaxLength(255);
+
+                entity.Property(e => e.PaymentType).HasColumnName("payment_type").IsRequired();
+                entity.Property(e => e.PaymentPrice).HasColumnName("payment_price").HasColumnType("numeric(18,2)").IsRequired();
+                entity.Property(e => e.DiscountPrice).HasColumnName("discount_price").HasColumnType("numeric(18,2)");
+                entity.Property(e => e.TotalPaymentPrice).HasColumnName("total_payment_price").HasColumnType("numeric(18,2)").IsRequired();
+                entity.Property(e => e.AccBankId).HasColumnName("AccBankId");
+                entity.Property(e => e.PaymentDate).HasColumnName("payment_date").HasColumnType("datetime").IsRequired();
+                entity.Property(e => e.DocumentRef).HasColumnName("document_ref").HasMaxLength(255);
             });
 
             modelBuilder.Entity<CarRegisListItem>(entity =>

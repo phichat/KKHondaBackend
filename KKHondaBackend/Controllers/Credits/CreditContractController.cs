@@ -173,9 +173,9 @@ namespace KKHondaBackend.Controllers.Credits
 
         }
 
-        // // GET api/values/5
+        // GET api/values/5
         [HttpGet("GetById")]
-        public IActionResult Get(int id)
+        public async Task<IActionResult> Get(int id)
         {
             try
             {
@@ -219,33 +219,33 @@ namespace KKHondaBackend.Controllers.Credits
 
                 var userDropdown = iUserService.GetDropdowns();
 
-                var customerDropdown = iCustService.GetDropdowns();
+                var customerDropdown = await iCustService.GetDropdowns();
 
                 var contractMateDropdown = customerDropdown;
                 if (cont.ContractMate != null)
                 {
-                    var mateDd = iCustService.GetDropdownByKey(cont.ContractMate);
+                    var mateDd = await iCustService.GetDropdownByKey(cont.ContractMate);
                     contractMateDropdown = contractMateDropdown.Concat(mateDd).ToArray();
                 }
 
                 var contractHireDropdown = customerDropdown;
                 if (cont.ContractHire != null)
                 {
-                    var userDd = iCustService.GetDropdownByKey(cont.ContractHire);
+                    var userDd = await iCustService.GetDropdownByKey(cont.ContractHire);
                     contractHireDropdown = contractHireDropdown.Concat(userDd).ToArray();
                 }
 
                 var contractGurantor1Dropdown = customerDropdown;
                 if (cont.ContractGurantor1 != null)
                 {
-                    var gurantorDd = iCustService.GetDropdownByKey(cont.ContractGurantor1);
+                    var gurantorDd = await iCustService.GetDropdownByKey(cont.ContractGurantor1);
                     contractGurantor1Dropdown = contractGurantor1Dropdown.Concat(gurantorDd).ToArray();
                 }
 
                 var contractGurantor2Dropdown = customerDropdown;
                 if (cont.ContractGurantor2 != null)
                 {
-                    var gurantorDd = iCustService.GetDropdownByKey(cont.ContractGurantor2);
+                    var gurantorDd = await iCustService.GetDropdownByKey(cont.ContractGurantor2);
                     contractGurantor2Dropdown = contractGurantor2Dropdown.Concat(gurantorDd).ToArray();
                 }
 

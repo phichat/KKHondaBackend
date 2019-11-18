@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using KKHondaBackend.Data;
 using KKHondaBackend.Models;
 using Microsoft.EntityFrameworkCore;
@@ -9,13 +10,13 @@ namespace KKHondaBackend.Services
 {
   public interface ICustomerServices
   {
-    Dropdown[] GetDropdownByKey(string term);
+    Task<IEnumerable<Dropdown>> GetDropdownByKey(string term);
 
-    Dropdown[] GetDropdowns();
+    Task<IEnumerable<Dropdown>> GetDropdowns();
 
-    MCustomer GetCustomerByCode(string custCode);
+    Task<MCustomer> GetCustomerByCode(string custCode);
 
-    IEnumerable<Customer> GetCustomer();
+    Task<IEnumerable<Customer>> GetCustomer();
   }
 
   public class Customer
@@ -34,81 +35,85 @@ namespace KKHondaBackend.Services
       ctx = context;
     }
 
-    public MCustomer GetCustomerByCode(string custCode)
+    public async Task<MCustomer> GetCustomerByCode(string custCode)
     {
-      var address = ctx.MCustomerAddress.Where(x => x.CustomerCode == custCode).ToList();
-      var card = ctx.MCustomerCard.Where(x => x.CustomerCode == custCode).ToList();
-      var customer = (from db in ctx.MCustomer
-                      where db.CustomerCode == custCode
-                      select new MCustomer
-                      {
-                        CustomerCode = db.CustomerCode,
-                        CustomerPrename = db.CustomerPrename,
-                        CustomerName = db.CustomerName,
-                        CustomerSurname = db.CustomerSurname,
-                        CustomerNickname = db.CustomerNickname,
-                        CustomerLevel = db.CustomerLevel,
-                        CustomerPhone = db.CustomerPhone,
-                        CustomerEmail = db.CustomerEmail,
-                        CustomerSex = db.CustomerSex,
-                        Birthday = db.Birthday,
-                        Nationality = db.Nationality,
-                        Occupation = db.Occupation,
-                        EmergencyContactName = db.EmergencyContactName,
-                        EmergencyContactPhone = db.EmergencyContactPhone,
-                        TypePersonal = db.TypePersonal,
-                        TypeCorporate = db.TypeCorporate,
-                        TypeDealer = db.TypeDealer,
-                        TypeSupplier = db.TypeSupplier,
-                        TypeOther = db.TypeOther,
-                        IdCard = db.IdCard,
-                        CreateBy = db.CreateBy,
-                        CreateDate = db.CreateDate,
-                        UpdateBy = db.UpdateBy,
-                        UpdateDate = db.UpdateDate,
-                        MCustomerAddress = address,
-                        MCustomerCard = card
-                      }).SingleOrDefault();
+      var address = await ctx.MCustomerAddress.Where(x => x.CustomerCode == custCode).ToListAsync();
+      var card = await ctx.MCustomerCard.Where(x => x.CustomerCode == custCode).ToListAsync();
+      var customer = await (from db in ctx.MCustomer
+                            where db.CustomerCode == custCode
+                            select new MCustomer
+                            {
+                              CustomerCode = db.CustomerCode,
+                              CustomerPrename = db.CustomerPrename,
+                              CustomerName = db.CustomerName,
+                              CustomerSurname = db.CustomerSurname,
+                              CustomerNickname = db.CustomerNickname,
+                              CustomerLevel = db.CustomerLevel,
+                              CustomerPhone = db.CustomerPhone,
+                              CustomerEmail = db.CustomerEmail,
+                              CustomerSex = db.CustomerSex,
+                              Birthday = db.Birthday,
+                              Nationality = db.Nationality,
+                              Occupation = db.Occupation,
+                              EmergencyContactName = db.EmergencyContactName,
+                              EmergencyContactPhone = db.EmergencyContactPhone,
+                              TypePersonal = db.TypePersonal,
+                              TypeCorporate = db.TypeCorporate,
+                              TypeDealer = db.TypeDealer,
+                              TypeSupplier = db.TypeSupplier,
+                              TypeOther = db.TypeOther,
+                              IdCard = db.IdCard,
+                              CreateBy = db.CreateBy,
+                              CreateDate = db.CreateDate,
+                              UpdateBy = db.UpdateBy,
+                              UpdateDate = db.UpdateDate,
+                              MCustomerAddress = address,
+                              MCustomerCard = card
+                            }).SingleOrDefaultAsync();
       return customer;
     }
 
-    public Dropdown[] GetDropdownByKey(string term)
+    public async Task<IEnumerable<Dropdown>> GetDropdownByKey(string term)
     {
       List<Dropdown> customerDropdowns = new List<Dropdown>();
 
-      customerDropdowns = ctx.MCustomer
-                             .Where(o => o.CustomerCode.Contains(term) || 
-                             ($"{o.CustomerPrename}{o.CustomerName} {o.CustomerSurname}").Contains(term)
+      customerDropdowns = await ctx.MCustomer
+                             .Where(o => o.CustomerCode.Contains(term) ||
+                             string.Concat(o.CustomerPrename, o.CustomerName, " ", o.CustomerSurname).Contains(term)
                              ).Select(o => new Dropdown
                              {
                                Value = o.CustomerCode,
-                               Text = $"{o.CustomerPrename}{o.CustomerName} {o.CustomerSurname}"
-                             }).Take(50).ToList();
+                               Text = string.Concat(o.CustomerPrename, o.CustomerName, " ", o.CustomerSurname)
+                             })
+                             .Take(50)
+                             .ToListAsync();
 
-      return customerDropdowns.ToArray();
+      return customerDropdowns;
     }
 
-    public Dropdown[] GetDropdowns()
+    public async Task<IEnumerable<Dropdown>> GetDropdowns()
     {
       List<Dropdown> customerDropdowns = new List<Dropdown>();
 
-      customerDropdowns = ctx.MCustomer
+      customerDropdowns = await ctx.MCustomer
                              .Select(o => new Dropdown
                              {
                                Value = o.CustomerCode,
-                               Text = $"{o.CustomerPrename}{o.CustomerName} {o.CustomerSurname}"
-                             }).Take(50).ToList();
+                               Text = string.Concat(o.CustomerPrename, o.CustomerName, " ", o.CustomerSurname)
+                             })
+                             .Take(50)
+                             .ToListAsync();
 
-      return customerDropdowns.ToArray();
+      return customerDropdowns;
     }
 
-    public IEnumerable<Customer> GetCustomer()
+    public async Task<IEnumerable<Customer>> GetCustomer()
     {
-      return ctx.MCustomer.Select(o => new Customer
+      return await ctx.MCustomer.Select(o => new Customer
       {
         CustomerCode = o.CustomerCode,
-        CustomerFullName = $"{o.CustomerPrename}{o.CustomerName} {o.CustomerSurname}"
-      }).AsNoTracking().ToList();
+        CustomerFullName = string.Concat(o.CustomerPrename, o.CustomerName, " ", o.CustomerSurname)
+      }).AsNoTracking().ToListAsync();
     }
   }
 
