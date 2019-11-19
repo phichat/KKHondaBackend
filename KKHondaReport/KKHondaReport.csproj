@@ -143,6 +143,12 @@
       <DependentUpon>SummaryDepositByDate.rpt</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="ALL\SummarySaleReportByType_All.cs">
+      <DependentUpon>SummarySaleReportByType_All.rpt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <SubType>Component</SubType>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="ALL\SummarySaleReportByType.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -365,6 +371,10 @@
     <EmbeddedResource Include="ALL\SummaryDepositByDate.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>SummaryDepositByDate.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ALL\SummarySaleReportByType_All.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>SummarySaleReportByType_All.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="ALL\SummarySaleReportByType.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>

@@ -22,7 +22,7 @@ namespace KKHondaReport.MCS
         private SqlConnection conn = null;
         private ReportDocument rptDoc;
         protected void Page_Load(object sender, EventArgs e)
-        { 
+        {
 
             //report 1
             if (Request.QueryString["BookingReport"] != null)
@@ -83,7 +83,7 @@ namespace KKHondaReport.MCS
                     {
                         sBookingReceiveDate = "";
                         eBookingReceiveDate = "";
-                    } 
+                    }
                     ExportFormatBookingReport(branchType, branchId, brandType, brandTypeId, version, design, color, bookingName, strBookingName, strRegisName, bookingStatus, bookingDate, sDate, eDate, bookingReceiveDate, sBookingReceiveDate, eBookingReceiveDate);
                 }
 
@@ -247,7 +247,7 @@ namespace KKHondaReport.MCS
                     string strFullText = dateTime.ToString("dddd, dd MMMM yyyy");
 
                     ExportSaleQtyDaily(strFullFormat, iMonth, iYear, strFullText);
-                }   
+                }
             }
 
             //report 44_2
@@ -267,7 +267,7 @@ namespace KKHondaReport.MCS
                     int iYear = dateTime.Year;
                     string strFullText = dateTime.ToString("dddd, dd MMMM yyyy");
 
-                    ExportSaleQtyDaily2(strFullFormat, iMonth, iYear, strFullText); 
+                    ExportSaleQtyDaily2(strFullFormat, iMonth, iYear, strFullText);
                 }
             }
 
@@ -400,34 +400,42 @@ namespace KKHondaReport.MCS
                 //var eDate = DateTime.ParseExact("2018-09-15",
                 //                  "yyyy-MM-dd",
                 //                   CultureInfo.InvariantCulture);
-
-                var startDateTime = DateTime.ParseExact(strStartDate,
-                                  "yyyy-MM-ddTHH:mm:ss.fffZ",
-                                   CultureInfo.InvariantCulture);
-                var endDateTime = DateTime.ParseExact(strEndDate,
-                                  "yyyy-MM-ddTHH:mm:ss.fffZ",
-                                   CultureInfo.InvariantCulture);
-
-                string sDate = startDateTime.Year + "-" + string.Format("{0:00}", startDateTime.Month) + "-" + string.Format("{0:00}", startDateTime.Day);
-
-                string eDate = endDateTime.Year + "-" + string.Format("{0:00}", endDateTime.Month) + "-" + string.Format("{0:00}", endDateTime.Day);
-
+                string sDate = "";
+                string eDate = "";
+                var file = "";
 
                 rptDoc = new ReportDocument();
                 SqlConnectionStringBuilder connection = new SqlConnectionStringBuilder(conStr);
                 var server = connection.DataSource;
 
-                var file = "../ALL/SummarySaleReportByType.rpt";
-                rptDoc.Load(Server.MapPath(file));
-                rptDoc.Refresh();
+                if (strStartDate == "" && strEndDate == "")
+                {
+                    file = "../ALL/SummarySaleReportByType_All.rpt";
+                    rptDoc.Load(Server.MapPath(file));
+                    rptDoc.Refresh();
+                    TableLogOnInfo L1 = rptDoc.Database.Tables[0].LogOnInfo;
+                    GetLoginfo(L1, server);
+                    rptDoc.Database.Tables[0].ApplyLogOnInfo(L1);
+                }
+                else
+                {
+                    file = "../ALL/SummarySaleReportByType.rpt";
+                    var startDateTime = DateTime.ParseExact(strStartDate,"yyyy-MM-ddTHH:mm:ss.fffZ",CultureInfo.InvariantCulture);
+                    var endDateTime = DateTime.ParseExact(strEndDate,"yyyy-MM-ddTHH:mm:ss.fffZ",CultureInfo.InvariantCulture);
 
-                TableLogOnInfo L1 = rptDoc.Database.Tables[0].LogOnInfo;
-                GetLoginfo(L1, server);
-                //rptDoc.SetParameterValue("@branch_id", 1);
-                rptDoc.SetParameterValue("@sDate", sDate);
-                rptDoc.SetParameterValue("@eDate", eDate);
-                rptDoc.Database.Tables[0].ApplyLogOnInfo(L1);
+                    sDate = startDateTime.Year + "-" + string.Format("{0:00}", startDateTime.Month) + "-" + string.Format("{0:00}", startDateTime.Day);
 
+                    eDate = endDateTime.Year + "-" + string.Format("{0:00}", endDateTime.Month) + "-" + string.Format("{0:00}", endDateTime.Day);
+
+                    rptDoc.Load(Server.MapPath(file));
+                    rptDoc.Refresh();
+                    TableLogOnInfo L1 = rptDoc.Database.Tables[0].LogOnInfo;
+                    GetLoginfo(L1, server);
+                    //rptDoc.SetParameterValue("@branch_id", 1);
+                    rptDoc.SetParameterValue("@sDate", sDate);
+                    rptDoc.SetParameterValue("@eDate", eDate);
+                    rptDoc.Database.Tables[0].ApplyLogOnInfo(L1);
+                } 
                 //rptDoc.SetParameterValue("@booking_id", 2, "Subreport3"); 
                 //rptDoc.Subreports["Subreport1"].Database.Tables[0].ApplyLogOnInfo(L1);
 
@@ -450,17 +458,8 @@ namespace KKHondaReport.MCS
                 //                  "yyyy-MM-dd",
                 //                   CultureInfo.InvariantCulture);
 
-                var startDateTime = DateTime.ParseExact(strStartDate,
-                                  "yyyy-MM-ddTHH:mm:ss.fffZ",
-                                   CultureInfo.InvariantCulture);
-                var endDateTime = DateTime.ParseExact(strEndDate,
-                                 "yyyy-MM-ddTHH:mm:ss.fffZ",
-                                  CultureInfo.InvariantCulture);
 
-                string startReceiveDate = startDateTime.Year + "-" + string.Format("{0:00}", startDateTime.Month) + "-" + string.Format("{0:00}", startDateTime.Day);
-
-                string EndReceiveDate = endDateTime.Year + "-" + string.Format("{0:00}", endDateTime.Month) + "-" + string.Format("{0:00}", endDateTime.Day);
-
+                
                 rptDoc = new ReportDocument();
                 SqlConnectionStringBuilder connection = new SqlConnectionStringBuilder(conStr);
                 var server = connection.DataSource;
@@ -472,9 +471,32 @@ namespace KKHondaReport.MCS
                 TableLogOnInfo L1 = rptDoc.Database.Tables[0].LogOnInfo;
                 GetLoginfo(L1, server);
                 //rptDoc.SetParameterValue("@branch_id", 1);
-                rptDoc.SetParameterValue("strReceiveDate", startReceiveDate);
-                rptDoc.SetParameterValue("@start_receive_date", startReceiveDate);
-                rptDoc.SetParameterValue("@end_receive_date", EndReceiveDate);
+
+                if (strStartDate == "" && strEndDate != "")
+                {
+                    strStartDate = strEndDate;
+                }
+                if (strStartDate != "" && strEndDate == "")
+                {
+                    strEndDate = strStartDate;
+                }
+
+                if (strStartDate != "" && strEndDate != "")
+                {
+                    var startDateTime = DateTime.ParseExact(strStartDate, "yyyy-MM-ddTHH:mm:ss.fffZ", CultureInfo.InvariantCulture);
+                    var endDateTime = DateTime.ParseExact(strEndDate, "yyyy-MM-ddTHH:mm:ss.fffZ", CultureInfo.InvariantCulture);
+                    string startReceiveDate = startDateTime.Year + "-" + string.Format("{0:00}", startDateTime.Month) + "-" + string.Format("{0:00}", startDateTime.Day);
+                    string EndReceiveDate = endDateTime.Year + "-" + string.Format("{0:00}", endDateTime.Month) + "-" + string.Format("{0:00}", endDateTime.Day);
+                    //rptDoc.SetParameterValue("strReceiveDate", startReceiveDate);
+                    //rptDoc.SetParameterValue("@start_receive_date", startReceiveDate);
+                    //rptDoc.SetParameterValue("@end_receive_date", EndReceiveDate);
+                    rptDoc.RecordSelectionFormula = "{SP_SummaryStockBalance;1.receive_date} in cDate('" + startReceiveDate + "') to cDate('" + EndReceiveDate + "')";
+                    rptDoc.SetParameterValue("strReceiveDate", startReceiveDate);
+                }
+                else
+                {
+                    rptDoc.SetParameterValue("strReceiveDate", "");
+                }
                 rptDoc.Database.Tables[0].ApplyLogOnInfo(L1);
 
                 //rptDoc.SetParameterValue("@start_receive_date", startReceiveDate, "Subreport1");
@@ -705,7 +727,7 @@ namespace KKHondaReport.MCS
             }
         }
 
-        public string ExportSaleQtyDaily(string strFullFormat = "", int iMonth =0, int iYear = 0, string strFullText = "")
+        public string ExportSaleQtyDaily(string strFullFormat = "", int iMonth = 0, int iYear = 0, string strFullText = "")
         {
 
             //call SP
@@ -844,7 +866,7 @@ namespace KKHondaReport.MCS
                         listDataRow.Add(branchName);
 
                         //data เช่าซื้อ KKI
-                        listDataRow.Add(installment_qty.ToString()); 
+                        listDataRow.Add(installment_qty.ToString());
                         listDataRow.Add(installment_qty_acc.ToString());
 
                         //data เงินสด
@@ -896,7 +918,7 @@ namespace KKHondaReport.MCS
                         string[] arrDataRow = listDataRow.ToArray();
                         listOfDataArr.Add(arrDataRow);
                         row++;
-                    } 
+                    }
                 }
 
                 //รวมแต่ละ zone
@@ -1026,7 +1048,7 @@ namespace KKHondaReport.MCS
             }
         }
 
-        public string ExportSaleQtyDaily2(string strFullFormat="", int iMonth = 0, int iYear = 0, string strFullText = "")
+        public string ExportSaleQtyDaily2(string strFullFormat = "", int iMonth = 0, int iYear = 0, string strFullText = "")
         {
 
             //call SP
@@ -1051,7 +1073,7 @@ namespace KKHondaReport.MCS
                     }
                 }
             }
-             
+
 
             //listZone
             DataView vZone = new DataView(dtPaymentType);
@@ -1081,8 +1103,8 @@ namespace KKHondaReport.MCS
             listHeader3.Add("วันนี้");
             listHeader3.Add("สะสม");
             listHeader3.Add("ภายในเดือนนี้");
-             
-            
+
+
             // Data of list of string arrays 
             var listOfDataArr = new List<string[]>();
             int lastZoneRow = 0;
@@ -1118,10 +1140,10 @@ namespace KKHondaReport.MCS
                     var othersell_qty = Convert.ToInt32(rowPaymentType["othersell_qty"].ToString());
                     var othersell_qty_acc = Convert.ToInt32(rowPaymentType["othersell_qty_acc"].ToString());
                     var installment_qty = Convert.ToInt32(rowPaymentType["installment_qty"].ToString());
-                    var installment_qty_acc = Convert.ToInt32(rowPaymentType["installment_qty_acc"].ToString()); 
+                    var installment_qty_acc = Convert.ToInt32(rowPaymentType["installment_qty_acc"].ToString());
                     //check zone
                     if (zone_id == zoneId)
-                    {  
+                    {
 
                         //Data Each Row
                         List<string> listDataRow = new List<string>();
@@ -1153,7 +1175,7 @@ namespace KKHondaReport.MCS
                         //คาดการณ์ยอดขายภายในเดือนนี้
                         listDataRow.Add("0");
                         //sumTotalByRows += installment_qty + installment_qty_acc + othersell_qty + othersell_qty_acc; 
-                         
+
                         string[] arrDataRow = listDataRow.ToArray();
                         listOfDataArr.Add(arrDataRow);
                         row++;
@@ -1205,13 +1227,13 @@ namespace KKHondaReport.MCS
                 }
                 string[] arrDataSummaryZoneRow = listSummary.ToArray();
                 listOfDataArr.Add(arrDataSummaryZoneRow);
-            } 
+            }
 
             //DateTime dateTime = DateTime.ParseExact("2018-06-09", "yyyy-MM-dd", CultureInfo.InvariantCulture);
             //string strDate = dateTime.ToString("dddd, dd MMMM yyyy");
 
             string title = "บริษัท เกริกไกรเอ็นเทอร์ไพรส์ จำกัด";
-            string subTitle = "รายงานรยอดขายประจำวัน DAILY SALE REPORT "+ strFullText;
+            string subTitle = "รายงานรยอดขายประจำวัน DAILY SALE REPORT " + strFullText;
 
             genExportExcelSaleQtyDaily2("test", listHeader1, listHeader2, listHeader3, listOfDataArr, listZoneRow, title, subTitle);
             return "aaaa";
@@ -1293,7 +1315,7 @@ namespace KKHondaReport.MCS
                 ws.Range(1, 1, totalRows, totalCols).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
                 ws.Columns("B").AdjustToContents();
                 ws.Columns("K").AdjustToContents();
-                
+
                 Response.Clear();
                 Response.Buffer = true;
                 Response.Charset = "";
@@ -1322,16 +1344,12 @@ namespace KKHondaReport.MCS
                 //                  "yyyy-MM-ddTHH:mm:ss.fffZ",
                 //                   CultureInfo.InvariantCulture);
 
-                var startDateTime = DateTime.ParseExact(strStartDate,
-                                 "yyyy-MM-ddTHH:mm:ss.fffZ",
-                                  CultureInfo.InvariantCulture);
-                var endDateTime = DateTime.ParseExact(strEndDate,
-                                 "yyyy-MM-ddTHH:mm:ss.fffZ",
-                                  CultureInfo.InvariantCulture);
+                //var startDateTime = DateTime.ParseExact(strStartDate,"yyyy-MM-ddTHH:mm:ss.fffZ",CultureInfo.InvariantCulture);
+                //var endDateTime = DateTime.ParseExact(strEndDate,"yyyy-MM-ddTHH:mm:ss.fffZ",CultureInfo.InvariantCulture);
 
-                string startDepositDate = startDateTime.Year + "-" + string.Format("{0:00}", startDateTime.Month) + "-" + string.Format("{0:00}", startDateTime.Day);
+                //string startDepositDate = startDateTime.Year + "-" + string.Format("{0:00}", startDateTime.Month) + "-" + string.Format("{0:00}", startDateTime.Day);
 
-                string EndDepositDate = endDateTime.Year + "-" + string.Format("{0:00}", endDateTime.Month) + "-" + string.Format("{0:00}", endDateTime.Day);
+                //string EndDepositDate = endDateTime.Year + "-" + string.Format("{0:00}", endDateTime.Month) + "-" + string.Format("{0:00}", endDateTime.Day);
 
                 rptDoc = new ReportDocument();
                 SqlConnectionStringBuilder connection = new SqlConnectionStringBuilder(conStr);
@@ -1342,7 +1360,7 @@ namespace KKHondaReport.MCS
                 rptDoc.Refresh();
 
                 TableLogOnInfo L1 = rptDoc.Database.Tables[0].LogOnInfo;
-                GetLoginfo(L1, server); 
+                GetLoginfo(L1, server);
                 //rptDoc.SetParameterValue("@sDate", sDate);
                 //rptDoc.SetParameterValue("@eDate", eDate);
                 rptDoc.Database.Tables[0].ApplyLogOnInfo(L1);
@@ -1361,7 +1379,7 @@ namespace KKHondaReport.MCS
         private void ExportContractGradePayment()
         {
             try
-            { 
+            {
                 rptDoc = new ReportDocument();
                 SqlConnectionStringBuilder connection = new SqlConnectionStringBuilder(conStr);
                 var server = connection.DataSource;
@@ -1374,7 +1392,7 @@ namespace KKHondaReport.MCS
                 GetLoginfo(L1, server);
                 //rptDoc.SetParameterValue("@sDate", sDate);
                 //rptDoc.SetParameterValue("@eDate", eDate);
-                rptDoc.Database.Tables[0].ApplyLogOnInfo(L1); 
+                rptDoc.Database.Tables[0].ApplyLogOnInfo(L1);
 
                 StreamPdfReport(rptDoc, "test");
             }
