@@ -5,6 +5,24 @@ using KKHondaBackend.Data;
 
 namespace KKHondaBackend.Services
 {
+    public interface ISysParameterService
+    {
+        string GetSysParameter(string prefix);
+        string GenerateSellNo(int branchId);
+        string GenerateVatNo(int branchId);
+        string GenerateContractNo(int branchId);
+        string GenerateInstalmentTaxInvoiceNo(int branchId);
+        string GenerateReceiptNo(int branchId);
+        string GeerateeReturnDepositNo(int branchId);
+        string GenerateConNo(int branchId);
+        string GenerateHistoryCarNo(int branchId);
+        string GenerateSedNo(int branchId);
+        string GenerateAlNo(int branchId);
+        string GenerateClNo(int branchId);
+        string GenerateRegisRevNo(int branchId);
+        string GenerateRegisCLDepositNo(int branchId);
+    }
+    
     public class SysParameterService : ISysParameterService
     {
         private readonly dbwebContext ctx;
@@ -137,6 +155,15 @@ namespace KKHondaBackend.Services
                       select db.RevNo).FirstOrDefault();
 
             return SetRunningCode("REV", branchId, no);
+        }
+
+        public string GenerateRegisCLDepositNo(int branchId) {
+            var no = (from db in ctx.CarRegisClDeposit
+                      orderby db.Id descending
+                      where db.BranchId == branchId
+                      select db.ReceiptNo).FirstOrDefault();
+
+            return SetRunningCode("PFD", branchId, no);
         }
 
         public string GetSysParameter(string prefix)

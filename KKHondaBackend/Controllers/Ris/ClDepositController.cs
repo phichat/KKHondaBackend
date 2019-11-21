@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using KKHondaBackend.Entities;
+using KKHondaBackend.Services;
 using System;
 
 namespace KKHondaBackend.Controllers.Ris
@@ -14,10 +15,15 @@ namespace KKHondaBackend.Controllers.Ris
   public class ClDepositController : Controller
   {
     private readonly dbwebContext ctx;
+    private readonly ISysParameterService iSysParamService;
 
-    public ClDepositController(dbwebContext _ctx)
+    public ClDepositController(
+      dbwebContext _ctx,
+      ISysParameterService isysParamService
+      )
     {
       ctx = _ctx;
+      iSysParamService = isysParamService;
     }
 
     public IEnumerable<CarRegisClDepositRes> ClDepositList
@@ -226,6 +232,8 @@ namespace KKHondaBackend.Controllers.Ris
 
           var clDeposit = new CarRegisClDeposit
           {
+            ReceiptNo = iSysParamService.GenerateRegisCLDepositNo(value.BranchId),
+            ReceiptDate = DateTime.Now,
             ListBookingId = listBookingId,
             InsuranceCode = value.InsuranceCode,
             TotalNetPrice1 = totalNetPrice1,
