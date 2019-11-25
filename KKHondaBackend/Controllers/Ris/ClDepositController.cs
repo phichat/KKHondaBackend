@@ -172,6 +172,8 @@ namespace KKHondaBackend.Controllers.Ris
           CreateName = cre.FullName,
           Reason = r.Reason,
           Remark = r.Remark,
+          ReceiptNo = r.ReceiptNo,
+          ReceiptDate = r.ReceiptDate,
           ConList = conList.ToList()
         }
       );

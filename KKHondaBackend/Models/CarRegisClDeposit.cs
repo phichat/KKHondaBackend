@@ -107,6 +107,8 @@ namespace KKHondaBackend.Models
     public string CreateName { get; set; }
     public string Reason { get; set; }
     public string Remark { get; set; }
+    public string ReceiptNo { get; set; }
+    public DateTime? ReceiptDate { get; set; }
     public List<CarRegisClDepositDeposit> ConList { get; set; }
   }
   public partial class CarRegisClDepositDeposit
@@ -126,12 +128,13 @@ namespace KKHondaBackend.Models
     public string Reason { get; set; }
   }
 
-  public partial class SearchClDepositList {
-      public string ReceiptNo {get;set;}
-      public DateTime? PaymentDate {get;set;}
-      public string[] ExpenseTag {get;set;}
-      public int?[] PaymentType {get;set;}
-      public string CreateName {get;set;}
-      public int? Status {get;set;}
+  public partial class SearchClDepositList
+  {
+    public string ReceiptNo { get; set; }
+    public DateTime? PaymentDate { get; set; }
+    public string[] ExpenseTag { get; set; }
+    public int?[] PaymentType { get; set; }
+    public string CreateName { get; set; }
+    public int? Status { get; set; }
   }
 }

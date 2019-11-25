@@ -222,6 +222,29 @@ namespace KKHondaReport.RIS
             }
         }
 
+        private void ExportRegisVehicleTax(string receiptNo)
+        {
+            try
+            {
+                //RIS/index.aspx?sDate=2019-09-11&eDate=2019-09-12&formRegisVehicleTax=true
+                rptDoc = new ReportDocument();
+                var file = "./RegisClDeposit.rpt";
+                rptDoc.Load(Server.MapPath(file));
+                rptDoc.Refresh();
+
+                TableLogOnInfo L1 = rptDoc.Database.Tables[0].LogOnInfo;
+                GetLoginfo(L1);
+                rptDoc.SetParameterValue("@receipt_no", receiptNo);
+                rptDoc.Database.Tables[0].ApplyLogOnInfo(L1);
+
+                StreamXlsReport(rptDoc, "RegisVehicleTax.xls");
+            }
+            catch (Exception ex)
+            {
+                Response.Write(ex.Message);
+            }
+        }
+
         private void StreamXlsReport(ReportDocument rptDoc, string fileName)
         {
             using (MemoryStream oStream = new MemoryStream())
