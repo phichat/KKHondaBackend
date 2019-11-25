@@ -70,6 +70,11 @@ namespace KKHondaReport.RIS
                 var edate = Request.QueryString["eDate"].ToString();
                 ExportRegisVehicleTax(DateTime.Parse(sdate), DateTime.Parse(edate));
             }
+
+            if (Request.QueryString["formClDeposit"] != null) {
+                var receiptNo = Request.QueryString["receiptNo"].ToString();
+                ExportRegisClDeposit(receiptNo);
+            }
             
         }
 
@@ -222,11 +227,11 @@ namespace KKHondaReport.RIS
             }
         }
 
-        private void ExportRegisVehicleTax(string receiptNo)
+        private void ExportRegisClDeposit(string receiptNo)
         {
             try
             {
-                //RIS/index.aspx?sDate=2019-09-11&eDate=2019-09-12&formRegisVehicleTax=true
+                //RIS/index.aspx?receipt_no&formRegisClDeposit=true
                 rptDoc = new ReportDocument();
                 var file = "./RegisClDeposit.rpt";
                 rptDoc.Load(Server.MapPath(file));
