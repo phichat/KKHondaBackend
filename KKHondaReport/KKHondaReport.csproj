@@ -96,6 +96,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <Content Include="MCS\refundBookingReport.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>refundBookingReport.cs</LastGenOutput>
+    </Content>
     <Content Include="PSS\subProductSellingProfitReport.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>subProductSellingProfitReport.cs</LastGenOutput>
@@ -229,6 +233,12 @@
       <DependentUpon>CreditNote.rpt</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="MCS\refundBookingReport.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>refundBookingReport.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="MCS\SaleReport.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -239,6 +249,12 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>SummaryStockBalance.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MCS\TopRankReport.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TopRankReport.rpt</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -432,6 +448,10 @@
     <EmbeddedResource Include="MCS\SummaryStockBalance.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>SummaryStockBalance.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MCS\TopRankReport.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>TopRankReport.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="PSS\ProductSellingProfitReport.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
