@@ -11,6 +11,7 @@ using KKHondaBackend.Services;
 
 namespace KKHondaBackend.Controllers.Selling
 {
+    [ApiController]
     [Produces("application/json")]
     [Route("api/Selling/[controller]")]
     public class BookingController : Controller

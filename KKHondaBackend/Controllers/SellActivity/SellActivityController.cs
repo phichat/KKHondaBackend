@@ -10,6 +10,7 @@ using KKHondaBackend.Models;
 
 namespace KKHondaBackend.Controllers.SellActivity
 {
+    [ApiController]
     [Produces("application/json")]
     [Route("api/Selling/[controller]")]
     public class SellActivityController : Controller

@@ -10,6 +10,7 @@ using KKHondaBackend.Models;
 
 namespace KKHondaBackend.Controllers.Products
 {
+    [ApiController]
     [Produces("application/json")]
     [Route("api/Products/[controller]")]
     public class CategoriesController : Controller

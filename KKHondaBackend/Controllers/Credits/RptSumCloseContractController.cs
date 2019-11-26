@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace KKHondaBackend.Controllers.Credits
 {
+  [ApiController]
     [Produces("application/json")]
     [Route("api/Credit/RptSumCloseContract")]
     public class RptSumCloseContractController : Controller

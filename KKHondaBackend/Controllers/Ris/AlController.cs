@@ -10,6 +10,7 @@ using KKHondaBackend.Entities;
 
 namespace KKHondaBackend.Controllers.Ris
 {
+  [ApiController]
   [Produces("application/json")]
   [Route("api/Ris/Al")]
   public class AlController : Controller
@@ -92,8 +93,9 @@ namespace KKHondaBackend.Controllers.Ris
     }
 
     [HttpGet("SearchAlList")]
-    public IActionResult SearchAlList(SearchAlList value) {
-      var list = AlListRes.Where(x => 
+    public IActionResult SearchAlList(SearchAlList value)
+    {
+      var list = AlListRes.Where(x =>
         (!string.IsNullOrEmpty(value.SedNo) && x.SedNo.IndexOf(value.SedNo) > -1) ||
         (!string.IsNullOrEmpty(value.AlNo) && x.AlNo.IndexOf(value.AlNo) > -1) ||
         (!string.IsNullOrEmpty(value.CreateName) && x.CreateName.IndexOf(value.CreateName) > -1) ||

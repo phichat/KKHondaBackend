@@ -10,6 +10,7 @@ using KKHondaBackend.Entities;
 
 namespace KKHondaBackend.Controllers.Ris
 {
+  [ApiController]
   [Produces("application/json")]
   [Route("api/Ris/Cl")]
   public class ClController : Controller

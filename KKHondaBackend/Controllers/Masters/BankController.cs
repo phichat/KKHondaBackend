@@ -6,6 +6,7 @@ using System.Linq;
 
 namespace KKHondaBackend.Controllers.Master
 {
+  [ApiController]
   [Produces("application/json")]
   [Route("api/Master/[controller]")]
   public class BankController : Controller

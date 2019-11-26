@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace KKHondaBackend.Controllers.Ris
 {
+    [ApiController]
     [Produces("application/json")]
     [Route("api/Ris/[controller]")]
     public class CarListItemController : Controller

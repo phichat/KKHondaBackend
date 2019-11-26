@@ -9,6 +9,7 @@ using KKHondaBackend.Models;
 
 namespace KKHondaBackend.Controllers.Products
 {
+    [ApiController]
     [Produces("application/json")]
     [Route("api/Products/Accessory")]
     public class AccessoryController : Controller

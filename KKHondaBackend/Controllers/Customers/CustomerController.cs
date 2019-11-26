@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace KKHondaBackend.Controllers.Customers
 {
+  [ApiController]
   [Produces("application/json")]
   [Route("api/Customers/[controller]")]
   public class CustomerController : Controller
@@ -30,21 +31,21 @@ namespace KKHondaBackend.Controllers.Customers
     public async Task<IActionResult> GetAction()
     {
       var customer = await (from h in ctx.MCustomer
-                      join c in ctx.MCustomerCard on h.CustomerCode equals c.CustomerCode into a
-                      from b in a.DefaultIfEmpty()
-                      join ad in ctx.MCustomerAddress on h.CustomerCode equals ad.CustomerCode into a1
-                      from b1 in a1.DefaultIfEmpty()
-                        //where h.TypePersonal.Equals("Y")
-                      select new
-                      {
-                        cardId = b.CardId,
-                        custCode = h.CustomerCode,
-                        custFullName = h.CustomerPrename + " " + h.CustomerName + " " + h.CustomerSurname,
-                        custTel = h.CustomerPhone,
-                        custEmail = h.CustomerEmail,
-                        custAddress = b1.Address + " " + b1.AmphorCode + " " + b1.ProvinceCode + " " + b1.Zipcode
+                            join c in ctx.MCustomerCard on h.CustomerCode equals c.CustomerCode into a
+                            from b in a.DefaultIfEmpty()
+                            join ad in ctx.MCustomerAddress on h.CustomerCode equals ad.CustomerCode into a1
+                            from b1 in a1.DefaultIfEmpty()
+                              //where h.TypePersonal.Equals("Y")
+                            select new
+                            {
+                              cardId = b.CardId,
+                              custCode = h.CustomerCode,
+                              custFullName = h.CustomerPrename + " " + h.CustomerName + " " + h.CustomerSurname,
+                              custTel = h.CustomerPhone,
+                              custEmail = h.CustomerEmail,
+                              custAddress = b1.Address + " " + b1.AmphorCode + " " + b1.ProvinceCode + " " + b1.Zipcode
 
-                      }).ToListAsync();
+                            }).ToListAsync();
 
       return Ok(customer);
     }

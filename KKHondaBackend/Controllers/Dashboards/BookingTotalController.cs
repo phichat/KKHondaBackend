@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace KKHondaBackend.Controllers.Dashboards
 {
+    [ApiController]
     [Produces("application/json")]
     [Route("api/Dashboards/BookingTotal")]
     public class BookingTotalController : Controller

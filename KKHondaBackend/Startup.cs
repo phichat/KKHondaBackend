@@ -1,19 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
 using KKHondaBackend.Data;
 using KKHondaBackend.Services;
 using KKHondaBackend.Services.Ris;
-using Swashbuckle.AspNetCore.Swagger;
-using System.IO;
+using Microsoft.OpenApi.Models;
 
 namespace KKHondaBackend
 {
@@ -43,14 +36,6 @@ namespace KKHondaBackend
                 .EnableSensitiveDataLogging()
                 .UseSqlServer(connection));
             
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new Info { Title = "KK Honda API", Version = "v1" });
-                // var basePath = AppContext.BaseDirectory;
-                // var xmlPath = Path.Combine(basePath, "KKHondaBackend.xml"); 
-                // c.IncludeXmlComments(xmlPath);
-            });
-
             services.AddMvc();
 
             services.AddTransient<ICustomerServices, CustomerServices>();
@@ -65,6 +50,11 @@ namespace KKHondaBackend
             services.AddTransient<IStatusService, StatusService>();
             services.AddTransient<IBankingService, BankingService>();
             services.AddTransient<IMSendbackService, MSendbackService>();
+
+            services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("v1", new OpenApiInfo { Title = "KK Honda", Version = "v1" });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -87,7 +77,8 @@ namespace KKHondaBackend
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "KK Honda API V1");
+                c.RoutePrefix = "";
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "KK Honda V1");
             });
         }
     }

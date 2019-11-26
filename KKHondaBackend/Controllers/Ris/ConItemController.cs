@@ -10,6 +10,7 @@ using KKHondaBackend.Entities;
 
 namespace KKHondaBackend.Controllers.Ris
 {
+  [ApiController]
   [Produces("application/json")]
   [Route("api/Ris/[controller]")]
   public class ConItemController : Controller
@@ -26,7 +27,7 @@ namespace KKHondaBackend.Controllers.Ris
       iMSendback = _iMSendback;
     }
 
-    public IEnumerable<CarRegisListItemRes> List
+    private IEnumerable<CarRegisListItemRes> List
     {
       get => (from list in ctx.CarRegisListItem
               join item in ctx.CarRegisList on list.BookingId equals item.BookingId into a
@@ -65,7 +66,7 @@ namespace KKHondaBackend.Controllers.Ris
         ExpensesType.Service,
         ExpensesType.Expenses
       };
-      var list = List.Where(x => 
+      var list = List.Where(x =>
           x.BookingNo == conNo &&
           expensesTag.Contains(x.ItemTag) &&
           expensesType.Contains((int)x.ItemType)
