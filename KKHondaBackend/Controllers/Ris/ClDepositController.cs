@@ -10,6 +10,7 @@ using System;
 
 namespace KKHondaBackend.Controllers.Ris
 {
+  [ApiController]
   [Produces("application/json")]
   [Route("api/Ris/[controller]")]
   public class ClDepositController : Controller
@@ -26,7 +27,7 @@ namespace KKHondaBackend.Controllers.Ris
       iSysParamService = isysParamService;
     }
 
-    public IEnumerable<CarRegisClDepositRes> ClDepositList
+    private IEnumerable<CarRegisClDepositRes> ClDepositList
     {
       get => (
         from clD in ctx.CarRegisClDeposit
@@ -81,7 +82,7 @@ namespace KKHondaBackend.Controllers.Ris
       );
     }
 
-    public IEnumerable<CarRegisListItemSummary> RegisListItem(string itemTag, List<int> listBookingId)
+    private IEnumerable<CarRegisListItemSummary> RegisListItem(string itemTag, List<int> listBookingId)
     {
       return (from d in ctx.CarRegisListItem
               join h in ctx.CarRegisList on (int)d.BookingId equals h.BookingId

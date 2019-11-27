@@ -8,6 +8,7 @@ using System.Collections.Generic;
 
 namespace KKHondaBackend.Controllers.Ris
 {
+  [ApiController]
   [Produces("application/json")]
   [Route("api/Ris/[controller]")]
   public class CarHistoryController : Controller
@@ -18,13 +19,13 @@ namespace KKHondaBackend.Controllers.Ris
       ctx = _ctx;
     }
 
-    public IEnumerable<CarHistory> HistoryList
+    private IEnumerable<CarHistory> HistoryList
     {
       get => (from h in ctx.CarHistory
-              // join ow in ctx.MCustomer on h.OwnerCode equals ow.CustomerCode into _ow
-              // join vi in ctx.MCustomer on h.VisitorCode equals vi.CustomerCode into _vi
-              // from own in _ow.DefaultIfEmpty()
-              // from vis in _vi.DefaultIfEmpty()
+                // join ow in ctx.MCustomer on h.OwnerCode equals ow.CustomerCode into _ow
+                // join vi in ctx.MCustomer on h.VisitorCode equals vi.CustomerCode into _vi
+                // from own in _ow.DefaultIfEmpty()
+                // from vis in _vi.DefaultIfEmpty()
               select new CarHistory
               {
                 CarId = h.CarId,

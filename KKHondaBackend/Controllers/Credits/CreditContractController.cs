@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace KKHondaBackend.Controllers.Credits
 {
+  [ApiController]
     [Produces("application/json")]
     [Route("api/Credit/Contract")]
     public class CreditContractController : Controller
@@ -95,7 +96,7 @@ namespace KKHondaBackend.Controllers.Credits
             return Ok(creditContractLists);
         }
 
-        public List<CreditContractList> GetListContracts()
+        private List<CreditContractList> GetListContracts()
         {
             var contract = (from db in ctx.CreditContract
 

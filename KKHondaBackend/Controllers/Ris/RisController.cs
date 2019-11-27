@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace KKHondaBackend.Controllers.Ris
 {
+  [ApiController]
   [Produces("application/json")]
   [Route("api/Ris")]
   public class RisController : Controller
@@ -28,7 +29,7 @@ namespace KKHondaBackend.Controllers.Ris
       iCustomer = _iCustomer;
     }
 
-    public async Task<IEnumerable<CarRegisListRes>> RegisList(List<string> tag)
+    private async Task<IEnumerable<CarRegisListRes>> RegisList(List<string> tag)
     {
       var list = await (from crl in ctx.CarRegisList
                         join crli in RegisListItem(tag) on crl.BookingId equals crli.BookingId
@@ -92,8 +93,7 @@ namespace KKHondaBackend.Controllers.Ris
 
     }
 
-
-    public IEnumerable<CarRegisListItemSummary> RegisListItem(List<string> itemTag)
+    private IEnumerable<CarRegisListItemSummary> RegisListItem(List<string> itemTag)
     {
 
       return (from d in ctx.CarRegisListItem
@@ -284,7 +284,7 @@ namespace KKHondaBackend.Controllers.Ris
     }
 
 
-    public IEnumerable<CarRegisClDepositDeposit> RegisReceiveDeposits(string itemTag)
+    private IEnumerable<CarRegisClDepositDeposit> RegisReceiveDeposits(string itemTag)
     {
       var tag = new List<string> { itemTag };
       return RegisListItem(tag)

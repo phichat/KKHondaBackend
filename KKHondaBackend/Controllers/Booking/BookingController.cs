@@ -10,6 +10,7 @@ using KKHondaBackend.Services;
 
 namespace KKHondaBackend.Controllers.Booking
 {
+  [ApiController]
     [Produces("application/json")]
     [Route("api/Booking")] 
     public class BookingController : Controller
@@ -27,6 +28,7 @@ namespace KKHondaBackend.Controllers.Booking
         }
 
         // GET: /<controller>/
+        [HttpGet]
         public IActionResult Get()
         {
             var contract = (from db in ctx.CreditContract

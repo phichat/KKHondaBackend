@@ -89,6 +89,119 @@ namespace KKHondaReport.MCS
 
             }
 
+            //รายงานคืนการจอง
+            if (Request.QueryString["RefundBookingReport"] != null)
+            {
+                if (Boolean.Parse(Request.QueryString["RefundBookingReport"]) == true)
+                {
+                    string branchType = (Request.QueryString["branchType"] == null ? "" : Request.QueryString["branchType"]);
+                    string branchId = (Request.QueryString["branchId"] == null ? "" : Request.QueryString["branchId"]);
+                    string brandType = (Request.QueryString["brandType"] == null ? "" : Request.QueryString["brandType"]);
+                    string brandTypeId = (Request.QueryString["brandTypeId"] == null ? "" : Request.QueryString["brandTypeId"]);
+                    string version = (Request.QueryString["version"] == null ? "" : Request.QueryString["version"]);
+                    string design = (Request.QueryString["design"] == null ? "" : Request.QueryString["design"]);
+                    string color = (Request.QueryString["color"] == null ? "" : Request.QueryString["color"]);
+                    string bookingName = (Request.QueryString["bookingName"] == null ? "" : Request.QueryString["bookingName"]);
+                    string strBookingName = (Request.QueryString["bookingNameId"] == null ? "" : Request.QueryString["bookingNameId"]);
+                    string strRegisName = (Request.QueryString["regisNameId"] == null ? "" : Request.QueryString["regisNameId"]);
+                    //string bookingStatus = (Request.QueryString["bookingStatus"] == null ? "" : Request.QueryString["bookingStatus"]);
+                    //string bookingStatusId = (Request.QueryString["bookingStatusId"] == null ? "" : Request.QueryString["bookingStatusId"]);
+                    string bookingDate = (Request.QueryString["bookingDate"] == null ? "" : Request.QueryString["bookingDate"]);
+                    string sDate = (Request.QueryString["sDate"] == null ? "" : Request.QueryString["sDate"]);
+                    string eDate = (Request.QueryString["eDate"] == null ? "" : Request.QueryString["eDate"]);
+                    string RefundbookingReceiveDate = (Request.QueryString["RefundbookingReceiveDate"] == null ? "" : Request.QueryString["RefundbookingReceiveDate"]);
+                    string sRefundBookingReceiveDate = (Request.QueryString["sRefundBookingReceiveDate"] == null ? "" : Request.QueryString["sRefundBookingReceiveDate"]);
+                    string eRefundBookingReceiveDate = (Request.QueryString["eRefundBookingReceiveDate"] == null ? "" : Request.QueryString["eRefundBookingReceiveDate"]);
+
+                    if (branchType == "")
+                    {
+                        branchId = "0";
+                    }
+
+                    if (brandType == "")
+                    {
+                        brandTypeId = "0";
+                        version = "0";
+                        design = "0";
+                        color = "0";
+                    }
+
+                    if (bookingName == "")
+                    {
+                        strBookingName = "";
+                        strRegisName = "";
+                    }
+
+                    //if (bookingStatus == "")
+                    //{
+                    //    bookingStatusId = "0";
+                    //}
+
+                    if (bookingDate == "")
+                    {
+                        sDate = "";
+                        eDate = "";
+                    }
+
+
+                    if (RefundbookingReceiveDate == "")
+                    {
+                        sRefundBookingReceiveDate = "";
+                        eRefundBookingReceiveDate = "";
+                    }
+                    ExportFormatRefundBookingReport(branchType, branchId, brandType, brandTypeId, version, design, color, bookingName, strBookingName, strRegisName, bookingDate, sDate, eDate, RefundbookingReceiveDate, sRefundBookingReceiveDate, eRefundBookingReceiveDate);
+                }
+
+            }
+
+            //รายงานยอดขายสินค้า TOP
+            if (Request.QueryString["ReportTopProduct"] != null)
+            {
+                if (Boolean.Parse(Request.QueryString["ReportTopProduct"]) == true)
+                {
+                    string branchType = (Request.QueryString["branchType"] == null ? "" : Request.QueryString["branchType"]);
+                    string branchId = (Request.QueryString["branchId"] == null ? "" : Request.QueryString["branchId"]);
+                    string brandType = (Request.QueryString["brandType"] == null ? "" : Request.QueryString["brandType"]);
+                    string brandTypeId = (Request.QueryString["brandTypeId"] == null ? "" : Request.QueryString["brandTypeId"]);
+                    string version = (Request.QueryString["version"] == null ? "" : Request.QueryString["version"]);
+                    string design = (Request.QueryString["design"] == null ? "" : Request.QueryString["design"]);
+                    string color = (Request.QueryString["color"] == null ? "" : Request.QueryString["color"]);
+                    string selltype = (Request.QueryString["selltype"] == null ? "" : Request.QueryString["selltype"]);
+                    string selltypeId = (Request.QueryString["selltypeId"] == null ? "" : Request.QueryString["selltypeId"]);
+                    string bookingDate = (Request.QueryString["bookingDate"] == null ? "" : Request.QueryString["bookingDate"]);
+                    string sDate = (Request.QueryString["sDate"] == null ? "" : Request.QueryString["sDate"]);
+                    string eDate = (Request.QueryString["eDate"] == null ? "" : Request.QueryString["eDate"]);
+                    string topRank = (Request.QueryString["topRank"] == null ? "20" : Request.QueryString["topRank"]);
+
+                    if (branchType == "")
+                    {
+                        branchId = "0";
+                    }
+
+                    if (brandType == "")
+                    {
+                        brandTypeId = "0";
+                        version = "0";
+                        design = "0";
+                        color = "0";
+                    }
+
+                    if (selltype == "")
+                    {
+                        selltypeId = "0";
+                    }
+
+                    if (bookingDate == "")
+                    {
+                        sDate = "";
+                        eDate = "";
+                    }
+
+                    ExportFormatTopRankReport(branchType, branchId, brandType, brandTypeId, version, design, color,selltype,selltypeId,bookingDate,sDate,eDate,topRank );
+                }
+
+            }
+
             //report 4. รายงานยอดขายรวม
             //ExportSummarySaleReport();
             if (Request.QueryString["SaleReport"] != null)
@@ -351,6 +464,115 @@ namespace KKHondaReport.MCS
                 Response.Write(ex.Message);
             }
         }
+
+        private void ExportFormatRefundBookingReport(string branchType = "", string branchId = "", string brandType = "", string brandTypeId = "", string version = "", string design = "", string color = "", string bookingName = "", string strBookingName = "", string strRegisName = "", string bookingDate = "", string sDate = "", string eDate = "", string RefundbookingReceiveDate = "", string sRefundBookingReceiveDate = "", string eRefundBookingReceiveDate = "")
+        {
+            try
+            {
+                rptDoc = new ReportDocument();
+                SqlConnectionStringBuilder connection = new SqlConnectionStringBuilder(conStr);
+                var server = connection.DataSource;
+
+                var file = "./refundBookingReport.rpt";
+                rptDoc.Load(Server.MapPath(file));
+                rptDoc.Refresh();
+
+                TableLogOnInfo L1 = rptDoc.Database.Tables[0].LogOnInfo;
+                GetLoginfo(L1, server);
+                //rptDoc.SetParameterValue("@branch_id", "1,2,3,4,5,6");
+                //rptDoc.SetParameterValue("strBookingType", "test string Booking Type");
+                rptDoc.SetParameterValue("@branch_ids", branchId);
+                rptDoc.SetParameterValue("@brandId", brandTypeId);
+                rptDoc.SetParameterValue("@modelId", version);
+                rptDoc.SetParameterValue("@typeId", design);
+                rptDoc.SetParameterValue("@colorId", color);
+                rptDoc.SetParameterValue("@book_preson", strBookingName);
+                rptDoc.SetParameterValue("@regist_person", strRegisName);
+                //rptDoc.SetParameterValue("@book_status_id", bookingStatus);
+                rptDoc.SetParameterValue("@booking_date_start", sDate);
+                rptDoc.SetParameterValue("@booking_date_end", eDate);
+                rptDoc.SetParameterValue("@book_refund_date_start", sRefundBookingReceiveDate);
+                rptDoc.SetParameterValue("@book_refund_date_end", eRefundBookingReceiveDate);
+                rptDoc.Database.Tables[0].ApplyLogOnInfo(L1);
+
+
+                StreamPdfReport(rptDoc, "test");
+            }
+            catch (Exception ex)
+            {
+                Response.Write(ex.Message);
+            }
+        }
+
+        private void ExportFormatTopRankReport(
+            string branchType = "", 
+            string branchId = "", 
+            string brandType = "", 
+            string brandTypeId = "", 
+            string version = "", 
+            string design = "", 
+            string color = "",
+            string selltype = "",
+            string selltypeId = "",
+            string bookingDate = "", 
+            string sDate = "", 
+            string eDate = "", 
+            string topRank = "")
+        {
+
+            try
+            {
+                rptDoc = new ReportDocument();
+                SqlConnectionStringBuilder connection = new SqlConnectionStringBuilder(conStr);
+                var server = connection.DataSource;
+
+                var file = "./TopRankReport.rpt";
+                rptDoc.Load(Server.MapPath(file));
+                rptDoc.Refresh();
+
+                TableLogOnInfo L1 = rptDoc.Database.Tables[0].LogOnInfo;
+                GetLoginfo(L1, server);
+                //rptDoc.SetParameterValue("@branch_id", "1,2,3,4,5,6");
+                //rptDoc.SetParameterValue("strBookingType", "test string Booking Type");
+
+                if (sDate == "" && eDate != "")
+                {
+                    sDate = eDate;
+                }
+                if (sDate != "" && eDate == "")
+                {
+                    eDate = sDate;
+                }
+
+                if (sDate != "" && eDate != "")
+                {
+                    var startDateTime = DateTime.ParseExact(sDate, "yyyy-MM-ddTHH:mm:ss.fffZ", CultureInfo.InvariantCulture);
+                    var endDateTime = DateTime.ParseExact(eDate, "yyyy-MM-ddTHH:mm:ss.fffZ", CultureInfo.InvariantCulture);
+                    sDate = startDateTime.Year + "-" + string.Format("{0:00}", startDateTime.Month) + "-" + string.Format("{0:00}", startDateTime.Day);
+                    eDate = endDateTime.Year + "-" + string.Format("{0:00}", endDateTime.Month) + "-" + string.Format("{0:00}", endDateTime.Day);
+
+                }
+
+                rptDoc.SetParameterValue("@branch_ids", branchId);
+                rptDoc.SetParameterValue("@brandId", brandTypeId);
+                rptDoc.SetParameterValue("@modelId", version);
+                rptDoc.SetParameterValue("@typeId", design);
+                rptDoc.SetParameterValue("@colorId", color);
+                rptDoc.SetParameterValue("@booking_type", selltypeId);
+                rptDoc.SetParameterValue("@sDate", sDate);
+                rptDoc.SetParameterValue("@eDate", eDate);
+                rptDoc.SetParameterValue("@toprank", topRank);
+                rptDoc.Database.Tables[0].ApplyLogOnInfo(L1);
+
+
+                StreamPdfReport(rptDoc, "test");
+            }
+            catch (Exception ex)
+            {
+                Response.Write(ex.Message);
+            }
+        }
+
 
         private void ExportSummarySaleReport(string branchId = "", string brandTypeId = "", string version = "", string design = "", string color = "", string SellId = "", string paymentTypeId = "", string sDate = "", string eDate = "")
         {

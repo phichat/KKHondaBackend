@@ -11,6 +11,7 @@ using KKHondaBackend.Models;
 
 namespace KKHondaBackend.Controllers.Users
 {
+    [ApiController]
     [Produces("application/json")]
     [Route("api/Users")]
     public class UserController : Controller

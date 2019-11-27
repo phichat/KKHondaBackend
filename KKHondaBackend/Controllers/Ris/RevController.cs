@@ -10,6 +10,7 @@ using KKHondaBackend.Entities;
 
 namespace KKHondaBackend.Controllers.Ris
 {
+  [ApiController]
   [Produces("application/json")]
   [Route("api/Ris/[controller]")]
   public class RevController : Controller
@@ -24,7 +25,7 @@ namespace KKHondaBackend.Controllers.Ris
       iSysParamService = isysParamService;
     }
 
-    public IEnumerable<CarRegisRevListRes> RevList
+    private IEnumerable<CarRegisRevListRes> RevList
     {
       get => (
           from rev in ctx.CarRegisRevList

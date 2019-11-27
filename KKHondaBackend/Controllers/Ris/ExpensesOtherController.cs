@@ -10,6 +10,7 @@ using KKHondaBackend.Services;
 
 namespace KKHondaBackend.Controllers.Ris
 {
+    [ApiController]
     [Produces("application/json")]
     [Route("api/Ris/[controller]")]
     public class ExpensesOtherController : Controller

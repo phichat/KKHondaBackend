@@ -12,6 +12,7 @@ using KKHondaBackend.Services;
 
 namespace KKHondaBackend.Controllers.Credits
 {
+  [ApiController]
     [Produces("application/json")]
     [Route("api/Credit/Calculates")]
     public class CreditCalculatesController : Controller

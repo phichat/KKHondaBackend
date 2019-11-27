@@ -10,6 +10,7 @@ using KKHondaBackend.Entities;
 
 namespace KKHondaBackend.Controllers.Ris
 {
+  [ApiController]
   [Produces("application/json")]
   [Route("api/Ris/Sed")]
   public class SedController : Controller
@@ -24,7 +25,7 @@ namespace KKHondaBackend.Controllers.Ris
       iSysParamService = isysParamService;
     }
 
-    public IEnumerable<CarRegisSedListRes> SedListRes
+    private IEnumerable<CarRegisSedListRes> SedListRes
     {
       get => (from sed in ctx.CarRegisSedList
                 // join al in ctx.CarRegisAlList on sed.SedNo equals al.SedNo into al1
