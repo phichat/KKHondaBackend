@@ -242,7 +242,7 @@ namespace KKHondaReport.RIS
                 rptDoc.SetParameterValue("@receipt_no", receiptNo);
                 rptDoc.Database.Tables[0].ApplyLogOnInfo(L1);
 
-                StreamXlsReport(rptDoc, "RegisVehicleTax.xls");
+                StreamPdfReport(rptDoc, "cl-deposit.pdf");
             }
             catch (Exception ex)
             {

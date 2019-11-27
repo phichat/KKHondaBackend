@@ -337,6 +337,12 @@
       <DependentUpon>RegisCL.rpt</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="RIS\RegisCLDeposit.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>RegisCLDeposit.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="RIS\RegisRegisVehicleTax.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -448,6 +454,10 @@
     <EmbeddedResource Include="RIS\RegisCL.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>RegisCL.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="RIS\RegisCLDeposit.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>RegisCLDeposit.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="RIS\RegisRegisVehicleTax.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
