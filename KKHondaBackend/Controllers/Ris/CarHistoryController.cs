@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace KKHondaBackend.Controllers.Ris
 {
-  [ApiController]
+  // [ApiController]
   [Produces("application/json")]
   [Route("api/Ris/[controller]")]
   public class CarHistoryController : Controller

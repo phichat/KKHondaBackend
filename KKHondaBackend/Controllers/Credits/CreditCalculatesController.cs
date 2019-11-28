@@ -2,17 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualBasic;
 using KKHondaBackend.Data;
 using KKHondaBackend.Models;
 using KKHondaBackend.Services;
 
 namespace KKHondaBackend.Controllers.Credits
 {
-  [ApiController]
+//   [ApiController]
     [Produces("application/json")]
     [Route("api/Credit/Calculates")]
     public class CreditCalculatesController : Controller

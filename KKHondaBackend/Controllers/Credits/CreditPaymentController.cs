@@ -10,7 +10,7 @@ using KKHondaBackend.Services;
 
 namespace KKHondaBackend.Controllers.Credits
 {
-  [ApiController]
+//   [ApiController]
     [Produces("application/json")]
     [Route("api/Credit/Contract/CreditPayment")]
     public class CreditPaymentController : Controller

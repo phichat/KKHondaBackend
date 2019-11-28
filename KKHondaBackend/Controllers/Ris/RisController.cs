@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace KKHondaBackend.Controllers.Ris
 {
-  [ApiController]
+  // [ApiController]
   [Produces("application/json")]
   [Route("api/Ris")]
   public class RisController : Controller

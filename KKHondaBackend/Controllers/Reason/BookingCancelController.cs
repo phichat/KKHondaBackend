@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace KKHondaBackend.Controllers.Reason
 {
-    [ApiController]
+    // [ApiController]
     [Produces("application/json")]
     [Route("api/Reason")]
     public class BookingCancelController : Controller

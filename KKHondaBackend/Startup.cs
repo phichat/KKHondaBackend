@@ -60,6 +60,7 @@ namespace KKHondaBackend
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            var SwaggerEndpoint = "";
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -70,6 +71,11 @@ namespace KKHondaBackend
                            .AllowAnyHeader()
                            .AllowAnyMethod();
                 });
+                SwaggerEndpoint = "/swagger/v1/swagger.json";
+            } 
+            else
+            {
+                SwaggerEndpoint = "../swagger/v1/swagger.json";
             }
 
             app.UseMvc();
@@ -78,7 +84,7 @@ namespace KKHondaBackend
             app.UseSwaggerUI(c =>
             {
                 c.RoutePrefix = "";
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "KK Honda V1");
+                c.SwaggerEndpoint(SwaggerEndpoint, "KK Honda V1");
             });
         }
     }
