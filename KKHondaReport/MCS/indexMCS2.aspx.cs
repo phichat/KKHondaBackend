@@ -166,8 +166,6 @@ namespace KKHondaReport.MCS
                     string version = (Request.QueryString["version"] == null ? "" : Request.QueryString["version"]);
                     string design = (Request.QueryString["design"] == null ? "" : Request.QueryString["design"]);
                     string color = (Request.QueryString["color"] == null ? "" : Request.QueryString["color"]);
-                    string selltype = (Request.QueryString["selltype"] == null ? "" : Request.QueryString["selltype"]);
-                    string selltypeId = (Request.QueryString["selltypeId"] == null ? "" : Request.QueryString["selltypeId"]);
                     string bookingDate = (Request.QueryString["bookingDate"] == null ? "" : Request.QueryString["bookingDate"]);
                     string sDate = (Request.QueryString["sDate"] == null ? "" : Request.QueryString["sDate"]);
                     string eDate = (Request.QueryString["eDate"] == null ? "" : Request.QueryString["eDate"]);
@@ -186,6 +184,36 @@ namespace KKHondaReport.MCS
                         color = "0";
                     }
 
+                    if (bookingDate == "")
+                    {
+                        sDate = "";
+                        eDate = "";
+                    }
+
+                    ExportFormatTopRankReport(branchType, branchId, brandType, brandTypeId, version, design, color,bookingDate,sDate,eDate,topRank );
+                }
+
+            }
+
+            //รายงานยอดขายสินค้า TOP (อะไหล่)
+            if (Request.QueryString["ReportTopProductSpare"] != null)
+            {
+                if (Boolean.Parse(Request.QueryString["ReportTopProductSpare"]) == true)
+                {
+                    string branchType = (Request.QueryString["branchType"] == null ? "" : Request.QueryString["branchType"]);
+                    string branchId = (Request.QueryString["branchId"] == null ? "" : Request.QueryString["branchId"]);                    
+                    string selltype = (Request.QueryString["selltype"] == null ? "" : Request.QueryString["selltype"]);
+                    string selltypeId = (Request.QueryString["selltypeId"] == null ? "" : Request.QueryString["selltypeId"]);
+                    string bookingDate = (Request.QueryString["bookingDate"] == null ? "" : Request.QueryString["bookingDate"]);
+                    string sDate = (Request.QueryString["sDate"] == null ? "" : Request.QueryString["sDate"]);
+                    string eDate = (Request.QueryString["eDate"] == null ? "" : Request.QueryString["eDate"]);
+                    string topRank = (Request.QueryString["topRank"] == null ? "20" : Request.QueryString["topRank"]);
+
+                    if (branchType == "")
+                    {
+                        branchId = "0";
+                    }
+
                     if (selltype == "")
                     {
                         selltypeId = "0";
@@ -197,7 +225,7 @@ namespace KKHondaReport.MCS
                         eDate = "";
                     }
 
-                    ExportFormatTopRankReport(branchType, branchId, brandType, brandTypeId, version, design, color,selltype,selltypeId,bookingDate,sDate,eDate,topRank );
+                    ExportFormatTopRankSpareReport(branchType, branchId, selltype, selltypeId, bookingDate, sDate, eDate, topRank);
                 }
 
             }
@@ -331,7 +359,6 @@ namespace KKHondaReport.MCS
 
             //report 28. รายงานการลดหนี้
             //ExportCreditNoteDetailsReport();
-
             if (Request.QueryString["CreditNoteDetailsReport"] != null)
             {
                 if (Boolean.Parse(Request.QueryString["CreditNoteDetailsReport"]) == true)
@@ -407,6 +434,91 @@ namespace KKHondaReport.MCS
                 }
 
             }
+
+
+
+            //รายงานค่าคอมมิชชั่น ตามใบขาย
+            if (Request.QueryString["CommissionSale"] != null)
+            {
+                if (Boolean.Parse(Request.QueryString["CommissionSale"]) == true)
+                {
+                    //string branchType = Request.QueryString["branchType"];
+                    string branchId = Request.QueryString["branchId"];
+                    string sellDate = Request.QueryString["sellDate"];
+                    string sDate = Request.QueryString["sDate"];
+                    string eDate = Request.QueryString["eDate"];
+                    //string sellType = Request.QueryString["sellType"];
+                    string sellId = Request.QueryString["sellId"];
+                    //string financeType = Request.QueryString["financeType"];
+                    string financeId = Request.QueryString["financeId"];
+                    ExportCommissionSale( branchId, sellDate, sDate, eDate, sellId, financeId);
+                }
+            }
+
+            //รายงานค่าคอมมิชชั่น ตามกิจกรรมขาย
+            if (Request.QueryString["CommissionEvent"] != null)
+            {
+                if (Boolean.Parse(Request.QueryString["CommissionEvent"]) == true)
+                {
+                    //string branchType = Request.QueryString["branchType"];
+                    string branchId = Request.QueryString["branchId"];
+                    string sellDate = Request.QueryString["sellDate"];
+                    string sDate = Request.QueryString["sDate"];
+                    string eDate = Request.QueryString["eDate"];
+                    //string sellType = Request.QueryString["sellType"];
+                    string sellId = Request.QueryString["sellId"];
+                    //string financeType = Request.QueryString["financeType"];
+                    string financeId = Request.QueryString["financeId"];
+                    ExportCommissionEvent(branchId, sellDate, sDate, eDate, sellId, financeId);
+                }
+            }
+
+            //รายงานภาษีซื้อ
+            if (Request.QueryString["TaxPurchase"] != null)
+            {
+                if (Boolean.Parse(Request.QueryString["TaxPurchase"]) == true)
+                {
+
+                    //string branchType = Request.QueryString["branchType"];
+                    string branchId = Request.QueryString["branchId"];
+                    string reportType = Request.QueryString["reportType"];
+                    string dateMonthYear = Request.QueryString["dateMonthYear"];
+                    string sDate = Request.QueryString["sDate"];
+                    string eDate = Request.QueryString["eDate"];
+                    ExportTaxPurchase(branchId, reportType, dateMonthYear, sDate, eDate);
+                }
+            }
+
+            //รายงานภาษีขาย
+            if (Request.QueryString["TaxSale"] != null)
+            {
+                if (Boolean.Parse(Request.QueryString["TaxSale"]) == true)
+                {
+                    //string branchType = Request.QueryString["branchType"];
+                    string branchId = Request.QueryString["branchId"];
+                    string reportType = Request.QueryString["reportType"];
+                    string dateMonthYear = Request.QueryString["dateMonthYear"];
+                    string sDate = Request.QueryString["sDate"];
+                    string eDate = Request.QueryString["eDate"];
+                    ExportTaxSale(branchId, reportType, dateMonthYear, sDate, eDate);
+                }
+            }
+
+            //รายงานภาษีขาย
+            if (Request.QueryString["TaxSaleSpare"] != null)
+            {
+                if (Boolean.Parse(Request.QueryString["TaxSaleSpare"]) == true)
+                {
+                    //string branchType = Request.QueryString["branchType"];
+                    string branchId = Request.QueryString["branchId"];
+                    string reportType = Request.QueryString["reportType"];
+                    string dateMonthYear = Request.QueryString["dateMonthYear"];
+                    string sDate = Request.QueryString["sDate"];
+                    string eDate = Request.QueryString["eDate"];
+                    ExportTaxSaleSpare(branchId, reportType, dateMonthYear, sDate, eDate);
+                }
+            }           
+
         }
 
         private void ExportFormatBookingReport(string branchType = "", string branchId = "", string brandType = "", string brandTypeId = "", string version = "", string design = "", string color = "", string bookingName = "", string strBookingName = "", string strRegisName = "", string bookingStatus = "", string bookingDate = "", string sDate = "", string eDate = "", string bookingReceiveDate = "", string sBookingReceiveDate = "", string eBookingReceiveDate = "")
@@ -512,8 +624,6 @@ namespace KKHondaReport.MCS
             string version = "", 
             string design = "", 
             string color = "",
-            string selltype = "",
-            string selltypeId = "",
             string bookingDate = "", 
             string sDate = "", 
             string eDate = "", 
@@ -534,7 +644,7 @@ namespace KKHondaReport.MCS
                 GetLoginfo(L1, server);
                 //rptDoc.SetParameterValue("@branch_id", "1,2,3,4,5,6");
                 //rptDoc.SetParameterValue("strBookingType", "test string Booking Type");
-
+                var txt = "รายงานยอดขายสินค้า (รถ)";
                 if (sDate == "" && eDate != "")
                 {
                     sDate = eDate;
@@ -551,6 +661,11 @@ namespace KKHondaReport.MCS
                     sDate = startDateTime.Year + "-" + string.Format("{0:00}", startDateTime.Month) + "-" + string.Format("{0:00}", startDateTime.Day);
                     eDate = endDateTime.Year + "-" + string.Format("{0:00}", endDateTime.Month) + "-" + string.Format("{0:00}", endDateTime.Day);
 
+                    string startTH = startDateTime.ToString("dd/MM/yyyy", CultureInfo.CreateSpecificCulture("th-TH"));
+                    string EndTH = endDateTime.ToString("dd/MM/yyyy", CultureInfo.CreateSpecificCulture("th-TH"));
+
+                    txt += " \n ตั้งแต่วันที่ " + startTH + " ถึง " + EndTH + "";
+
                 }
 
                 rptDoc.SetParameterValue("@branch_ids", branchId);
@@ -558,10 +673,11 @@ namespace KKHondaReport.MCS
                 rptDoc.SetParameterValue("@modelId", version);
                 rptDoc.SetParameterValue("@typeId", design);
                 rptDoc.SetParameterValue("@colorId", color);
-                rptDoc.SetParameterValue("@booking_type", selltypeId);
                 rptDoc.SetParameterValue("@sDate", sDate);
                 rptDoc.SetParameterValue("@eDate", eDate);
                 rptDoc.SetParameterValue("@toprank", topRank);
+
+                rptDoc.SetParameterValue("txt", txt);
                 rptDoc.Database.Tables[0].ApplyLogOnInfo(L1);
 
 
@@ -573,6 +689,71 @@ namespace KKHondaReport.MCS
             }
         }
 
+        private void ExportFormatTopRankSpareReport(
+    string branchType = "",
+    string branchId = "",    
+    string selltype = "",
+    string selltypeId = "",
+    string bookingDate = "",
+    string sDate = "",
+    string eDate = "",
+    string topRank = "")
+        {
+
+            try
+            {
+                rptDoc = new ReportDocument();
+                SqlConnectionStringBuilder connection = new SqlConnectionStringBuilder(conStr);
+                var server = connection.DataSource;
+
+                var file = "./TopRankReportSpare.rpt";
+                rptDoc.Load(Server.MapPath(file));
+                rptDoc.Refresh();
+
+                TableLogOnInfo L1 = rptDoc.Database.Tables[0].LogOnInfo;
+                GetLoginfo(L1, server);
+                //rptDoc.SetParameterValue("@branch_id", "1,2,3,4,5,6");
+                //rptDoc.SetParameterValue("strBookingType", "test string Booking Type");
+                var txt = "รายงานยอดขายสินค้า (อะไหล่)";
+                if (sDate == "" && eDate != "")
+                {
+                    sDate = eDate;
+                }
+                if (sDate != "" && eDate == "")
+                {
+                    eDate = sDate;
+                }
+
+                if (sDate != "" && eDate != "")
+                {
+                    var startDateTime = DateTime.ParseExact(sDate, "yyyy-MM-ddTHH:mm:ss.fffZ", CultureInfo.InvariantCulture);
+                    var endDateTime = DateTime.ParseExact(eDate, "yyyy-MM-ddTHH:mm:ss.fffZ", CultureInfo.InvariantCulture);
+                    sDate = startDateTime.Year + "-" + string.Format("{0:00}", startDateTime.Month) + "-" + string.Format("{0:00}", startDateTime.Day);
+                    eDate = endDateTime.Year + "-" + string.Format("{0:00}", endDateTime.Month) + "-" + string.Format("{0:00}", endDateTime.Day);
+
+                    string startTH = startDateTime.ToString("dd/MM/yyyy", CultureInfo.CreateSpecificCulture("th-TH"));
+                    string EndTH = endDateTime.ToString("dd/MM/yyyy", CultureInfo.CreateSpecificCulture("th-TH"));
+
+                    txt += " \n ตั้งแต่วันที่ " + startTH + " ถึง " + EndTH + "";
+
+                }
+
+                rptDoc.SetParameterValue("@branch_ids", branchId);
+                rptDoc.SetParameterValue("@sDate", sDate);
+                rptDoc.SetParameterValue("@eDate", eDate);
+                rptDoc.SetParameterValue("@toprank", topRank);
+
+                rptDoc.SetParameterValue("txt", txt);
+                rptDoc.Database.Tables[0].ApplyLogOnInfo(L1);
+
+
+                StreamPdfReport(rptDoc, "test");
+            }
+            catch (Exception ex)
+            {
+                Response.Write(ex.Message);
+            }
+        }
 
         private void ExportSummarySaleReport(string branchId = "", string brandTypeId = "", string version = "", string design = "", string color = "", string SellId = "", string paymentTypeId = "", string sDate = "", string eDate = "")
         {
@@ -612,7 +793,7 @@ namespace KKHondaReport.MCS
             }
         }
 
-        private void ExportSummarySaleReportByType(string strStartDate = "", string strEndDate = "")
+        private void ExportSummarySaleReportByType(string sDate = "", string eDate = "")
         {
             try
             {
@@ -622,42 +803,46 @@ namespace KKHondaReport.MCS
                 //var eDate = DateTime.ParseExact("2018-09-15",
                 //                  "yyyy-MM-dd",
                 //                   CultureInfo.InvariantCulture);
-                string sDate = "";
-                string eDate = "";
                 var file = "";
 
                 rptDoc = new ReportDocument();
                 SqlConnectionStringBuilder connection = new SqlConnectionStringBuilder(conStr);
                 var server = connection.DataSource;
 
-                if (strStartDate == "" && strEndDate == "")
+                var txtDate = "";
+                if (sDate == "" && eDate != "")
                 {
-                    file = "../ALL/SummarySaleReportByType_All.rpt";
-                    rptDoc.Load(Server.MapPath(file));
-                    rptDoc.Refresh();
-                    TableLogOnInfo L1 = rptDoc.Database.Tables[0].LogOnInfo;
-                    GetLoginfo(L1, server);
-                    rptDoc.Database.Tables[0].ApplyLogOnInfo(L1);
+                    sDate = eDate;
                 }
-                else
+                if (sDate != "" && eDate == "")
                 {
-                    file = "../ALL/SummarySaleReportByType.rpt";
-                    var startDateTime = DateTime.ParseExact(strStartDate,"yyyy-MM-ddTHH:mm:ss.fffZ",CultureInfo.InvariantCulture);
-                    var endDateTime = DateTime.ParseExact(strEndDate,"yyyy-MM-ddTHH:mm:ss.fffZ",CultureInfo.InvariantCulture);
+                    eDate = sDate;
+                }
 
+                if (sDate != "" && eDate != "")
+                {
+                    var startDateTime = DateTime.ParseExact(sDate, "yyyy-MM-ddTHH:mm:ss.fffZ", CultureInfo.InvariantCulture);
+                    var endDateTime = DateTime.ParseExact(eDate, "yyyy-MM-ddTHH:mm:ss.fffZ", CultureInfo.InvariantCulture);
                     sDate = startDateTime.Year + "-" + string.Format("{0:00}", startDateTime.Month) + "-" + string.Format("{0:00}", startDateTime.Day);
-
                     eDate = endDateTime.Year + "-" + string.Format("{0:00}", endDateTime.Month) + "-" + string.Format("{0:00}", endDateTime.Day);
 
-                    rptDoc.Load(Server.MapPath(file));
-                    rptDoc.Refresh();
-                    TableLogOnInfo L1 = rptDoc.Database.Tables[0].LogOnInfo;
-                    GetLoginfo(L1, server);
-                    //rptDoc.SetParameterValue("@branch_id", 1);
-                    rptDoc.SetParameterValue("@sDate", sDate);
-                    rptDoc.SetParameterValue("@eDate", eDate);
-                    rptDoc.Database.Tables[0].ApplyLogOnInfo(L1);
-                } 
+                    string startTH = startDateTime.ToString("dd/MM/yyyy", CultureInfo.CreateSpecificCulture("th-TH"));
+                    string EndTH = endDateTime.ToString("dd/MM/yyyy", CultureInfo.CreateSpecificCulture("th-TH"));
+
+                    txtDate = "ตั้งแต่วันที่ " + startTH + " ถึง " + EndTH;
+                }
+
+
+                file = "../ALL/SummarySaleReportByType.rpt";
+                rptDoc.Load(Server.MapPath(file));
+                rptDoc.Refresh();
+                TableLogOnInfo L1 = rptDoc.Database.Tables[0].LogOnInfo;
+                GetLoginfo(L1, server);
+                //rptDoc.SetParameterValue("@branch_id", 1);
+                rptDoc.SetParameterValue("@sDate", sDate);
+                rptDoc.SetParameterValue("@eDate", eDate);
+                rptDoc.SetParameterValue("txtDate", txtDate);
+                rptDoc.Database.Tables[0].ApplyLogOnInfo(L1);
                 //rptDoc.SetParameterValue("@booking_id", 2, "Subreport3"); 
                 //rptDoc.Subreports["Subreport1"].Database.Tables[0].ApplyLogOnInfo(L1);
 
@@ -936,6 +1121,7 @@ namespace KKHondaReport.MCS
                 GetLoginfo(L1, server);
                 //rptDoc.SetParameterValue("@branch_id", 1);
                 //rptDoc.SetParameterValue("strBookingType", "test ExportSummarySaleReport");
+                rptDoc.SetParameterValue("txtDate", "");
                 rptDoc.Database.Tables[0].ApplyLogOnInfo(L1);
 
                 //rptDoc.SetParameterValue("@booking_id", 2, "Subreport3"); 
@@ -1633,6 +1819,402 @@ namespace KKHondaReport.MCS
         //    //Log.ConnectionInfo.Password = "sql@1234";
         //    Log.ConnectionInfo.DatabaseName = "";
         //}
+
+        private void ExportCommissionSale(
+        string branchId = "",
+        string sellDate = "",
+        string sDate = "",
+        string eDate = "",
+        string sellId = "",
+        string financeId = "")
+        {
+
+            try
+            {
+                rptDoc = new ReportDocument();
+                SqlConnectionStringBuilder connection = new SqlConnectionStringBuilder(conStr);
+                var server = connection.DataSource;
+
+                var file = "./CommissionSale.rpt";
+                rptDoc.Load(Server.MapPath(file));
+                rptDoc.Refresh();
+
+                TableLogOnInfo L1 = rptDoc.Database.Tables[0].LogOnInfo;
+                GetLoginfo(L1, server);
+
+                string txtDate = "";
+
+                if (sDate == "" && eDate != "")
+                {
+                    sDate = eDate;
+                }
+                if (sDate != "" && eDate == "")
+                {
+                    eDate = sDate;
+                }
+
+                if (sDate != "" && eDate != "")
+                {
+                    var startDate = DateTime.ParseExact(sDate, "yyyy-MM-ddTHH:mm:ss.fffZ", CultureInfo.InvariantCulture);
+                    var endDate = DateTime.ParseExact(eDate, "yyyy-MM-ddTHH:mm:ss.fffZ", CultureInfo.InvariantCulture);
+                    string startReceiveDate = startDate.Year + "-" + string.Format("{0:00}", startDate.Month) + "-" + string.Format("{0:00}", startDate.Day);
+                    string EndReceiveDate = endDate.Year + "-" + string.Format("{0:00}", endDate.Month) + "-" + string.Format("{0:00}", endDate.Day);
+
+                    string startTHDate = string.Format("{0:00}", startDate.Day) + "/" + string.Format("{0:00}", startDate.Month) + "/" + startDate.Year;
+                    string EndTHDate = string.Format("{0:00}", endDate.Day) + "/" + string.Format("{0:00}", endDate.Month) + "/" + endDate.Year;
+
+                    sDate = startReceiveDate;
+                    eDate = EndReceiveDate;
+
+                    string startTH = startDate.ToString("dd/MM/yyyy", CultureInfo.CreateSpecificCulture("th-TH"));
+                    string EndTH = endDate.ToString("dd/MM/yyyy", CultureInfo.CreateSpecificCulture("th-TH"));
+
+                    txtDate = "ตั้งแต่วันที่ " + startTH + " ถึง " + EndTH;
+                }
+
+                rptDoc.SetParameterValue("@branch_ids", branchId);
+                //rptDoc.SetParameterValue("@sellDate", sellDate);
+                rptDoc.SetParameterValue("@sDate", sDate);
+                rptDoc.SetParameterValue("@eDate", eDate);
+                rptDoc.SetParameterValue("@sell_ids", sellId);
+                rptDoc.SetParameterValue("@finance_ids", financeId);
+                rptDoc.SetParameterValue("txtDate", txtDate);
+
+                rptDoc.Database.Tables[0].ApplyLogOnInfo(L1);
+
+                StreamPdfReport(rptDoc, "test");
+            }
+            catch (Exception ex)
+            {
+                Response.Write(ex.Message);
+            }
+        }
+
+        private void ExportCommissionEvent(
+        string branchId = "",
+        string sellDate = "",
+        string sDate = "",
+        string eDate = "",
+        string sellId = "",
+        string financeId = "")
+        {
+
+            try
+            {
+                rptDoc = new ReportDocument();
+                SqlConnectionStringBuilder connection = new SqlConnectionStringBuilder(conStr);
+                var server = connection.DataSource;
+
+                var file = "./CommissionEvent.rpt";
+                rptDoc.Load(Server.MapPath(file));
+                rptDoc.Refresh();
+
+                TableLogOnInfo L1 = rptDoc.Database.Tables[0].LogOnInfo;
+                GetLoginfo(L1, server);
+
+                string txtDate = "";
+
+                if (sDate == "" && eDate != "")
+                {
+                    sDate = eDate;
+                }
+                if (sDate != "" && eDate == "")
+                {
+                    eDate = sDate;
+                }
+
+                if (sDate != "" && eDate != "")
+                {
+                    var startDate = DateTime.ParseExact(sDate, "yyyy-MM-ddTHH:mm:ss.fffZ", CultureInfo.InvariantCulture);
+                    var endDate = DateTime.ParseExact(eDate, "yyyy-MM-ddTHH:mm:ss.fffZ", CultureInfo.InvariantCulture);
+                    string startReceiveDate = startDate.Year + "-" + string.Format("{0:00}", startDate.Month) + "-" + string.Format("{0:00}", startDate.Day);
+                    string EndReceiveDate = endDate.Year + "-" + string.Format("{0:00}", endDate.Month) + "-" + string.Format("{0:00}", endDate.Day);
+
+                    string startTHDate = string.Format("{0:00}", startDate.Day) + "/" + string.Format("{0:00}", startDate.Month) + "/" + startDate.Year;
+                    string EndTHDate = string.Format("{0:00}", endDate.Day) + "/" + string.Format("{0:00}", endDate.Month) + "/" + endDate.Year;
+
+                    sDate = startReceiveDate;
+                    eDate = EndReceiveDate;
+
+                    string startTH = startDate.ToString("dd/MM/yyyy", CultureInfo.CreateSpecificCulture("th-TH"));
+                    string EndTH = endDate.ToString("dd/MM/yyyy", CultureInfo.CreateSpecificCulture("th-TH"));
+
+                    txtDate = "ตั้งแต่วันที่ " + startTH + " ถึง " + EndTH;
+                }
+
+
+                rptDoc.SetParameterValue("@branch_ids", branchId);
+                //rptDoc.SetParameterValue("@sellDate", sellDate);
+                rptDoc.SetParameterValue("@sDate", sDate);
+                rptDoc.SetParameterValue("@eDate", eDate);
+                rptDoc.SetParameterValue("@sell_ids", sellId);
+                rptDoc.SetParameterValue("@finance_ids", financeId);
+                rptDoc.SetParameterValue("txtDate", txtDate);
+
+                rptDoc.Database.Tables[0].ApplyLogOnInfo(L1);
+
+                StreamPdfReport(rptDoc, "test");
+            }
+            catch (Exception ex)
+            {
+                Response.Write(ex.Message);
+            }
+        }
+
+        private void ExportTaxPurchase(
+        string branchId = "",
+        string reportType = "",
+        string dateMonthYear = "",
+        string sDate = "",
+        string eDate = "")
+        {
+            try
+            {
+                rptDoc = new ReportDocument();
+                SqlConnectionStringBuilder connection = new SqlConnectionStringBuilder(conStr);
+                var server = connection.DataSource;
+
+                var file = "./TaxPurchase.rpt";
+                rptDoc.Load(Server.MapPath(file));
+                rptDoc.Refresh();
+
+                TableLogOnInfo L1 = rptDoc.Database.Tables[0].LogOnInfo;
+                GetLoginfo(L1, server);
+
+                string txtDate = "";
+
+                if (dateMonthYear != "")
+                {
+                    var startDate = DateTime.ParseExact(dateMonthYear + "-01", "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                    var endDate = DateTime.ParseExact(dateMonthYear + "-01", "yyyy-MM-dd", CultureInfo.InvariantCulture).AddMonths(1).AddDays(-1);
+                    string startReceiveDate = startDate.Year + "-" + string.Format("{0:00}", startDate.Month) + "-" + string.Format("{0:00}", startDate.Day);
+                    string EndReceiveDate = endDate.Year + "-" + string.Format("{0:00}", endDate.Month) + "-" + string.Format("{0:00}", endDate.Day);
+
+                    string startTHDate = string.Format("{0:00}", startDate.Day) + "/" + string.Format("{0:00}", startDate.Month) + "/" + startDate.Year;
+                    string EndTHDate = string.Format("{0:00}", endDate.Day) + "/" + string.Format("{0:00}", endDate.Month) + "/" + endDate.Year;
+
+                    sDate = startReceiveDate;
+                    eDate = EndReceiveDate;
+
+                    string MonthTH = startDate.ToString("MMMM", CultureInfo.CreateSpecificCulture("th-TH"));
+                    string YearTH = startDate.ToString("yyyy", CultureInfo.CreateSpecificCulture("th-TH"));
+                    txtDate = "เดือนภาษี " + MonthTH + " ปี " + YearTH;
+                }
+                else
+                {
+                    if (sDate == "" && eDate != "")
+                    {
+                        sDate = eDate;
+                    }
+                    if (sDate != "" && eDate == "")
+                    {
+                        eDate = sDate;
+                    }
+
+                    if (sDate != "" && eDate != "")
+                    {
+                        var startDate = DateTime.ParseExact(sDate, "yyyy-MM-ddTHH:mm:ss.fffZ", CultureInfo.InvariantCulture);
+                        var endDate = DateTime.ParseExact(eDate, "yyyy-MM-ddTHH:mm:ss.fffZ", CultureInfo.InvariantCulture);
+                        string startReceiveDate = startDate.Year + "-" + string.Format("{0:00}", startDate.Month) + "-" + string.Format("{0:00}", startDate.Day);
+                        string EndReceiveDate = endDate.Year + "-" + string.Format("{0:00}", endDate.Month) + "-" + string.Format("{0:00}", endDate.Day);
+
+                        string startTHDate = string.Format("{0:00}", startDate.Day) + "/" + string.Format("{0:00}", startDate.Month) + "/" + startDate.Year;
+                        string EndTHDate = string.Format("{0:00}", endDate.Day) + "/" + string.Format("{0:00}", endDate.Month) + "/" + endDate.Year;
+
+                        sDate = startReceiveDate;
+                        eDate = EndReceiveDate;
+
+                        string startTH = startDate.ToString("dd/MM/yyyy", CultureInfo.CreateSpecificCulture("th-TH"));
+                        string EndTH = endDate.ToString("dd/MM/yyyy", CultureInfo.CreateSpecificCulture("th-TH"));
+
+                        txtDate = "ตั้งแต่วันที่ " + startTH + " ถึง " + EndTH;
+                    }
+                }
+                rptDoc.SetParameterValue("@branch_ids", branchId);
+                rptDoc.SetParameterValue("@sDate", sDate);
+                rptDoc.SetParameterValue("@eDate", eDate);
+                rptDoc.SetParameterValue("@reportType", reportType);
+                rptDoc.SetParameterValue("txtDate", txtDate);
+
+                rptDoc.Database.Tables[0].ApplyLogOnInfo(L1);
+
+                StreamPdfReport(rptDoc, "test");
+            }
+            catch (Exception ex)
+            {
+                Response.Write(ex.Message);
+            }
+        }
+
+        private void ExportTaxSale(
+        string branchId = "",
+        string reportType = "",
+        string dateMonthYear = "",
+        string sDate = "",
+        string eDate = "")
+        {
+            try
+            {
+                rptDoc = new ReportDocument();
+                SqlConnectionStringBuilder connection = new SqlConnectionStringBuilder(conStr);
+                var server = connection.DataSource;
+
+                var file = "./TaxSale.rpt";
+                rptDoc.Load(Server.MapPath(file));
+                rptDoc.Refresh();
+
+                TableLogOnInfo L1 = rptDoc.Database.Tables[0].LogOnInfo;
+                GetLoginfo(L1, server);
+
+                string txtDate = "";
+
+                if (dateMonthYear != "")
+                {
+                    var startDate = DateTime.ParseExact(dateMonthYear + "-01", "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                    var endDate = DateTime.ParseExact(dateMonthYear + "-01", "yyyy-MM-dd", CultureInfo.InvariantCulture).AddMonths(1).AddDays(-1);
+                    string startReceiveDate = startDate.Year + "-" + string.Format("{0:00}", startDate.Month) + "-" + string.Format("{0:00}", startDate.Day);
+                    string EndReceiveDate = endDate.Year + "-" + string.Format("{0:00}", endDate.Month) + "-" + string.Format("{0:00}", endDate.Day);
+
+                    string startTHDate = string.Format("{0:00}", startDate.Day) + "/" + string.Format("{0:00}", startDate.Month) + "/" + startDate.Year;
+                    string EndTHDate = string.Format("{0:00}", endDate.Day) + "/" + string.Format("{0:00}", endDate.Month) + "/" + endDate.Year;
+
+                    sDate = startReceiveDate;
+                    eDate = EndReceiveDate;
+
+                    string MonthTH = startDate.ToString("MMMM", CultureInfo.CreateSpecificCulture("th-TH"));
+                    string YearTH = startDate.ToString("yyyy", CultureInfo.CreateSpecificCulture("th-TH"));
+                    txtDate = "เดือนภาษี " + MonthTH + " ปี " + YearTH;
+                }
+                else
+                {
+                    if (sDate == "" && eDate != "")
+                    {
+                        sDate = eDate;
+                    }
+                    if (sDate != "" && eDate == "")
+                    {
+                        eDate = sDate;
+                    }
+
+                    if (sDate != "" && eDate != "")
+                    {
+                        var startDate = DateTime.ParseExact(sDate, "yyyy-MM-ddTHH:mm:ss.fffZ", CultureInfo.InvariantCulture);
+                        var endDate = DateTime.ParseExact(eDate, "yyyy-MM-ddTHH:mm:ss.fffZ", CultureInfo.InvariantCulture);
+                        string startReceiveDate = startDate.Year + "-" + string.Format("{0:00}", startDate.Month) + "-" + string.Format("{0:00}", startDate.Day);
+                        string EndReceiveDate = endDate.Year + "-" + string.Format("{0:00}", endDate.Month) + "-" + string.Format("{0:00}", endDate.Day);
+
+                        string startTHDate = string.Format("{0:00}", startDate.Day) + "/" + string.Format("{0:00}", startDate.Month) + "/" + startDate.Year;
+                        string EndTHDate = string.Format("{0:00}", endDate.Day) + "/" + string.Format("{0:00}", endDate.Month) + "/" + endDate.Year;
+
+                        sDate = startReceiveDate;
+                        eDate = EndReceiveDate;
+
+                        string startTH = startDate.ToString("dd/MM/yyyy", CultureInfo.CreateSpecificCulture("th-TH"));
+                        string EndTH = endDate.ToString("dd/MM/yyyy", CultureInfo.CreateSpecificCulture("th-TH"));
+
+                        txtDate = "ตั้งแต่วันที่ " + startTH + " ถึง " + EndTH;
+                    }
+                }
+                rptDoc.SetParameterValue("@branch_ids", branchId);
+                rptDoc.SetParameterValue("@sDate", sDate);
+                rptDoc.SetParameterValue("@eDate", eDate);
+                rptDoc.SetParameterValue("@reportType", reportType);
+                rptDoc.SetParameterValue("txtDate", txtDate);
+
+                rptDoc.Database.Tables[0].ApplyLogOnInfo(L1);
+
+                StreamPdfReport(rptDoc, "test");
+            }
+            catch (Exception ex)
+            {
+                Response.Write(ex.Message);
+            }
+        }
+
+        private void ExportTaxSaleSpare(
+        string branchId = "",
+        string reportType = "",
+        string dateMonthYear = "",
+        string sDate = "",
+        string eDate = "")
+        {
+            try
+            {
+                rptDoc = new ReportDocument();
+                SqlConnectionStringBuilder connection = new SqlConnectionStringBuilder(conStr);
+                var server = connection.DataSource;
+
+                var file = "./TaxSaleSpare.rpt";
+                rptDoc.Load(Server.MapPath(file));
+                rptDoc.Refresh();
+
+                TableLogOnInfo L1 = rptDoc.Database.Tables[0].LogOnInfo;
+                GetLoginfo(L1, server);
+
+                string txtDate = "";
+
+                if (dateMonthYear != "")
+                {
+                    var startDate = DateTime.ParseExact(dateMonthYear + "-01", "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                    var endDate = DateTime.ParseExact(dateMonthYear + "-01", "yyyy-MM-dd", CultureInfo.InvariantCulture).AddMonths(1).AddDays(-1);
+                    string startReceiveDate = startDate.Year + "-" + string.Format("{0:00}", startDate.Month) + "-" + string.Format("{0:00}", startDate.Day);
+                    string EndReceiveDate = endDate.Year + "-" + string.Format("{0:00}", endDate.Month) + "-" + string.Format("{0:00}", endDate.Day);
+
+                    string startTHDate = string.Format("{0:00}", startDate.Day) + "/" + string.Format("{0:00}", startDate.Month) + "/" + startDate.Year;
+                    string EndTHDate = string.Format("{0:00}", endDate.Day) + "/" + string.Format("{0:00}", endDate.Month) + "/" + endDate.Year;
+
+                    sDate = startReceiveDate;
+                    eDate = EndReceiveDate;
+
+                    string MonthTH = startDate.ToString("MMMM", CultureInfo.CreateSpecificCulture("th-TH"));
+                    string YearTH = startDate.ToString("yyyy", CultureInfo.CreateSpecificCulture("th-TH"));
+                    txtDate = "เดือนภาษี " + MonthTH + " ปี " + YearTH;
+                }
+                else
+                {
+                    if (sDate == "" && eDate != "")
+                    {
+                        sDate = eDate;
+                    }
+                    if (sDate != "" && eDate == "")
+                    {
+                        eDate = sDate;
+                    }
+
+                    if (sDate != "" && eDate != "")
+                    {
+                        var startDate = DateTime.ParseExact(sDate, "yyyy-MM-ddTHH:mm:ss.fffZ", CultureInfo.InvariantCulture);
+                        var endDate = DateTime.ParseExact(eDate, "yyyy-MM-ddTHH:mm:ss.fffZ", CultureInfo.InvariantCulture);
+                        string startReceiveDate = startDate.Year + "-" + string.Format("{0:00}", startDate.Month) + "-" + string.Format("{0:00}", startDate.Day);
+                        string EndReceiveDate = endDate.Year + "-" + string.Format("{0:00}", endDate.Month) + "-" + string.Format("{0:00}", endDate.Day);
+
+                        string startTHDate = string.Format("{0:00}", startDate.Day) + "/" + string.Format("{0:00}", startDate.Month) + "/" + startDate.Year;
+                        string EndTHDate = string.Format("{0:00}", endDate.Day) + "/" + string.Format("{0:00}", endDate.Month) + "/" + endDate.Year;
+
+                        sDate = startReceiveDate;
+                        eDate = EndReceiveDate;
+
+                        string startTH = startDate.ToString("dd/MM/yyyy", CultureInfo.CreateSpecificCulture("th-TH"));
+                        string EndTH = endDate.ToString("dd/MM/yyyy", CultureInfo.CreateSpecificCulture("th-TH"));
+
+                        txtDate = "ตั้งแต่วันที่ " + startTH + " ถึง " + EndTH;
+                    }
+                }
+                rptDoc.SetParameterValue("@branch_ids", branchId);
+                rptDoc.SetParameterValue("@sDate", sDate);
+                rptDoc.SetParameterValue("@eDate", eDate);
+                rptDoc.SetParameterValue("@reportType", reportType);
+                rptDoc.SetParameterValue("txtDate", txtDate);
+
+                rptDoc.Database.Tables[0].ApplyLogOnInfo(L1);
+
+                StreamPdfReport(rptDoc, "test");
+            }
+            catch (Exception ex)
+            {
+                Response.Write(ex.Message);
+            }
+        }
 
         private void GetLoginfo(TableLogOnInfo Log, string server)
         {
