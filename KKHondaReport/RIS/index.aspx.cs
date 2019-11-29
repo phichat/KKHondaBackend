@@ -61,7 +61,8 @@ namespace KKHondaReport.RIS
             {
                 var sdate = Request.QueryString["sDate"].ToString();
                 var edate = Request.QueryString["eDate"].ToString();
-                ExportRegisTag(DateTime.Parse(sdate), DateTime.Parse(edate));
+                var paymentType = Int32.Parse(Request.QueryString["paymentType"].ToString());
+                ExportRegisTag(DateTime.Parse(sdate), DateTime.Parse(edate), paymentType);
             }
 
             if (Request.QueryString["formRegisVehicleTax"] != null)
@@ -167,7 +168,7 @@ namespace KKHondaReport.RIS
             }
         }
 
-        private void ExportRegisTag(DateTime sdate, DateTime edate)
+        private void ExportRegisTag(DateTime sdate, DateTime edate, int paymentType)
         {
             try
             {
@@ -187,6 +188,7 @@ namespace KKHondaReport.RIS
                 GetLoginfo(L1);
                 rptDoc.SetParameterValue("@start_sell_date", sdate.ToString("yyyy-MM-dd"));
                 rptDoc.SetParameterValue("@end_sell_date", edate.ToString("yyyy-MM-dd"));
+                rptDoc.SetParameterValue("@paymentType", paymentType);
                 rptDoc.Database.Tables[0].ApplyLogOnInfo(L1);
 
                 StreamXlsReport(rptDoc, "regis-tag-doc.xls");
