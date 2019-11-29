@@ -524,6 +524,11 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.WarExpire).HasColumnName("war_expire").HasColumnType("datetime");
                 entity.Property(e => e.OwnerCode).HasColumnName("owner_code").HasMaxLength(50);
                 entity.Property(e => e.VisitorCode).HasColumnName("visitor_code").HasMaxLength(50);
+                entity.Property(e => e.CateName).HasColumnName("cate_name").HasMaxLength(50);
+                entity.Property(e => e.BrandName).HasColumnName("brand_name").HasMaxLength(50);
+                entity.Property(e => e.ColorName).HasColumnName("color_name").HasMaxLength(50);
+                entity.Property(e => e.ModelName).HasColumnName("model_name").HasMaxLength(50);
+                entity.Property(e => e.EngineSize).HasColumnName("engine_size").HasMaxLength(50);
 
             });
 

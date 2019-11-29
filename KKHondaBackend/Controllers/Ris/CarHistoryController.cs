@@ -58,7 +58,7 @@ namespace KKHondaBackend.Controllers.Ris
     [HttpGet("GetByBookingId")]
     public IActionResult GetByBookingId(int bookingId)
     {
-      var list = HistoryList.FirstOrDefault(x => x.BookingId == bookingId);
+      var list = ctx.CarHistory.FirstOrDefault(x => x.BookingId == bookingId);
       return Ok(list);
     }
 

@@ -25,6 +25,11 @@ namespace KKHondaBackend.Models
     public DateTime? WarExpire { get; set; }
     public string OwnerCode { get; set; }
     public string VisitorCode { get; set; }
+    public string CateName { get; set; }
+    public string BrandName { get; set; }
+    public string ColorName { get; set; }
+    public string ModelName { get; set; }
+    public decimal? EngineSize { get; set; }
   }
 
   public partial class CarHistoryRes
@@ -53,6 +58,11 @@ namespace KKHondaBackend.Models
     public string OwnerName { get; set; }
     public string VisitorCode { get; set; }
     public string VisitorName { get; set; }
+    public string CateName { get; set; }
+    public string BrandName { get; set; }
+    public string ColorName { get; set; }
+    public string ModelName { get; set; }
+    public decimal? EngineSize { get; set; }
   }
 }
 
