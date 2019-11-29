@@ -62,7 +62,7 @@ namespace KKHondaReport.RIS
                 var sdate = Request.QueryString["sDate"].ToString();
                 var edate = Request.QueryString["eDate"].ToString();
                 var paymentType = Int32.Parse(Request.QueryString["paymentType"].ToString());
-                ExportRegisTag(DateTime.Parse(sdate), DateTime.Parse(edate), paymentType);
+                ExportRegisTag(sdate, edate, paymentType);
             }
 
             if (Request.QueryString["formRegisVehicleTax"] != null)
@@ -84,11 +84,6 @@ namespace KKHondaReport.RIS
             try
             {
                 rptDoc = new ReportDocument();
-                SqlConnectionStringBuilder connection = new SqlConnectionStringBuilder(conStr);
-                var server = connection.DataSource;
-                var userid = connection.UserID;
-                var pass = connection.Password;
-                var database = connection.InitialCatalog;
 
                 var file = "./SED.rpt";
                 rptDoc.Load(Server.MapPath(file));
@@ -113,11 +108,6 @@ namespace KKHondaReport.RIS
             {
                 //RIS/index.aspx?alNo=AL026209/0001&userId=4111&formAl=true
                 rptDoc = new ReportDocument();
-                SqlConnectionStringBuilder connection = new SqlConnectionStringBuilder(conStr);
-                var server = connection.DataSource;
-                var userid = connection.UserID;
-                var pass = connection.Password;
-                var database = connection.InitialCatalog;
 
                 var file = "./RegisCL.rpt";
                 rptDoc.Load(Server.MapPath(file));
@@ -143,11 +133,6 @@ namespace KKHondaReport.RIS
             {
                 //RIS/index.aspx?clNo=CL016209/0001&userId=4111&formCl=true
                 rptDoc = new ReportDocument();
-                SqlConnectionStringBuilder connection = new SqlConnectionStringBuilder(conStr);
-                var server = connection.DataSource;
-                var userid = connection.UserID;
-                var pass = connection.Password;
-                var database = connection.InitialCatalog;
 
                 var file = "./RegisAL.rpt";
                 rptDoc.Load(Server.MapPath(file));
@@ -168,7 +153,7 @@ namespace KKHondaReport.RIS
             }
         }
 
-        private void ExportRegisTag(DateTime sdate, DateTime edate, int paymentType)
+        private void ExportRegisTag(string sdate, string edate, int paymentType)
         {
             try
             {
@@ -181,8 +166,8 @@ namespace KKHondaReport.RIS
 
                 TableLogOnInfo L1 = rptDoc.Database.Tables[0].LogOnInfo;
                 GetLoginfo(L1);
-                var s = sdate != null ? sdate.ToString("yyyy-MM-dd") : "";
-                var e = edate != null ? edate.ToString("yyyy-MM-dd") : "";
+                var s = sdate != "" ? DateTime.Parse(sdate).ToString("yyyy-MM-dd") : "";
+                var e = edate != "" ? DateTime.Parse(edate).ToString("yyyy-MM-dd") : "";
                 rptDoc.SetParameterValue("@start_sell_date", s);
                 rptDoc.SetParameterValue("@end_sell_date", e);
                 rptDoc.SetParameterValue("@paymentType", paymentType);
@@ -202,11 +187,6 @@ namespace KKHondaReport.RIS
             {
                 //RIS/index.aspx?sDate=2019-09-11&eDate=2019-09-12&formRegisVehicleTax=true
                 rptDoc = new ReportDocument();
-                SqlConnectionStringBuilder connection = new SqlConnectionStringBuilder(conStr);
-                var server = connection.DataSource;
-                var userid = connection.UserID;
-                var pass = connection.Password;
-                var database = connection.InitialCatalog;
 
                 var file = "./RegisVihecleTax.rpt";
                 rptDoc.Load(Server.MapPath(file));
