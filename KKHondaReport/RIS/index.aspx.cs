@@ -174,11 +174,6 @@ namespace KKHondaReport.RIS
             {
                 //RIS/index.aspx?sDate=2019-09-11&eDate=2019-09-12&formRegisTag=true
                 rptDoc = new ReportDocument();
-                SqlConnectionStringBuilder connection = new SqlConnectionStringBuilder(conStr);
-                var server = connection.DataSource;
-                var userid = connection.UserID;
-                var pass = connection.Password;
-                var database = connection.InitialCatalog;
 
                 var file = "./RegisTag.rpt";
                 rptDoc.Load(Server.MapPath(file));
@@ -186,8 +181,10 @@ namespace KKHondaReport.RIS
 
                 TableLogOnInfo L1 = rptDoc.Database.Tables[0].LogOnInfo;
                 GetLoginfo(L1);
-                rptDoc.SetParameterValue("@start_sell_date", sdate.ToString("yyyy-MM-dd"));
-                rptDoc.SetParameterValue("@end_sell_date", edate.ToString("yyyy-MM-dd"));
+                var s = sdate != null ? sdate.ToString("yyyy-MM-dd") : "";
+                var e = edate != null ? edate.ToString("yyyy-MM-dd") : "";
+                rptDoc.SetParameterValue("@start_sell_date", s);
+                rptDoc.SetParameterValue("@end_sell_date", e);
                 rptDoc.SetParameterValue("@paymentType", paymentType);
                 rptDoc.Database.Tables[0].ApplyLogOnInfo(L1);
 
