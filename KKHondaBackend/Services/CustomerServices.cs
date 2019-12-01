@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using KKHondaBackend.Data;
 using KKHondaBackend.Models;
@@ -76,20 +77,22 @@ namespace KKHondaBackend.Services
     public async Task<IEnumerable<Dropdown>> GetDropdownByKey(string term)
     {
       List<Dropdown> customerDropdowns = new List<Dropdown>();
-
+      var fullName = new StringBuilder();
       customerDropdowns = await ctx.MCustomer
                              .Where(o => o.CustomerCode.Contains(term) ||
-                             string.Concat(o.CustomerPrename, o.CustomerName, " ", o.CustomerSurname).Contains(term)
+                             ($"{o.CustomerPrename}{o.CustomerName} {o.CustomerSurname}").Contains(term)
                              ).Select(o => new Dropdown
                              {
                                Value = o.CustomerCode,
-                               Text = string.Concat(o.CustomerPrename, o.CustomerName, " ", o.CustomerSurname)
+                               Text = $"{o.CustomerPrename}{o.CustomerName} {o.CustomerSurname}"
                              })
                              .Take(50)
                              .ToListAsync();
 
       return customerDropdowns;
     }
+
+    // private stringBuilder()
 
     public async Task<IEnumerable<Dropdown>> GetDropdowns()
     {

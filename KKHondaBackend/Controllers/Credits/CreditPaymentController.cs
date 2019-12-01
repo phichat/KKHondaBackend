@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using KKHondaBackend.Data;
 using KKHondaBackend.Models;
@@ -291,13 +289,13 @@ namespace KKHondaBackend.Controllers.Credits
 
                         // กรณีที่มีค่าปรับ ระบบจะหักให้อัตโนมัติ
                         // โดยจะต้องชำระค่าปรับก่อนค่างวดเสมอ
-                        if (Item.FineSum > 0)
-                        {
-                            Item.FineSumRemain = 0;
-                            Item.FineSumStatus = 11;
-                        }
+                        // if (Item.FineSum > 0)
+                        // {
+                        //     Item.FineSumRemain = 0;
+                        //     Item.FineSumStatus = 11;
+                        // }
 
-                        if (payment.FineSumOther > 0) Item.FineSumOther = payment.FineSumOther;
+                        // if (payment.FineSumOther > 0) Item.FineSumOther = payment.FineSumOther;
 
                         // ถ้า ยอดรับชำระ น้อยกว่า ยอดคงเหลือ
                         // true = ชำระบางส่วน
@@ -323,7 +321,7 @@ namespace KKHondaBackend.Controllers.Credits
                         var PayVatPrice = Item.BalanceVatPrice - (_PayNetPrice - remainNetPriceExVat);
                         var __PayNetPrice = Item.BalanceNetPrice - _PayNetPrice;
 
-                        Item.RevenueStamp = payment.RevenueStamp;
+                        // Item.RevenueStamp = payment.RevenueStamp;
 
                         Item.PayPrice = PayPrice;
                         Item.PayVatPrice = PayVatPrice;
@@ -338,19 +336,19 @@ namespace KKHondaBackend.Controllers.Credits
                         Item.RemainVatPrice = _PayNetPrice - remainNetPriceExVat;
                         Item.RemainNetPrice = _PayNetPrice;
 
-                        Item.Payeer = payment.UpdateBy;
-                        Item.PayDate = payment.PayDate;
-                        Item.PaymentType = payment.PaymentType;
+                        // Item.Payeer = payment.UpdateBy;
+                        // Item.PayDate = payment.PayDate;
+                        // Item.PaymentType = payment.PaymentType;
 
-                        Item.BankCode = payment.BankCode;
-                        Item.TaxInvoiceBranchId = payment.BranchId;
-                        if (Item.TaxInvoiceNo == null) Item.TaxInvoiceNo = TaxInvoiceNo;
-                        if (Item.ReceiptNo == null) Item.ReceiptNo = ReceiptNo;
-                        Item.Remark = payment.Remark;
-                        Item.DocumentRef = payment.DocumentRef;
+                        // Item.BankCode = payment.BankCode;
+                        // Item.TaxInvoiceBranchId = payment.BranchId;
+                        // if (Item.TaxInvoiceNo == null) Item.TaxInvoiceNo = TaxInvoiceNo;
+                        // if (Item.ReceiptNo == null) Item.ReceiptNo = ReceiptNo;
+                        // Item.Remark = payment.Remark;
+                        // Item.DocumentRef = payment.DocumentRef;
 
-                        Item.UpdateBy = payment.UpdateBy;
-                        Item.UpdateDate = DateTime.Now;
+                        // Item.UpdateBy = payment.UpdateBy;
+                        // Item.UpdateDate = DateTime.Now;
 
                         ctx.CreditContractItem.Update(Item);
                         ctx.SaveChanges();
@@ -359,7 +357,7 @@ namespace KKHondaBackend.Controllers.Credits
                         ctx.SaveChanges();
                     });
 
-                    // นำจะนวนรายการชำระครบ
+                    // นับจำนวนรายการชำระครบ
                     var isPay = ctx.CreditContractItem
                             .Where(p =>
                                 p.Status == 11 &&

@@ -22,7 +22,7 @@ namespace KKHondaBackend.Controllers.Credits
         private readonly IBookingServices iBookService;
         private readonly IUserServices iUserService;
         private readonly ICustomerServices iCustService;
-        private readonly IRelationService iRelaService;
+        // private readonly IRelationService iRelaService;
         private readonly IContractGroupService iContGroupService;
         private readonly IContractTypeService iContTypeService;
         private readonly IZoneService iZoneService;
@@ -35,7 +35,7 @@ namespace KKHondaBackend.Controllers.Credits
             IBookingServices ibookService,
             IUserServices iuserService,
             ICustomerServices icustService,
-            IRelationService irelaService,
+            // IRelationService irelaService,
             IContractGroupService icontGroupService,
             IContractTypeService iconTypeService,
             IZoneService izoneService,
@@ -48,7 +48,7 @@ namespace KKHondaBackend.Controllers.Credits
             iBookService = ibookService;
             iUserService = iuserService;
             iCustService = icustService;
-            iRelaService = irelaService;
+            // iRelaService = irelaService;
             iContGroupService = icontGroupService;
             iContTypeService = iconTypeService;
             iZoneService = izoneService;
@@ -220,37 +220,37 @@ namespace KKHondaBackend.Controllers.Credits
 
                 var userDropdown = iUserService.GetDropdowns();
 
-                var customerDropdown = await iCustService.GetDropdowns();
+                // var customerDropdown = await iCustService.GetDropdowns();
 
-                var contractMateDropdown = customerDropdown;
-                if (cont.ContractMate != null)
-                {
-                    var mateDd = await iCustService.GetDropdownByKey(cont.ContractMate);
-                    contractMateDropdown = contractMateDropdown.Concat(mateDd).ToArray();
-                }
+                // var contractMateDropdown = customerDropdown;
+                // if (cont.ContractMate != null)
+                // {
+                //     var mateDd = await iCustService.GetDropdownByKey(cont.ContractMate);
+                //     contractMateDropdown = contractMateDropdown.Concat(mateDd).ToArray();
+                // }
 
-                var contractHireDropdown = customerDropdown;
-                if (cont.ContractHire != null)
-                {
-                    var userDd = await iCustService.GetDropdownByKey(cont.ContractHire);
-                    contractHireDropdown = contractHireDropdown.Concat(userDd).ToArray();
-                }
+                // var contractHireDropdown = customerDropdown;
+                // if (cont.ContractHire != null)
+                // {
+                //     var userDd = await iCustService.GetDropdownByKey(cont.ContractHire);
+                //     contractHireDropdown = contractHireDropdown.Concat(userDd).ToArray();
+                // }
 
-                var contractGurantor1Dropdown = customerDropdown;
-                if (cont.ContractGurantor1 != null)
-                {
-                    var gurantorDd = await iCustService.GetDropdownByKey(cont.ContractGurantor1);
-                    contractGurantor1Dropdown = contractGurantor1Dropdown.Concat(gurantorDd).ToArray();
-                }
+                // var contractGurantor1Dropdown = customerDropdown;
+                // if (cont.ContractGurantor1 != null)
+                // {
+                //     var gurantorDd = await iCustService.GetDropdownByKey(cont.ContractGurantor1);
+                //     contractGurantor1Dropdown = contractGurantor1Dropdown.Concat(gurantorDd).ToArray();
+                // }
 
-                var contractGurantor2Dropdown = customerDropdown;
-                if (cont.ContractGurantor2 != null)
-                {
-                    var gurantorDd = await iCustService.GetDropdownByKey(cont.ContractGurantor2);
-                    contractGurantor2Dropdown = contractGurantor2Dropdown.Concat(gurantorDd).ToArray();
-                }
+                // var contractGurantor2Dropdown = customerDropdown;
+                // if (cont.ContractGurantor2 != null)
+                // {
+                //     var gurantorDd = await iCustService.GetDropdownByKey(cont.ContractGurantor2);
+                //     contractGurantor2Dropdown = contractGurantor2Dropdown.Concat(gurantorDd).ToArray();
+                // }
 
-                var relationDropdown = iRelaService.GetDropdowns();
+                // var relationDropdown = iRelaService.GetDropdowns();
 
                 var contractGroupDropdown = iContGroupService.GetDropdowns();
 
@@ -260,7 +260,7 @@ namespace KKHondaBackend.Controllers.Credits
 
                 var branchDropdown = iBranchService.GetDropdowns();
 
-                var statusDropdown = iStatusService.GetDropdownCredit();
+                var statusDropdown = iStatusService.GetDropdown();
 
                 var obj = new Dictionary<string, object>
                 {
@@ -271,11 +271,11 @@ namespace KKHondaBackend.Controllers.Credits
                     {"booking", booking},
                     {"statusDropdown", statusDropdown},
                     {"userDropdown", userDropdown},
-                    {"contractMateDropdown", contractMateDropdown},
-                    {"contractHireDropdown", contractHireDropdown},
-                    {"contractGurantor1Dropdown", contractGurantor1Dropdown},
-                    {"contractGurantor2Dropdown", contractGurantor2Dropdown},
-                    {"relationDropdown", relationDropdown},
+                    // {"contractMateDropdown", contractMateDropdown},
+                    // {"contractHireDropdown", contractHireDropdown},
+                    // {"contractGurantor1Dropdown", contractGurantor1Dropdown},
+                    // {"contractGurantor2Dropdown", contractGurantor2Dropdown},
+                    // {"relationDropdown", relationDropdown},
                     {"contractGroupDropdown", contractGroupDropdown},
                     {"contractTypeDropdown", contractTypeDropdown},
                     {"zoneDropdown", zoneDropdown},
@@ -332,11 +332,11 @@ namespace KKHondaBackend.Controllers.Credits
                               join _gurantor2 in ctx.MCustomer on db.ContractGurantor2 equals _gurantor2.CustomerCode into a11
                               from gurantor2 in a11.DefaultIfEmpty()
 
-                              join _relation1 in ctx.MRelation on db.GurantorRelation1 equals _relation1.Id into a12
-                              from relation1 in a12.DefaultIfEmpty()
-
-                              join _relation2 in ctx.MRelation on db.GurantorRelation2 equals _relation2.Id into a13
-                              from relation2 in a13.DefaultIfEmpty()
+                            //   join _relation1 in ctx.MRelation on db.GurantorRelation1 equals _relation1.Id into a12
+                            //   from relation1 in a12.DefaultIfEmpty()
+                            
+                            //   join _relation2 in ctx.MRelation on db.GurantorRelation2 equals _relation2.Id into a13
+                            //   from relation2 in a13.DefaultIfEmpty()
 
                               join _created in ctx.User on db.CreatedBy equals _created.Id into a14
                               from created in a14.DefaultIfEmpty()
@@ -365,9 +365,9 @@ namespace KKHondaBackend.Controllers.Credits
                                   ContractMate = $"{contractMate.CustomerPrename}{contractMate.CustomerName} {contractMate.CustomerSurname}",
                                   ContractBooking = $"{contractBooking.CustomerPrename}{contractBooking.CustomerName} {contractBooking.CustomerSurname}",
                                   ContractGurantor1 = $"{gurantor1.CustomerPrename}{gurantor1.CustomerName} {gurantor1.CustomerSurname}",
-                                  GurantorRelation1 = relation1.RelationDesc,
+                                  GurantorRelation1 = db.GurantorRelation1,
                                   ContractGurantor2 = $"{gurantor2.CustomerPrename}{gurantor2.CustomerName} {gurantor2.CustomerSurname}",
-                                  GurantorRelation2 = relation2.RelationDesc,
+                                  GurantorRelation2 = db.GurantorRelation2,
                                   CreatedBy = created.FullName,
                                   CheckedBy = checkedBy.FullName,
                                   ApprovedBy = approve.FullName,

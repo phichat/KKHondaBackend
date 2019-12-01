@@ -1050,88 +1050,35 @@ namespace KKHondaBackend.Data
                 entity.HasKey(e => e.ContractId);
 
                 entity.ToTable("credit_contract");
-
                 entity.Property(e => e.ContractId).HasColumnName("contract_id");
-
                 entity.Property(e => e.ApprovedBy).HasColumnName("approved_by");
-
                 entity.Property(e => e.AreaPayment).HasColumnName("area_payment");
-
                 entity.Property(e => e.BookingId).HasColumnName("booking_id");
-
                 entity.Property(e => e.BranchId).HasColumnName("branch_id");
-
                 entity.Property(e => e.CalculateId).HasColumnName("calculate_id");
-
                 entity.Property(e => e.CheckedBy).HasColumnName("checked_by");
-
-                entity.Property(e => e.ContractDate)
-                                    .HasColumnName("contract_date")
-                                    .HasColumnType("datetime");
-
-                entity.Property(e => e.ContractGroup)
-                    .HasColumnName("contract_group")
-                    .HasMaxLength(50);
-
-                entity.Property(e => e.ContractGurantor1)
-                                    .HasColumnName("contract_gurantor1")
-                                    .HasMaxLength(50);
-
-                entity.Property(e => e.ContractGurantor2)
-                                    .HasColumnName("contract_gurantor2")
-                                    .HasMaxLength(50);
-
-                entity.Property(e => e.ContractHire)
-                                    .HasColumnName("contract_hire")
-                                    .HasMaxLength(50);
-
-                entity.Property(e => e.ContractMate)
-                                    .HasColumnName("contract_mate")
-                                    .HasMaxLength(50);
-
-                entity.Property(e => e.ContractNo)
-                                    .HasColumnName("contract_no")
-                                    .HasMaxLength(50);
-
+                entity.Property(e => e.ContractDate).HasColumnName("contract_date").HasColumnType("datetime");
+                entity.Property(e => e.ContractGroup).HasColumnName("contract_group").HasMaxLength(50);
+                entity.Property(e => e.ContractGurantor1).HasColumnName("contract_gurantor1").HasMaxLength(50);
+                entity.Property(e => e.ContractGurantor2).HasColumnName("contract_gurantor2").HasMaxLength(50);
+                entity.Property(e => e.ContractHire).HasColumnName("contract_hire").HasMaxLength(50);
+                entity.Property(e => e.ContractMate).HasColumnName("contract_mate").HasMaxLength(50);
+                entity.Property(e => e.ContractNo).HasColumnName("contract_no").HasMaxLength(50);
                 entity.Property(e => e.ContractPoint).HasColumnName("contract_point");
-
                 entity.Property(e => e.ContractStatus).HasColumnName("contract_status");
-
-                entity.Property(e => e.ContractType)
-                    .HasColumnName("contract_type")
-                    .HasMaxLength(50);
-
-                entity.Property(e => e.ContractBooking)
-                                    .HasColumnName("contract_booking")
-                                    .HasMaxLength(50);
-
+                entity.Property(e => e.ContractType).HasColumnName("contract_type").HasMaxLength(50);
+                entity.Property(e => e.ContractBooking).HasColumnName("contract_booking").HasMaxLength(50);
                 entity.Property(e => e.CreateBy).HasColumnName("create_by");
-
-                entity.Property(e => e.CreateDate)
-                                    .HasColumnName("create_date")
-                                    .HasColumnType("datetime");
-
+                entity.Property(e => e.CreateDate).HasColumnName("create_date").HasColumnType("datetime");
                 entity.Property(e => e.CreatedBy).HasColumnName("created_by");
-
-                entity.Property(e => e.GurantorRelation1).HasColumnName("gurantor_relation1");
-
-                entity.Property(e => e.GurantorRelation2).HasColumnName("gurantor_relation2");
-
+                entity.Property(e => e.GurantorRelation1).HasColumnName("gurantor_relation1").HasMaxLength(100);
+                entity.Property(e => e.GurantorRelation2).HasColumnName("gurantor_relation2").HasMaxLength(100);
                 entity.Property(e => e.KeeperBy).HasColumnName("keeper_by");
-
                 entity.Property(e => e.RefNo).HasColumnName("ref_no").HasMaxLength(10);
-
                 entity.Property(e => e.Remark).HasColumnName("remark").HasMaxLength(255);
-
                 entity.Property(e => e.UpdateBy).HasColumnName("update_by");
-
-                entity.Property(e => e.UpdateDate)
-                                    .HasColumnName("update_date")
-                                    .HasColumnType("datetime");
-
-                entity.Property(e => e.EndContractDate)
-                                      .HasColumnName("end_contract_date")
-                                      .HasColumnType("datetime");
+                entity.Property(e => e.UpdateDate).HasColumnName("update_date").HasColumnType("datetime");
+                entity.Property(e => e.EndContractDate).HasColumnName("end_contract_date").HasColumnType("datetime");
             });
 
             modelBuilder.Entity<CreditContractItem>(entity =>
@@ -1354,6 +1301,27 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.PayPrice).HasColumnName("pay_price").HasColumnType("decimal(18, 2)");
                 entity.Property(e => e.PayNetPrice).HasColumnName("pay_net_price").HasColumnType("decimal(18, 2)");
                 entity.Property(e => e.PayVatPrice).HasColumnName("pay_vat_price").HasColumnType("decimal(18, 2)");
+
+                entity.Property(e => e.FineSum).HasColumnName("fine_sum").IsRequired().HasDefaultValue(0);
+                entity.Property(e => e.FineSumOther).HasColumnName("fine_sum_other").IsRequired().HasDefaultValue(0);
+                entity.Property(e => e.RevenueStamp).HasColumnName("revenue_stamp").IsRequired().HasDefaultValue(0);
+                entity.Property(e => e.PaymentName).HasColumnName("payment_name").IsRequired().HasMaxLength(100);
+                entity.Property(e => e.DelayDueDate).HasColumnName("delay_due_date").IsRequired().HasDefaultValue(0);
+                entity.Property(e => e.AccBankId).HasColumnName("acc_bank_id");
+                entity.Property(e => e.Payeer).HasColumnName("payeer").IsRequired();
+                entity.Property(e => e.PaymentType).HasColumnName("payment_type").IsRequired();
+                entity.Property(e => e.DocumentRef).HasColumnName("document_ref").HasMaxLength(255);
+                entity.Property(e => e.PaymentPrice).HasColumnName("payment_price").IsRequired();
+                entity.Property(e => e.DiscountPrice).HasColumnName("discount_price").IsRequired().HasDefaultValue(0);
+                entity.Property(e => e.TotalPaymentPrice).HasColumnName("total_payment_price").IsRequired();
+                entity.Property(e => e.PaymentDate).HasColumnName("payment_date").IsRequired().HasColumnType("datetime");
+                entity.Property(e => e.BranchId).HasColumnName("branch_id").IsRequired();
+                entity.Property(e => e.Remark).HasColumnName("remark").HasMaxLength(255);
+                entity.Property(e => e.Reason).HasColumnName("reason").HasMaxLength(255);
+                entity.Property(e => e.CreateDate).HasColumnName("create_date").IsRequired().HasColumnType("datetime");
+                entity.Property(e => e.CreateBy).HasColumnName("create_by").IsRequired();
+                entity.Property(e => e.UpdateDate).HasColumnName("update_date").HasColumnType("datetime");
+                entity.Property(e => e.UpdateBy).HasColumnName("update_by");
             });
 
             modelBuilder.Entity<CreditTermList>(entity =>
@@ -4025,39 +3993,22 @@ namespace KKHondaBackend.Data
                 entity.HasKey(e => e.ReceiveId);
 
                 entity.ToTable("_stock_receive");
-
-                entity.HasIndex(e => e.BranchId)
-                    .HasName("I_branch_id");
-
-                entity.HasIndex(e => e.ItemId)
-                                    .HasName("I_item_id");
-
-                entity.HasIndex(e => e.LogId)
-                                    .HasName("I_log_id");
-
-                entity.HasIndex(e => e.ReceiveBy)
-                                    .HasName("I_receive_by");
-
-                entity.HasIndex(e => e.WhlId)
-                                    .HasName("I_whl_id");
-
+                entity.HasIndex(e => e.BranchId).HasName("I_branch_id");
+                entity.HasIndex(e => e.ItemId).HasName("I_item_id");
+                entity.HasIndex(e => e.LogId).HasName("I_log_id");
+                entity.HasIndex(e => e.ReceiveBy).HasName("I_receive_by");
+                entity.HasIndex(e => e.WhlId).HasName("I_whl_id");
                 entity.Property(e => e.ReceiveId).HasColumnName("receive_id");
-
                 entity.Property(e => e.BalanceQty).HasColumnName("balance_qty");
-
                 entity.Property(e => e.BranchId).HasColumnName("branch_id");
-
                 entity.Property(e => e.ItemId).HasColumnName("item_id");
-
                 entity.Property(e => e.LogId).HasColumnName("log_id");
-
                 entity.Property(e => e.ReceiveBy).HasColumnName("receive_by");
-
-                entity.Property(e => e.ReceiveDate)
-                                    .HasColumnName("receive_date")
-                                    .HasColumnType("datetime");
-
+                entity.Property(e => e.ReceiveDate).HasColumnName("receive_date").HasColumnType("datetime");
                 entity.Property(e => e.ReceiveQty).HasColumnName("receive_qty");
+                entity.Property(e => e.StockAllocate).HasColumnName("stock_allocate").IsRequired().HasDefaultValue(0);
+                entity.Property(e => e.StockAviable).HasColumnName("stock_variable").IsRequired().HasDefaultValue(0);
+                entity.Property(e => e.StockOnhand).HasColumnName("stock_onhand").IsRequired().HasDefaultValue(0);
 
                 entity.Property(e => e.WhlId).HasColumnName("whl_id");
             });
@@ -4572,101 +4523,39 @@ namespace KKHondaBackend.Data
                 entity.HasKey(e => e.LogId);
 
                 entity.ToTable("_transfer_log");
-
-                entity.HasIndex(e => e.ColorId)
-                    .HasName("I_color_id");
-
-                entity.HasIndex(e => e.CreateBy)
-                                    .HasName("I_create_by");
-
-                entity.HasIndex(e => e.ItemId)
-                                    .HasName("I_item_id");
-
-                entity.HasIndex(e => e.ModelId)
-                                    .HasName("I_model_id");
-
-                entity.HasIndex(e => e.ReceiverId)
-                                    .HasName("I_receiver_id");
-
-                entity.HasIndex(e => e.SenderId)
-                                    .HasName("i_sender_id");
-
-                entity.HasIndex(e => e.UpdateBy)
-                                    .HasName("I_update_by");
-
+                entity.Property(e => e.SellIn).HasColumnName("sell_in");
+                entity.HasIndex(e => e.ColorId).HasName("I_color_id");
+                entity.HasIndex(e => e.CreateBy).HasName("I_create_by");
+                entity.HasIndex(e => e.ItemId).HasName("I_item_id");
+                entity.HasIndex(e => e.ModelId).HasName("I_model_id");
+                entity.HasIndex(e => e.ReceiverId).HasName("I_receiver_id");
+                entity.HasIndex(e => e.SenderId).HasName("i_sender_id");
+                entity.HasIndex(e => e.UpdateBy).HasName("I_update_by");
                 entity.Property(e => e.LogId).HasColumnName("log_id");
-
-                entity.Property(e => e.BQty)
-                                    .HasColumnName("b_qty")
-                                    .HasDefaultValueSql("((0))");
-
+                entity.Property(e => e.BQty).HasColumnName("b_qty").HasDefaultValueSql("((0))");
                 entity.Property(e => e.ColorId).HasColumnName("color_id");
-
                 entity.Property(e => e.CreateBy).HasColumnName("create_by");
-
-                entity.Property(e => e.CreateDate)
-                                    .HasColumnName("create_date")
-                                    .HasColumnType("datetime");
-
-                entity.Property(e => e.DeliveryDate)
-                                    .HasColumnName("delivery_date")
-                                    .HasMaxLength(250);
-
-                entity.Property(e => e.EngineNo)
-                                    .HasColumnName("engine_no")
-                                    .HasMaxLength(250);
-
-                entity.Property(e => e.FrameNo)
-                                    .HasColumnName("frame_no")
-                                    .HasMaxLength(250);
-
-                entity.Property(e => e.InvAmt)
-                                    .HasColumnName("inv_amt")
-                                    .HasColumnType("numeric(18, 0)");
-
+                entity.Property(e => e.CreateDate).HasColumnName("create_date").HasColumnType("datetime");
+                entity.Property(e => e.DeliveryDate).HasColumnName("delivery_date").HasMaxLength(250);
+                entity.Property(e => e.EngineNo).HasColumnName("engine_no").HasMaxLength(250);
+                entity.Property(e => e.FrameNo).HasColumnName("frame_no").HasMaxLength(250);
+                entity.Property(e => e.InvAmt).HasColumnName("inv_amt").HasColumnType("numeric(18, 0)");
                 entity.Property(e => e.ItemId).HasColumnName("item_id");
-
                 entity.Property(e => e.LogItemType).HasColumnName("log_item_type");
-
-                entity.Property(e => e.LogRef)
-                                    .HasColumnName("log_ref")
-                                    .HasMaxLength(250);
-
+                entity.Property(e => e.LogRef).HasColumnName("log_ref").HasMaxLength(250);
                 entity.Property(e => e.LogSecondhand).HasColumnName("log_secondhand");
-
                 entity.Property(e => e.LogStatus).HasColumnName("log_status");
-
                 entity.Property(e => e.LogType).HasColumnName("log_type");
-
                 entity.Property(e => e.ModelId).HasColumnName("model_id");
-
-                entity.Property(e => e.PartCode)
-                                    .HasColumnName("part_code")
-                                    .HasMaxLength(250);
-
+                entity.Property(e => e.PartCode).HasColumnName("part_code").HasMaxLength(250);
                 entity.Property(e => e.Qty).HasColumnName("qty");
-
                 entity.Property(e => e.ReceiverId).HasColumnName("receiver_id");
-
                 entity.Property(e => e.SenderId).HasColumnName("sender_id");
-
-                entity.Property(e => e.TaxNo)
-                                    .HasColumnName("tax_no")
-                                    .HasMaxLength(250);
-
-                entity.Property(e => e.TranferNo)
-                                    .HasColumnName("tranfer_no")
-                                    .HasMaxLength(250);
-
+                entity.Property(e => e.TaxNo).HasColumnName("tax_no").HasMaxLength(250);
+                entity.Property(e => e.TranferNo).HasColumnName("tranfer_no").HasMaxLength(250);
                 entity.Property(e => e.UpdateBy).HasColumnName("update_by");
-
-                entity.Property(e => e.UpdateDate)
-                                    .HasColumnName("update_date")
-                                    .HasColumnType("datetime");
-
-                entity.Property(e => e.VatAmt)
-                                    .HasColumnName("vat_amt")
-                                    .HasColumnType("numeric(18, 0)");
+                entity.Property(e => e.UpdateDate).HasColumnName("update_date").HasColumnType("datetime");
+                entity.Property(e => e.VatAmt).HasColumnName("vat_amt").HasColumnType("numeric(18, 0)");
             });
 
             modelBuilder.Entity<User>(entity =>
