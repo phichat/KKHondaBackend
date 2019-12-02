@@ -4,12 +4,14 @@ namespace KKHondaBackend.Models
   public class CreditTransaction
   {
     public int TransactionId { get; set; }
+    public string ReceiptNo { get; set; }
+    public string TaxInvNo { get; set; }
     public int ContractItemId { get; set; }
     public string Description { get; set; }
-    public decimal? PayPrice { get; set; }
-    public decimal? PayVatPrice { get; set; }
-    public decimal? PayNetPrice { get; set; }
-    
+    public decimal PayPrice { get; set; }
+    public decimal PayVatPrice { get; set; }
+    public decimal PayNetPrice { get; set; }
+ 
     public decimal FineSum { get; set; }
     public decimal FineSumOther { get; set; }
     public decimal RevenueStamp { get; set; }

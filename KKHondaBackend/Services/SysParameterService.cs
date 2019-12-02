@@ -11,8 +11,8 @@ namespace KKHondaBackend.Services
         string GenerateSellNo(int branchId);
         string GenerateVatNo(int branchId);
         string GenerateContractNo(int branchId);
-        string GenerateInstalmentTaxInvoiceNo(int branchId);
-        string GenerateReceiptNo(int branchId);
+        string GenerateHpsTransactionTaxInvNo(int branchId);
+        string GenerateHpsTransactionReceiptNo(int branchId);
         string GeerateeReturnDepositNo(int branchId);
         string GenerateConNo(int branchId);
         string GenerateHistoryCarNo(int branchId);
@@ -53,23 +53,21 @@ namespace KKHondaBackend.Services
             return SetRunningCode("CO", branchId, contractNo);
         }
 
-        public string GenerateInstalmentTaxInvoiceNo(int branchId)
+        public string GenerateHpsTransactionTaxInvNo(int branchId)
         {
-            // ctx.CreditContractPayment
-            var invNo = (from db in ctx.CreditContractItem
-                         orderby db.TaxInvoiceNo descending
-                         where db.TaxInvoiceBranchId == branchId
-                         select db.TaxInvoiceNo).FirstOrDefault();
+            var invNo = (from db in ctx.CreditTransactions
+                         orderby db.TaxInvNo descending
+                         where db.BranchId == branchId
+                         select db.TaxInvNo).FirstOrDefault();
 
             return SetRunningCode("TF", branchId, invNo);
         }
 
-        public string GenerateReceiptNo(int branchId)
+        public string GenerateHpsTransactionReceiptNo(int branchId)
         {
-            // ctx.CreditContractPayment
-            var receiptNo = (from db in ctx.CreditContractItem
+            var receiptNo = (from db in ctx.CreditTransactions
                              orderby db.ReceiptNo descending
-                             where db.TaxInvoiceBranchId == branchId
+                             where db.BranchId == branchId
                              select db.ReceiptNo).FirstOrDefault();
 
             return SetRunningCode("OP", branchId, receiptNo);

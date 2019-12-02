@@ -1128,10 +1128,10 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.GoodsPrice).HasColumnName("goods_price").HasColumnType("decimal(18,4)");
                 entity.Property(e => e.GoodsPriceRemain).HasColumnName("goods_price_remain").HasColumnType("decimal(18,4)");
                 entity.Property(e => e.InstalmentPrice).HasColumnName("instalment_price").HasColumnType("decimal(18,4)");
-                entity.Property(e => e.DelayDueDate).HasColumnName("delay_due_date");
+                entity.Property(e => e.DelayDueDate).HasColumnName("delay_due_date").IsRequired().HasDefaultValue(0);
                 entity.Property(e => e.CheckDueDate).HasColumnName("check_due_date").HasColumnType("datetime");
-                entity.Property(e => e.FineSum).HasColumnName("fine_sum").HasColumnType("decimal(18,4)");
-                entity.Property(e => e.FineSumRemain).HasColumnName("fine_sum_remain").HasColumnType("decimal(18,4)");
+                entity.Property(e => e.FineSum).HasColumnName("fine_sum").HasColumnType("decimal(18,4)").IsRequired().HasDefaultValueSql("0");
+                entity.Property(e => e.FineSumRemain).HasColumnName("fine_sum_remain").HasColumnType("decimal(18,4)").IsRequired().HasDefaultValueSql("0");
                 entity.Property(e => e.FineSumStatus).HasColumnName("fine_sum_status");
                 entity.Property(e => e.FineSumOther).HasColumnName("fine_sum_other").HasColumnType("decimal(18,4)");
                 entity.Property(e => e.Remark).HasColumnName("remark");
@@ -1143,38 +1143,6 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.UpdateBy).HasColumnName("update_by");
                 entity.Property(e => e.UpdateDate).HasColumnName("update_date").HasColumnType("datetime");
                 entity.Property(e => e.RevenueStamp).HasColumnName("revenue_stamp").HasColumnType("decimal(18,4)");
-
-                // entity.Property(e => e.ContractItemId).HasColumnName("contract_item_id");
-                // entity.Property(e => e.Balance).HasColumnName("balance").HasColumnType("decimal(18, 4)");
-                // entity.Property(e => e.BalanceNetPrice).HasColumnName("balance_net_price").HasColumnType("decimal(18, 4)");
-                // entity.Property(e => e.BalanceVatPrice).HasColumnName("balance_vat_price").HasColumnType("decimal(18, 4)");
-                // entity.Property(e => e.ContractBranchId).HasColumnName("contract_branch_id");
-                // entity.Property(e => e.ContractId).HasColumnName("contract_id");
-                // entity.Property(e => e.CreateBy).HasColumnName("create_by");
-                // entity.Property(e => e.CreateDate).HasColumnName("create_date").HasColumnType("datetime");
-                // entity.Property(e => e.DelayDueDate).HasColumnName("delay_due_date");
-                // entity.Property(e => e.CheckDueDate).HasColumnName("check_due_date").HasColumnType("datetime");
-                // entity.Property(e => e.DueDate).HasColumnName("due_date").HasColumnType("datetime");
-                // entity.Property(e => e.FineSum).HasColumnName("fine_sum").HasColumnType("decimal(18, 4)");
-                // entity.Property(e => e.FineSumRemain).HasColumnName("fine_sum_remain").HasColumnType("decimal(18,4)");
-                // entity.Property(e => e.FineSumStatus).HasColumnName("fine_sum_status");
-                // entity.Property(e => e.InstalmentNo).HasColumnName("instalment_no");
-                // entity.Property(e => e.InterestInstalment).HasColumnName("interest_instalment").HasColumnType("decimal(18, 4)");
-                // entity.Property(e => e.RefNo).HasColumnName("ref_no").HasMaxLength(10);
-                // entity.Property(e => e.Remain).HasColumnName("remain").HasColumnType("decimal(18, 4)");
-                // entity.Property(e => e.RemainNetPrice).HasColumnName("remain_net_price").HasColumnType("decimal(18, 4)");
-                // entity.Property(e => e.RemainVatPrice).HasColumnName("remain_vat_price").HasColumnType("decimal(8, 4)");
-                // entity.Property(e => e.Status).HasColumnName("status");
-                // entity.Property(e => e.UpdateBy).HasColumnName("update_by");
-                // entity.Property(e => e.UpdateDate).HasColumnName("update_date").HasColumnType("datetime");
-                // entity.Property(e => e.VatRate).HasColumnName("vat_rate").HasColumnType("decimal(18, 4)");
-                // entity.Property(e => e.Remark).HasColumnName("remark");
-                // entity.Property(e => e.CancelRemark).HasColumnName("cancel_remark");
-                // entity.Property(e => e.InitialPrice).HasColumnName("initial_price").HasColumnType("decimal(18, 4)");
-                // entity.Property(e => e.Principal).HasColumnName("principal").HasColumnType("decimal(18, 4)");
-                // entity.Property(e => e.PrincipalRemain).HasColumnName("principal_remain").HasColumnType("decimal(18, 4)");
-                // entity.Property(e => e.InterestPrincipalRemain).HasColumnName("interest_principal_remain").HasColumnType("decimal(18, 4)");
-                // entity.Property(e => e.DiscountInterest).HasColumnName("discount_interest").HasColumnType("decimal(18, 4)");
             });
 
             modelBuilder.Entity<CreditContractPayment>(entity =>
@@ -1301,11 +1269,12 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.PayPrice).HasColumnName("pay_price").HasColumnType("decimal(18, 2)");
                 entity.Property(e => e.PayNetPrice).HasColumnName("pay_net_price").HasColumnType("decimal(18, 2)");
                 entity.Property(e => e.PayVatPrice).HasColumnName("pay_vat_price").HasColumnType("decimal(18, 2)");
-
+                entity.Property(e => e.ReceiptNo).HasColumnName("receipt_no").HasMaxLength(50);
+                entity.Property(e => e.TaxInvNo).HasColumnName("tax_inv_no").HasMaxLength(50);
                 entity.Property(e => e.FineSum).HasColumnName("fine_sum").IsRequired().HasDefaultValue(0);
                 entity.Property(e => e.FineSumOther).HasColumnName("fine_sum_other").IsRequired().HasDefaultValue(0);
                 entity.Property(e => e.RevenueStamp).HasColumnName("revenue_stamp").IsRequired().HasDefaultValue(0);
-                entity.Property(e => e.PaymentName).HasColumnName("payment_name").IsRequired().HasMaxLength(100);
+                entity.Property(e => e.PaymentName).HasColumnName("payment_name").HasMaxLength(100);
                 entity.Property(e => e.DelayDueDate).HasColumnName("delay_due_date").IsRequired().HasDefaultValue(0);
                 entity.Property(e => e.AccBankId).HasColumnName("acc_bank_id");
                 entity.Property(e => e.Payeer).HasColumnName("payeer").IsRequired();
