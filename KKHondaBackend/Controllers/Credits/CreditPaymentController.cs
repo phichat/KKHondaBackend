@@ -247,10 +247,11 @@ namespace KKHondaBackend.Controllers.Credits
                         where item.ContractId == contractId
                         select new CreditTransactionReceipt
                         {
-                          TransactionId = trans.TransactionId,
                           TaxInvNo = trans.TaxInvNo,
                           ReceiptNo = trans.ReceiptNo
-                        }).ToListAsync();
+                        })
+                        .Distinct()
+                        .ToListAsync();
       return Ok(list);
     }
 

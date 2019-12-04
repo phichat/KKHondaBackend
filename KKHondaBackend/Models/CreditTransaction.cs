@@ -35,7 +35,6 @@ namespace KKHondaBackend.Models
   }
 
   public class CreditTransactionReceipt {
-    public int TransactionId { get; set; }
     public string ReceiptNo { get; set; }
     public string TaxInvNo { get; set; }
 
