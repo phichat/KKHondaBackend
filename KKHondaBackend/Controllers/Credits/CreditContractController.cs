@@ -182,8 +182,12 @@ namespace KKHondaBackend.Controllers.Credits
     }
 
     [HttpGet("GetContractItem")]
-    public IActionResult GetContractItem(int contractId, string refNo) {
-        return Ok(ListContractItems(contractId, refNo));
+    public IActionResult GetContractItem(int contractId) {
+        var contract = ctx.CreditContract
+          .AsNoTracking()
+          .First(x => x.ContractId == contractId);
+
+        return Ok(ListContractItems(contractId, contract.RefNo));
     }
 
     // GET api/values/5

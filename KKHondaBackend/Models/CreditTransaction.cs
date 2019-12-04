@@ -33,4 +33,11 @@ namespace KKHondaBackend.Models
     public DateTime? UpdateDate { get; set; }
     public int UpdateBy { get; set; }
   }
+
+  public class CreditTransactionReceipt {
+    public int TransactionId { get; set; }
+    public string ReceiptNo { get; set; }
+    public string TaxInvNo { get; set; }
+
+  }
 }

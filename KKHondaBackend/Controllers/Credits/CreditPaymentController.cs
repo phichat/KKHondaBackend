@@ -6,6 +6,8 @@ using KKHondaBackend.Data;
 using KKHondaBackend.Models;
 using KKHondaBackend.Services;
 using Microsoft.EntityFrameworkCore;
+using System.Collections;
+using System.Threading.Tasks;
 
 namespace KKHondaBackend.Controllers.Credits
 {
@@ -237,6 +239,20 @@ namespace KKHondaBackend.Controllers.Credits
       return Compare < 0 ? DelayDue * 100 : 0;
     }
 
+    [HttpGet("GetReceiptByContractId")]
+    public async Task<IActionResult> GetReceiptByContractId(int contractId)
+    {
+      var list = await (from trans in ctx.CreditTransactions
+                        join item in ctx.CreditContractItem on trans.ContractItemId equals item.ContractItemId
+                        where item.ContractId == contractId
+                        select new CreditTransactionReceipt
+                        {
+                          TransactionId = trans.TransactionId,
+                          TaxInvNo = trans.TaxInvNo,
+                          ReceiptNo = trans.ReceiptNo
+                        }).ToListAsync();
+      return Ok(list);
+    }
 
     // PUT: api/CreditPayment/5
     [HttpPost("PaymentTerm")]
@@ -261,13 +277,10 @@ namespace KKHondaBackend.Controllers.Credits
           var receiptNo = iSysParamService.GenerateHpsTransactionReceiptNo(payment.BranchId);
           var CreditTransList = new List<CreditTransaction>();
 
-          var instalNo = new List<int>();
-
           _contractItem.ForEach(Item =>
           {
             if (totalPaymentPrice <= 0) return;
 
-            instalNo.Add(Item.InstalmentNo);
             var CreditTransItem = new CreditTransaction
             {
               ReceiptNo = receiptNo,
@@ -304,10 +317,13 @@ namespace KKHondaBackend.Controllers.Credits
                             {
                               ContractItemId = g.Key,
                               PayNetPrice = g.Sum(x => x.PayNetPrice),
-                              FineSum = g.Sum(x => x.FineSum)
+                              FineSum = g.Sum(x => x.FineSum),
+                              Count = g.Count()
                             })
                             .AsNoTracking()
                             .SingleOrDefault();
+
+            int paymentCount = oldTrans != null ? oldTrans.Count + 1 : 1;
 
             if (oldTrans != null)
             {
@@ -315,6 +331,7 @@ namespace KKHondaBackend.Controllers.Credits
               if (Item.FineSumRemain > oldTrans.FineSum && totalPaymentPrice > 0)
               {
                 var fineSum = ((decimal)Item.FineSumRemain - oldTrans.FineSum);
+                Item.FineSumStatus = 11;
                 Item.FineSumRemain -= fineSum;
                 totalPaymentPrice -= fineSum;
                 CreditTransItem.FineSum = fineSum;
@@ -332,6 +349,7 @@ namespace KKHondaBackend.Controllers.Credits
               if (Item.FineSumRemain > 0 && totalPaymentPrice > 0)
               {
                 var fineSum = Item.FineSumRemain;
+                Item.FineSumStatus = 11;
                 Item.FineSumRemain -= fineSum;
                 totalPaymentPrice -= fineSum;
                 CreditTransItem.FineSum = fineSum;
@@ -340,17 +358,11 @@ namespace KKHondaBackend.Controllers.Credits
               Payment(ref totalPaymentPrice, ref CreditTransItem, ref Item, (decimal)Item.PayNetPrice);
             }
 
+            CreditTransItem.Description = Item.InstalmentNo == 0 ? "เงินดาวน์" : $"ค่างวดที่ {Item.InstalmentNo}/{paymentCount}";
             CreditTransList.Add(CreditTransItem);
 
             ctx.CreditContractItem.Update(Item);
             ctx.SaveChanges();
-          });
-
-          int index = instalNo.Count - 1;
-          var firstIndex = instalNo[0] == 0 ? "เงินดาวน์" : $"ค่างวดท่ี {instalNo[0].ToString()}";
-          CreditTransList.ForEach(x =>
-          {
-            x.Description = instalNo.Count > 1 ? $"{firstIndex} - งวดที่ {instalNo[index]}" : firstIndex;
           });
 
           ctx.CreditTransactions.AddRange(CreditTransList);
