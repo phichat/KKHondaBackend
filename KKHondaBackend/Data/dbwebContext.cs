@@ -43,7 +43,8 @@ namespace KKHondaBackend.Data
         public virtual DbSet<CreditContract> CreditContract { get; set; }
         public virtual DbSet<CreditContractItem> CreditContractItem { get; set; }
         public virtual DbSet<CreditContractPayment> CreditContractPayment { get; set; }
-        public virtual DbSet<CreditTransaction> CreditTransactions { get; set; }
+        public virtual DbSet<CreditTransactionD> CreditTransactionD { get; set; }
+        public virtual DbSet<CreditTransactionH> CreditTransactionH { get; set; }
         public virtual DbSet<CreditTermList> CreditTermList { get; set; }
         public virtual DbSet<Cyclecount> Cyclecount { get; set; }
         public virtual DbSet<CyclecountLocationItem> CyclecountLocationItem { get; set; }
@@ -1259,34 +1260,47 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.UpdateDate).HasColumnName("update_date").HasColumnType("datetime");
             });
 
-            modelBuilder.Entity<CreditTransaction>(entity =>
+            modelBuilder.Entity<CreditTransactionD>(entity =>
             {
-                entity.ToTable("credit_trasaction");
-                entity.HasKey(e => e.TransactionId);
-                entity.Property(e => e.TransactionId).HasColumnName("trasaction_id");
-                entity.Property(e => e.ContractItemId).HasColumnName("contract_item_id");
-                entity.Property(e => e.Description).HasColumnName("description").HasMaxLength(255);
-                entity.Property(e => e.PayPrice).HasColumnName("pay_price").HasColumnType("decimal(18, 2)");
-                entity.Property(e => e.PayNetPrice).HasColumnName("pay_net_price").HasColumnType("decimal(18, 2)");
-                entity.Property(e => e.PayVatPrice).HasColumnName("pay_vat_price").HasColumnType("decimal(18, 2)");
-                entity.Property(e => e.ReceiptNo).HasColumnName("receipt_no").HasMaxLength(50);
-                entity.Property(e => e.TaxInvNo).HasColumnName("tax_inv_no").HasMaxLength(50);
+                entity.ToTable("credit_transaction_d");
+                entity.HasKey(e => e.CTD_Id);
+                entity.Property(e => e.CTD_Id).HasColumnName("ctd_id");
+                entity.Property(e => e.CTH_Id).HasColumnName("cth_id").IsRequired();
+                entity.Property(e => e.ContractItemId).HasColumnName("contract_item_id").IsRequired();
+                entity.Property(e => e.Description).HasColumnName("description").HasMaxLength(255).IsRequired();
+                entity.Property(e => e.PayPrice).HasColumnName("pay_price").HasColumnType("decimal(18, 2)").IsRequired();
+                entity.Property(e => e.PayNetPrice).HasColumnName("pay_net_price").HasColumnType("decimal(18, 2)").IsRequired();
+                entity.Property(e => e.PayVatPrice).HasColumnName("pay_vat_price").HasColumnType("decimal(18, 2)").IsRequired();
                 entity.Property(e => e.FineSum).HasColumnName("fine_sum").IsRequired().HasDefaultValue(0);
                 entity.Property(e => e.FineSumOther).HasColumnName("fine_sum_other").IsRequired().HasDefaultValue(0);
                 entity.Property(e => e.RevenueStamp).HasColumnName("revenue_stamp").IsRequired().HasDefaultValue(0);
-                entity.Property(e => e.PaymentName).HasColumnName("payment_name").HasMaxLength(100);
                 entity.Property(e => e.DelayDueDate).HasColumnName("delay_due_date").IsRequired().HasDefaultValue(0);
+            });
+
+            modelBuilder.Entity<CreditTransactionH>(entity => 
+            {
+                entity.ToTable("credit_transaction_h");
+                entity.HasKey(e => e.CTH_Id);
+                entity.Property(e => e.CTH_Id).HasColumnName("cth_id");
+                entity.Property(e => e.ContractId).HasColumnName("contract_id");
+                entity.Property(e => e.ReceiptNo).HasColumnName("receipt_no").HasMaxLength(50);
+                entity.Property(e => e.TaxInvNo).HasColumnName("tax_inv_no").HasMaxLength(50);
+                entity.Property(e => e.PaymentName).HasColumnName("payment_name").HasMaxLength(255);
                 entity.Property(e => e.AccBankId).HasColumnName("acc_bank_id");
                 entity.Property(e => e.Payeer).HasColumnName("payeer").IsRequired();
                 entity.Property(e => e.PaymentType).HasColumnName("payment_type").IsRequired();
-                entity.Property(e => e.DocumentRef).HasColumnName("document_ref").HasMaxLength(255);
-                entity.Property(e => e.PaymentPrice).HasColumnName("payment_price").IsRequired();
-                entity.Property(e => e.DiscountPrice).HasColumnName("discount_price").IsRequired().HasDefaultValue(0);
-                entity.Property(e => e.TotalPaymentPrice).HasColumnName("total_payment_price").IsRequired();
-                entity.Property(e => e.PaymentDate).HasColumnName("payment_date").IsRequired().HasColumnType("datetime");
+                entity.Property(e => e.DocumentRef).HasColumnName("document_ref").HasMaxLength(100);
+                entity.Property(e => e.OutstandingBalance).HasColumnName("outstanding_balance").HasColumnType("decimal(18, 2)").IsRequired().HasDefaultValueSql("0");
+                entity.Property(e => e.CutBalance).HasColumnName("cut_balance").IsRequired().HasColumnType("decimal(18, 2)").HasDefaultValueSql("0");
+                entity.Property(e => e.DiscountInterest).HasColumnName("discount_interest").HasColumnType("decimal(18, 2)").IsRequired().HasDefaultValueSql("0");
+                entity.Property(e => e.PaymentPrice).HasColumnName("payment_price").HasColumnType("decimal(18, 2)").IsRequired().HasDefaultValueSql("0");
+                entity.Property(e => e.DiscountPrice).HasColumnName("discount_price").HasColumnType("decimal(18, 2)").IsRequired().HasDefaultValue(0);
+                entity.Property(e => e.TotalPaymentPrice).HasColumnName("total_payment_price").HasColumnType("decimal(18, 2)").IsRequired();
+                entity.Property(e => e.PaymentDate).HasColumnName("payment_date").IsRequired().HasColumnType("date");
                 entity.Property(e => e.BranchId).HasColumnName("branch_id").IsRequired();
                 entity.Property(e => e.Remark).HasColumnName("remark").HasMaxLength(255);
                 entity.Property(e => e.Reason).HasColumnName("reason").HasMaxLength(255);
+                entity.Property(e => e.Status).HasColumnName("status").IsRequired().HasDefaultValue(11);
                 entity.Property(e => e.CreateDate).HasColumnName("create_date").IsRequired().HasColumnType("datetime");
                 entity.Property(e => e.CreateBy).HasColumnName("create_by").IsRequired();
                 entity.Property(e => e.UpdateDate).HasColumnName("update_date").HasColumnType("datetime");

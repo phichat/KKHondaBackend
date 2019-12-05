@@ -55,7 +55,7 @@ namespace KKHondaBackend.Services
 
         public string GenerateHpsTransactionTaxInvNo(int branchId)
         {
-            var invNo = (from db in ctx.CreditTransactions
+            var invNo = (from db in ctx.CreditTransactionH
                          orderby db.TaxInvNo descending
                          where db.BranchId == branchId
                          select db.TaxInvNo).FirstOrDefault();
@@ -65,7 +65,7 @@ namespace KKHondaBackend.Services
 
         public string GenerateHpsTransactionReceiptNo(int branchId)
         {
-            var receiptNo = (from db in ctx.CreditTransactions
+            var receiptNo = (from db in ctx.CreditTransactionH
                              orderby db.ReceiptNo descending
                              where db.BranchId == branchId
                              select db.ReceiptNo).FirstOrDefault();
