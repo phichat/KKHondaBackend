@@ -71,6 +71,7 @@ namespace KKHondaBackend.Controllers.Credits
                           db.RefNo,
                           db.ContractNo,
                           db.ContractDate,
+                          db.ContractStatus,
                           status.StatusDesc,
                           ContractHire = $"{contrachHire.CustomerPrename}{contrachHire.CustomerName} {contrachHire.CustomerSurname}",
                           SaleName = sale.FullName,
@@ -392,7 +393,6 @@ namespace KKHondaBackend.Controllers.Credits
                       p.Status == 11 &&
                       p.ContractId == contract.ContractId &&
                       p.RefNo == contract.RefNo)
-                  .AsNoTracking()
                   .Count();
 
           // นับจำนวนทั้งหมด
@@ -400,7 +400,6 @@ namespace KKHondaBackend.Controllers.Credits
                   .Where(p =>
                       p.ContractId == contract.ContractId &&
                       p.RefNo == contract.RefNo)
-                  .AsNoTracking()
                   .Count();
 
           if (isPay == totalRec)
