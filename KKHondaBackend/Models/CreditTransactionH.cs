@@ -24,6 +24,7 @@ namespace KKHondaBackend.Models
     public string Reason { get; set; }
     public string Remark { get; set; }
     public int Status { get; set; }
+    public int? ApproveBy { get; set; }
     public DateTime CreateDate { get; set; }
     public int CreateBy { get; set; }
     public DateTime? UpdateDate { get; set; }

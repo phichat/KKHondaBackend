@@ -1301,6 +1301,7 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.Remark).HasColumnName("remark").HasMaxLength(255);
                 entity.Property(e => e.Reason).HasColumnName("reason").HasMaxLength(255);
                 entity.Property(e => e.Status).HasColumnName("status").IsRequired().HasDefaultValue(11);
+                entity.Property(e => e.ApproveBy).HasColumnName("approve_by");
                 entity.Property(e => e.CreateDate).HasColumnName("create_date").IsRequired().HasColumnType("datetime");
                 entity.Property(e => e.CreateBy).HasColumnName("create_by").IsRequired();
                 entity.Property(e => e.UpdateDate).HasColumnName("update_date").HasColumnType("datetime");

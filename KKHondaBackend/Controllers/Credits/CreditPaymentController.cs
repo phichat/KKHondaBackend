@@ -100,32 +100,14 @@ namespace KKHondaBackend.Controllers.Credits
 
         _contractItem.ForEach(x =>
         {
-          var _FineSum = (decimal)CheckFineSum((DateTime)x.DueDate);
-          switch (x.FineSumStatus)
+          var DueDate = (DateTime)x.DueDate;
+          var DelayDue = (int)(DateTime.Now.Date - DueDate).TotalDays;
+          if (DelayDue > 0 && x.Status == 13)
           {
-            case null:
-            case 13: // ยังไม่ชำระ
-              x.FineSum = _FineSum;
-              x.FineSumRemain = _FineSum;
-              x.DelayDueDate = (int)(_FineSum / 100);
-              x.CheckDueDate = (DateTime.Now.Date);
-              break;
-
-            case 12:
-              var _CheckDueDate = (DateTime)x.CheckDueDate;
-              var _Compare = _CheckDueDate.Date.CompareTo(DateTime.Now.Date);
-
-              if (_Compare < 0)
-              {
-                // ถ้า _Compare < 0 แสดงว่าต้องคิดค่าปรับของวันใหม่เพิ่มเข้าไป
-                // โดยที่ นำเอาวันที่ตรวจสอบล่าสุดนำไปเปรียบเที่ยบกับวันปัจจุบัน
-                _FineSum = (decimal)CheckFineSum(_CheckDueDate);
-                x.FineSum = x.FineSum + _FineSum;
-                x.FineSumRemain = x.FineSumRemain + _FineSum;
-                x.DelayDueDate = x.DelayDueDate + (int)(_FineSum / 100);
-                x.CheckDueDate = (DateTime.Now.Date);
-              }
-              break;
+            x.FineSum = 100;
+            x.FineSumRemain = 100;
+            x.DelayDueDate = DelayDue;
+            x.CheckDueDate = (DateTime.Now.Date);
           }
         });
         ctx.CreditContractItem.UpdateRange(_contractItem);
@@ -245,7 +227,7 @@ namespace KKHondaBackend.Controllers.Credits
     public async Task<IActionResult> GetReceiptByContractId(int contractId)
     {
       var list = await (from hd in ctx.CreditTransactionH
-                        where hd.ContractId == contractId
+                        where hd.ContractId == contractId && hd.Status == 11
                         select new CreditTransactionReceipt
                         {
                           TaxInvNo = hd.TaxInvNo,
@@ -302,7 +284,7 @@ namespace KKHondaBackend.Controllers.Credits
             TotalPaymentPrice = payment.TotalPrice,
             PaymentDate = payment.PaymentDate,
             Remark = payment.Remark,
-            Status = 11,
+            Status = payment.CutBalance > 0 ? 25 : 11,
             CreateDate = DateTime.Now,
             CreateBy = payment.Payeer
           };
@@ -328,7 +310,7 @@ namespace KKHondaBackend.Controllers.Credits
              //    1.2 หักค่างวด
              // 2. กรณีที่ไม่มียอดค้างจากรอบบิลก่อน 
              var oldTrans = (from d in ctx.CreditTransactionD
-                             join h in ctx.CreditTransactionH on d.CTH_Id equals h.CTH_Id 
+                             join h in ctx.CreditTransactionH on d.CTH_Id equals h.CTH_Id
                              where d.ContractItemId == Item.ContractItemId && h.Status == 11
                              group d by new { d.ContractItemId } into g
                              select new
@@ -462,62 +444,49 @@ namespace KKHondaBackend.Controllers.Credits
       {
         try
         {
-          var item = ctx.CreditContractItem.SingleOrDefault(_item => _item.ContractItemId == cancel.ContractItemId);
-          if (item == null)
+          var cthd = ctx.CreditTransactionH
+            .Where(e => e.ContractId == cancel.ContractId && e.ReceiptNo == cancel.ReceiptNo && e.Status != 13);
+
+          if (!cthd.Any())
           {
-            return BadRequest();
+            return NotFound();
           }
-          item.Remain = item.Balance;
-          item.RemainVatPrice = item.BalanceVatPrice;
-          item.RemainNetPrice = item.BalanceNetPrice;
-          item.FineSumRemain = item.FineSum;
-          item.FineSumOther = 0;
-          item.FineSumStatus = null;
-          // if (item.FineSumStatus != null) item.FineSumStatus = 13;
-          item.Status = 13;
-          // item.CancelRemark = cancel.CancelRemark;
-          item.UpdateBy = cancel.UpdateBy;
-          item.UpdateDate = DateTime.Now;
+
+          var hd = cthd.Single();
+          hd.Status = 0;
+          hd.Reason = cancel.Reason;
+          hd.UpdateBy = cancel.UpdateBy;
+          hd.UpdateDate = DateTime.Now;
+          hd.ApproveBy = cancel.ApproveBy;
+          ctx.CreditTransactionH.Update(hd);
           ctx.SaveChanges();
 
-          // ลบรายการ transaction การชำระเงินใน งวดนั้น
-          var ctdt = ctx.CreditTransactionD
-            .AsNoTracking()
-            .Where(e => e.ContractItemId == cancel.ContractItemId)
-            .First();
-          var cthd = ctx.CreditTransactionH.Single(e => e.CTH_Id == ctdt.CTH_Id);
-          cthd.Status = 0;
-          cthd.Reason = cancel.Reason;
-          cthd.UpdateBy = cancel.UpdateBy;
-          cthd.UpdateDate = DateTime.Now;
-          ctx.CreditTransactionH.Update(cthd);
+          var ctdt = ctx.CreditTransactionD.Where(e => e.CTH_Id == hd.CTH_Id);
+
+          var cItem = new List<CreditContractItem>();
+          foreach (var dt in ctdt)
+          {
+            var item = ctx.CreditContractItem.Single(_item => _item.ContractItemId == dt.ContractItemId);
+            item.Remain += dt.PayPrice;
+            item.RemainVatPrice += dt.PayVatPrice;
+            item.RemainNetPrice += dt.PayNetPrice;
+            item.FineSumRemain += dt.FineSum;
+            item.FineSumOther += dt.FineSumOther;
+            item.FineSumStatus = null;
+            item.Status = item.RemainNetPrice < item.PayNetPrice ? 12 : 13;
+            item.UpdateBy = cancel.UpdateBy;
+            item.UpdateDate = DateTime.Now;
+            cItem.Add(item);
+          }
+          ctx.UpdateRange(cItem);
           ctx.SaveChanges();
 
-          // นับจำนวนรายการชำระครบ
-          var isPay = ctx.CreditContractItem
-                  .Where(p =>
-                      p.Status == 11 &&
-                      p.ContractId == item.ContractId &&
-                      p.RefNo == item.RefNo)
-                  .Count();
-
-          // นับจำนวนทั้งหมด
-          var totalRec = ctx.CreditContractItem
-                  .Where(p =>
-                      p.ContractId == item.ContractId &&
-                      p.RefNo == item.RefNo)
-                  .Count();
-
-          var ct = ctx.CreditContract.SingleOrDefault(x => x.ContractId == item.ContractId);
-
-          if (isPay < totalRec)
-          {
-            // เปลี่ยนสถานะ อยู่ระหว่างการผ่อนชำระ
-            ct.ContractStatus = 31;
-            ct.EndContractDate = DateTime.Now;
-            ctx.CreditContract.Update(ct);
-            ctx.SaveChanges();
-          }
+          var ct = ctx.CreditContract.SingleOrDefault(x => x.ContractId == cancel.ContractId);
+          // เปลี่ยนสถานะ อยู่ระหว่างการผ่อนชำระ
+          ct.ContractStatus = 31;
+          ct.EndContractDate = DateTime.Now;
+          ctx.CreditContract.Update(ct);
+          ctx.SaveChanges();
 
           transaction.Commit();
 
@@ -533,9 +502,11 @@ namespace KKHondaBackend.Controllers.Credits
 
     public class ICancelPayment
     {
-      public int ContractItemId { get; set; }
+      public int ContractId { get; set; }
+      public string ReceiptNo { get; set; }
       public string Reason { get; set; }
       public int UpdateBy { get; set; }
+      public int ApproveBy { get; set; }
     }
 
     public class ICreditContractItem
