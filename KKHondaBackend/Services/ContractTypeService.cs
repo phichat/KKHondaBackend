@@ -5,6 +5,10 @@ using KKHondaBackend.Data;
 
 namespace KKHondaBackend.Services
 {
+    public interface IContractTypeService
+    {
+        Dropdown[] GetDropdowns();
+    }
     public class ContractTypeService : IContractTypeService
     {
         private readonly dbwebContext ctx;

@@ -7,6 +7,7 @@ using KKHondaBackend.Data;
 using KKHondaBackend.Models;
 using KKHondaBackend.Services;
 using Microsoft.EntityFrameworkCore;
+using System.Data.SqlClient;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -57,121 +58,34 @@ namespace KKHondaBackend.Controllers.Credits
       iStatusService = istatusService;
     }
 
-    [HttpGet("Canceled")]
-    public IActionResult Canceled()
+    [HttpGet("SearchContract")]
+    public async Task<IActionResult> SearchContract(SearchContract form)
     {
-      List<CreditContractList> creditContractLists = GetListContracts();
-      creditContractLists = creditContractLists.Where(o => o.ContractStatus == 27).OrderByDescending(x => x.ContractNo).ToList();
-      return Ok(creditContractLists);
-    }
+      var commandText = @"EXEC SP_SearchContractHPS @BranchId
+        ,@Status
+        ,@ContractNo
+        ,@ContractDate
+        ,@HireName
+        ,@HireIdCard
+        ,@ENo
+        ,@FNo
+        ,@ContractGroup
+        ,@ContractType
+        ,@ContractPoint";
+      var p1 = new SqlParameter("@BranchId", form.BranchId.ToString());
+      var p2 = new SqlParameter("@Status", form.Status != null ? form.Status.ToString() : "");
+      var p3 = new SqlParameter("@ContractNo", form.ContractNo != null ? form.ContractNo : "");
+      var p4 = new SqlParameter("@ContractDate", form.ContractDate != null ? form.ContractDate?.ToString("yyyy-MM-dd") : "");
+      var p5 = new SqlParameter("@HireName", form.HireName != null ? form.HireName : "");
+      var p6 = new SqlParameter("@HireIdCard", form.HireIdCard != null ? form.HireIdCard : "");
+      var p7 = new SqlParameter("@ENo", form.ENo != null ? form.ENo : "");
+      var p8 = new SqlParameter("@FNo", form.FNo != null ? form.FNo : "");
+      var p9 = new SqlParameter("@ContractGroup", form.ContractGroup != null ? form.ContractGroup.ToString() : "");
+      var p10 = new SqlParameter("@ContractType", form.ContractType != null ? form.ContractType.ToString() : "");
+      var p11 = new SqlParameter("@ContractPoint", form.ContractPoint != null ? form.ContractPoint.ToString() : "");
 
-    [HttpGet("Active")]
-    public IActionResult Active()
-    {
-      List<CreditContractList> creditContractLists = GetListContracts();
-      creditContractLists = creditContractLists.Where(o =>
-                                                      o.ContractStatus == 30 ||
-                                                      o.ContractStatus == 31 ||
-                                                      o.ContractStatus == 32).OrderByDescending(x => x.ContractNo).ToList();
-      return Ok(creditContractLists);
-    }
-
-    [HttpGet("CloseContract")]
-    public IActionResult CloseContract()
-    {
-      List<CreditContractList> creditContractLists = GetListContracts();
-      creditContractLists = creditContractLists.Where(o => o.ContractStatus == 29).OrderByDescending(x => x.ContractNo).ToList();
-      return Ok(creditContractLists);
-    }
-
-    [HttpGet("OtherContract")]
-    public IActionResult OtherContract()
-    {
-      List<CreditContractList> creditContractLists = GetListContracts();
-      creditContractLists = creditContractLists.Where(o =>
-                                                      o.ContractStatus != 29 &&
-                                                      o.ContractStatus != 30 &&
-                                                      o.ContractStatus != 31 &&
-                                                      o.ContractStatus != 32).OrderByDescending(x => x.ContractNo).ToList();
-      return Ok(creditContractLists);
-    }
-
-    private List<CreditContractList> GetListContracts()
-    {
-      var contract = (from db in ctx.CreditContract
-
-                      join _branch in ctx.Branch on db.BranchId equals _branch.BranchId into a1
-                      from branch in a1.DefaultIfEmpty()
-
-                      join _contractType in ctx.MContractType on db.ContractType equals _contractType.TypeCode into a2
-                      from contractType in a2.DefaultIfEmpty()
-
-                      join _areaPayment in ctx.Branch on db.AreaPayment equals _areaPayment.BranchId into a3
-                      from areaPayment in a3.DefaultIfEmpty()
-
-                      join _contractGroup in ctx.MContractGroup on db.ContractGroup equals _contractGroup.GroupCode into a4
-                      from contractGroup in a4.DefaultIfEmpty()
-
-                      join _status in ctx.MStatus on db.ContractStatus equals _status.Id into a13
-                      from status in a13.DefaultIfEmpty()
-
-                      join _contractPoint in ctx.Zone on db.ContractPoint equals _contractPoint.ZoneId into a6
-                      from contractPoint in a6.DefaultIfEmpty()
-
-                      join _contrachHire in ctx.MCustomer on db.ContractHire equals _contrachHire.CustomerCode into a7
-                      from contrachHire in a7.DefaultIfEmpty()
-
-                      join _hireCard in ctx.MCustomerCard on db.ContractHire equals _hireCard.CustomerCode into a8
-                      from hireCard in a8.DefaultIfEmpty()
-
-                      join _booking in ctx.Booking on db.BookingId equals _booking.BookingId into a10
-                      from booking in a10.DefaultIfEmpty()
-
-                      join _bookingItem in ctx.BookingItem on db.BookingId equals _bookingItem.BookingId into a9
-                      from bookingItem in a9.DefaultIfEmpty()
-                      where bookingItem.ItemDetailType == 1
-
-                      join bra in ctx.ProductBrand on bookingItem.BrandId equals bra.BrandId into a11
-                      from brand in a11.DefaultIfEmpty()
-
-                      join col in ctx.ProductColor on bookingItem.ColorId equals col.ColorId into a41
-                      from color in a41.DefaultIfEmpty()
-
-                      join mod in ctx.ProductModel on bookingItem.ModelId equals mod.ModelId into a51
-                      from model in a51.DefaultIfEmpty()
-
-                      join _tfLog in ctx.TransferLog on bookingItem.ItemId equals _tfLog.ItemId into a61
-                      from tfLog in a61.DefaultIfEmpty()
-                      where bookingItem.ItemId == tfLog.ItemId &&
-                      bookingItem.LogReceiveId == tfLog.LogId
-
-                      select new CreditContractList
-                      {
-                        ContractId = db.ContractId,
-                        CalculateId = db.CalculateId,
-                        Branch = branch.BranchName,
-                        ContractNo = db.ContractNo,
-                        ContractType = contractType.TypeDesc,
-                        ContractDate = db.ContractDate,
-                        AreaPayment = areaPayment.BranchName,
-                        ContractPoint = contractPoint.ZoneName,
-                        ContractGroup = contractGroup.GroupDesc,
-                        StatusDesc = status.StatusDesc,
-                        ContractStatus = db.ContractStatus,
-                        RefNo = db.RefNo,
-                        BookingPaymentType = booking.BookingPaymentType,
-                        HireFullName = $"{contrachHire.CustomerPrename} {contrachHire.CustomerName} {contrachHire.CustomerSurname}",
-                        HireIdCard = hireCard.CardId,
-                        Brand = brand.BrandName,
-                        Color = color.ColorName,
-                        Model = model.ModelCode,
-                        EngineNo = tfLog.EngineNo,
-                        FrameNo = tfLog.FrameNo,
-                        EndContractDate = db.EndContractDate
-                      }).ToList();
-
-      return contract;
-
+      var reslut = ctx.SpSearchContractHps.FromSql(commandText, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11);
+      return Ok(await reslut.ToListAsync());
     }
 
     private IEnumerable<CreditContractItem> ListContractItems(int contractId, string refNo)
@@ -182,17 +96,18 @@ namespace KKHondaBackend.Controllers.Credits
     }
 
     [HttpGet("GetContractItem")]
-    public IActionResult GetContractItem(int contractId) {
-        var contract = ctx.CreditContract
-          .AsNoTracking()
-          .First(x => x.ContractId == contractId);
+    public IActionResult GetContractItem(int contractId)
+    {
+      var contract = ctx.CreditContract
+        .AsNoTracking()
+        .First(x => x.ContractId == contractId);
 
-        return Ok(ListContractItems(contractId, contract.RefNo));
+      return Ok(ListContractItems(contractId, contract.RefNo));
     }
 
     // GET api/values/5
     [HttpGet("GetById")]
-    public async Task<IActionResult> Get(int id)
+    public IActionResult Get(int id)
     {
       try
       {
@@ -642,42 +557,7 @@ namespace KKHondaBackend.Controllers.Credits
       public int UpdateBy { get; set; }
     }
 
-    public class CreditContractList
-    {
-      public int ContractId { get; set; }
-      public int CalculateId { get; set; }
-      public string Branch { get; set; }
-      public int? BookingPaymentType { get; set; }
-      public string ContractNo { get; set; }
-      public string ContractType { get; set; }
-      public DateTime? ContractDate { get; set; }
-      public string AreaPayment { get; set; }
-      public string ContractPoint { get; set; }
-      public string ContractGroup { get; set; }
-      public string ContractHire { get; set; }
-      public string ContractBooking { get; set; }
-      public string ContractGurantor1 { get; set; }
-      public string ContractGurantor2 { get; set; }
-      public string CreatedBy { get; set; }
-      public string CheckedBy { get; set; }
-      public string ApprovedBy { get; set; }
-      public string KeeperBy { get; set; }
-      public string StatusDesc { get; set; }
-      public int? ContractStatus { get; set; }
-      public string RefNo { get; set; }
-      public string HireFullName { get; set; }
-      public string HireIdCard { get; set; }
-      public string Brand { get; set; }
-      public string Color { get; set; }
-      public string Model { get; set; }
-      public string EngineNo { get; set; }
-      public string FrameNo { get; set; }
-      public string CreateBy { get; set; }
-      public DateTime CreateDate { get; set; }
-      public string UpdateBy { get; set; }
-      public DateTime? UpdateDate { get; set; }
-      public DateTime? EndContractDate { get; set; }
-    }
+
 
     public class CreditContractDetail
     {

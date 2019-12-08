@@ -6,28 +6,32 @@ using KKHondaBackend.Models;
 
 namespace KKHondaBackend.Services
 {
-    public class RelationService : IRelationService
+  public interface IRelationService
+  {
+    Dropdown[] GetDropdowns();
+  }
+  public class RelationService : IRelationService
+  {
+    private readonly dbwebContext ctx;
+
+    public RelationService(dbwebContext context)
     {
-        private readonly dbwebContext ctx;
-
-        public RelationService(dbwebContext context)
-        {
-            ctx = context;
-        }
-
-        public Dropdown[] GetDropdowns()
-        {
-            List<Dropdown> relations = new List<Dropdown>();
-
-            relations = (from db in ctx.MRelation
-                         where db.Status == true
-                         select new Dropdown
-                         {
-                             Value = db.Id.ToString(),
-                             Text = db.RelationDesc
-                         }).ToList();
-
-            return relations.ToArray();
-        }
+      ctx = context;
     }
+
+    public Dropdown[] GetDropdowns()
+    {
+      List<Dropdown> relations = new List<Dropdown>();
+
+      relations = (from db in ctx.MRelation
+                   where db.Status == true
+                   select new Dropdown
+                   {
+                     Value = db.Id.ToString(),
+                     Text = db.RelationDesc
+                   }).ToList();
+
+      return relations.ToArray();
+    }
+  }
 }

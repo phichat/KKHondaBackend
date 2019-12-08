@@ -5,40 +5,46 @@ using KKHondaBackend.Data;
 
 namespace KKHondaBackend.Services
 {
-    public class BranchService : IBranchService
+  public interface IBranchService
+  {
+    Dropdown[] GetDropdowns();
+
+    Dropdown GetDropdownById(int id);
+  }
+  public class BranchService : IBranchService
+  {
+    private readonly dbwebContext ctx;
+    public BranchService(dbwebContext context)
     {
-        private readonly dbwebContext ctx;
-        public BranchService(dbwebContext context)
-        {
-            ctx = context;
-        }
-
-        public Dropdown[] GetDropdowns()
-        {
-            List<Dropdown> dropdowns = new List<Dropdown>();
-
-            dropdowns = ctx.Branch
-                           .Where(o => o.BranchEnable == 1)
-                           .Select(o => new Dropdown
-                           {
-                               Value = o.BranchId.ToString(),
-                               Text = o.BranchName
-                           }).ToList();
-            return dropdowns.ToArray();
-        }
-
-        public Dropdown GetDropdownById(int id)
-        {
-            Dropdown dropdowns = new Dropdown();
-
-            dropdowns = ctx.Branch
-                           .Where(o => o.BranchId == id)
-                           .Select(o => new Dropdown
-                           {
-                               Value = o.BranchId.ToString(),
-                               Text = o.BranchName
-                           }).SingleOrDefault();
-            return dropdowns;
-        }
+      ctx = context;
     }
+
+    public Dropdown[] GetDropdowns()
+    {
+      List<Dropdown> dropdowns = new List<Dropdown>();
+
+      dropdowns = ctx.Branch
+                     .Where(o => o.BranchEnable == 1)
+                     .Select(o => new Dropdown
+                     {
+                       Value = o.BranchId.ToString(),
+                       Text = o.BranchName
+                     }).ToList();
+      return dropdowns.ToArray();
+    }
+
+    public Dropdown GetDropdownById(int id)
+    {
+      Dropdown dropdowns = new Dropdown();
+
+      dropdowns = ctx.Branch
+                     .Where(o => o.BranchId == id)
+                     .Select(o => new Dropdown
+                     {
+                       Value = o.BranchId.ToString(),
+                       Text = o.BranchName
+                     }).SingleOrDefault();
+      return dropdowns;
+    }
+  }
 }

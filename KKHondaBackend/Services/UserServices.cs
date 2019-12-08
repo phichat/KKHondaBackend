@@ -8,32 +8,36 @@ using KKHondaBackend.Data;
 
 namespace KKHondaBackend.Services
 {
-    // You may need to install the Microsoft.AspNetCore.Http.Abstractions package into your project
-    public class UserServices : IUserServices
+  public interface IUserServices
+  {
+    Dropdown[] GetDropdowns();
+  }
+  // You may need to install the Microsoft.AspNetCore.Http.Abstractions package into your project
+  public class UserServices : IUserServices
+  {
+    private readonly dbwebContext ctx;
+
+    public UserServices(dbwebContext context)
     {
-        private readonly dbwebContext ctx;
-
-        public UserServices(dbwebContext context)
-        {
-            ctx = context;
-        }
-
-        public Dropdown[] GetDropdowns()
-        {
-            Dropdown[] userDropdowns = new Dropdown[] { };
-
-            userDropdowns = (from db in ctx.User
-                        where db.Enable == 1
-                             select new Dropdown
-                        {
-                            Value = db.Id.ToString(),
-                            Text = db.FullName
-                        }).ToArray();
-
-            return userDropdowns.ToArray();
-        }
-
+      ctx = context;
     }
+
+    public Dropdown[] GetDropdowns()
+    {
+      Dropdown[] userDropdowns = new Dropdown[] { };
+
+      userDropdowns = (from db in ctx.User
+                       where db.Enable == 1
+                       select new Dropdown
+                       {
+                         Value = db.Id.ToString(),
+                         Text = db.FullName
+                       }).ToArray();
+
+      return userDropdowns.ToArray();
+    }
+
+  }
 
 
 }
