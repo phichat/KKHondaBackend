@@ -64,6 +64,7 @@ namespace KKHondaBackend.Services
                               TypeDealer = db.TypeDealer,
                               TypeSupplier = db.TypeSupplier,
                               TypeOther = db.TypeOther,
+                              TypeFinance = db.TypeFinance,
                               IdCard = db.IdCard,
                               CreateBy = db.CreateBy,
                               CreateDate = db.CreateDate,
@@ -73,37 +74,37 @@ namespace KKHondaBackend.Services
                               MCustomerCard = card
                             }).SingleOrDefaultAsync();
 
-      if (customer == null)
-      {
-        customer = await ctx.Company.Where(x => x.ComCode == custCode)
-        .Select(x => new MCustomer
-        {
-          CustomerCode = x.ComCode,
-          CustomerName = x.ComName,
-          IdCard = x.TaxId,
-          TypePersonal = x.TypePersonal,
-          CustomerPhone = x.Phone,
-          MCustomerAddress = new List<MCustomerAddress> {
-            new MCustomerAddress { CustomerCode = x.ComCode, Address = x.Address }
-          }
-        }).FirstOrDefaultAsync();
-      }
+      // if (customer == null)
+      // {
+      //   customer = await ctx.Company.Where(x => x.ComCode == custCode)
+      //   .Select(x => new MCustomer
+      //   {
+      //     CustomerCode = x.ComCode,
+      //     CustomerName = x.ComName,
+      //     IdCard = x.TaxId,
+      //     TypePersonal = x.TypePersonal,
+      //     CustomerPhone = x.Phone,
+      //     MCustomerAddress = new List<MCustomerAddress> {
+      //       new MCustomerAddress { CustomerCode = x.ComCode, Address = x.Address }
+      //     }
+      //   }).FirstOrDefaultAsync();
+      // }
 
-      if (customer == null)
-      {
-        customer = await ctx.FinanceCompany.Where(x => x.FicCode == custCode)
-        .Select(x => new MCustomer
-        {
-          CustomerCode = x.FicCode,
-          CustomerName = x.FicName,
-          IdCard = x.TaxId,
-          TypePersonal = x.TypePersonal,
-          CustomerPhone = x.Phone,
-          MCustomerAddress = new List<MCustomerAddress> {
-            new MCustomerAddress { CustomerCode = x.FicCode, Address = x.Address }
-          }
-        }).FirstOrDefaultAsync();
-      }
+      // if (customer == null)
+      // {
+      //   customer = await ctx.FinanceCompany.Where(x => x.FicCode == custCode)
+      //   .Select(x => new MCustomer
+      //   {
+      //     CustomerCode = x.FicCode,
+      //     CustomerName = x.FicName,
+      //     IdCard = x.TaxId,
+      //     TypePersonal = x.TypePersonal,
+      //     CustomerPhone = x.Phone,
+      //     MCustomerAddress = new List<MCustomerAddress> {
+      //       new MCustomerAddress { CustomerCode = x.FicCode, Address = x.Address }
+      //     }
+      //   }).FirstOrDefaultAsync();
+      // }
 
       return customer;
     }
@@ -124,32 +125,6 @@ namespace KKHondaBackend.Services
         Text = $"{o.CustomerPrename}{o.CustomerName} {o.CustomerSurname}"
       })
       .ToListAsync();
-
-      // if (customerDropdowns == null)
-      // {
-      //   customerDropdowns = await ctx.Company
-      //     .Where(o => o.ComCode.Contains(term) || o.ComName.Contains(term))
-      //     .Select(o => new Dropdown
-      //     {
-      //       Value = o.ComCode,
-      //       Text = o.ComName
-      //     })
-      //     .Take(50)
-      //     .ToListAsync();
-      // }
-
-      // if (customerDropdowns == null)
-      // {
-      //   customerDropdowns = await ctx.FinanceCompany
-      //     .Where(o => o.FicCode.Contains(term) || o.FicName.Contains(term))
-      //     .Select(o => new Dropdown
-      //     {
-      //       Value = o.FicCode,
-      //       Text = o.FicName
-      //     })
-      //     .Take(50)
-      //     .ToListAsync();
-      // }
 
       return customerDropdowns;
     }

@@ -1775,29 +1775,14 @@ namespace KKHondaBackend.Data
                                   .HasColumnName("nationality")
                                   .HasMaxLength(50);
 
-        entity.Property(e => e.Occupation)
-                                  .HasColumnName("occupation")
-                                  .HasMaxLength(150);
+        entity.Property(e => e.Occupation).HasColumnName("occupation").HasMaxLength(150);
 
-        entity.Property(e => e.TypeCorporate)
-                                  .HasColumnName("type_corporate")
-                                  .HasMaxLength(50);
-
-        entity.Property(e => e.TypeDealer)
-                                  .HasColumnName("type_dealer")
-                                  .HasMaxLength(50);
-
-        entity.Property(e => e.TypeOther)
-                                  .HasColumnName("type_other")
-                                  .HasMaxLength(50);
-
-        entity.Property(e => e.TypePersonal)
-                                  .HasColumnName("type_personal")
-                                  .HasMaxLength(50);
-
-        entity.Property(e => e.TypeSupplier)
-                                  .HasColumnName("type_supplier")
-                                  .HasMaxLength(50);
+        entity.Property(e => e.TypeCorporate).HasColumnName("type_corporate").HasColumnType("bit");
+        entity.Property(e => e.TypeDealer).HasColumnName("type_dealer").HasColumnType("bit");
+        entity.Property(e => e.TypeOther).HasColumnName("type_other").HasColumnType("bit");
+        entity.Property(e => e.TypePersonal).HasColumnName("type_personal").HasColumnType("bit");
+        entity.Property(e => e.TypeSupplier).HasColumnName("type_supplier").HasColumnType("bit");
+        entity.Property(e => e.TypeFinance).HasColumnName("type_finance").HasColumnType("bit");
 
         entity.Property(e => e.IdCard).HasColumnName("idcard").HasColumnType("nvarchar(MAX)");
 
