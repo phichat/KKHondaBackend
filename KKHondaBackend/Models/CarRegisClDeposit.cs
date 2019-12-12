@@ -31,40 +31,16 @@ namespace KKHondaBackend.Models
     public string Remark { get; set; }
   }
 
-  public partial class CarRegisClDepositRes
+  public partial class CarRegisClDepositRes : CarRegisClDeposit
   {
-    public int Id { get; set; }
-    public string ListBookingId { get; set; }
-    public string ExpenseTag { get; set; }
     public string ExpenseTagName { get; set; }
-    public string InsuranceCode { get; set; }
     public string InsuranceName { get; set; }
-    public string ReceiptNo { get; set; }
-    public DateTime? ReceiptDate { get; set; }
-    public decimal TotalNetPrice1 { get; set; }
-    public decimal TotalExpense { get; set; }
-    public decimal TotalPrice { get; set; }
-    public int PaymentType { get; set; }
     public string PaymentTypeDesc { get; set; }
-    public decimal PaymentPrice { get; set; }
-    public decimal Discount { get; set; }
-    public decimal TotalPaymentPrice { get; set; }
-    public DateTime? PaymentDate { get; set; }
-    public int? AccBankId { get; set; }
     public string BankName { get; set; }
-    public string DocumentRef { get; set; }
-    public int Status { get; set; }
     public string StatusDesc { get; set; }
-    public int BranchId { get; set; }
     public string BranchName { get; set; }
-    public int CreateBy { get; set; }
     public string CreateName { get; set; }
-    public DateTime CreateDate { get; set; }
-    public int? UpdateBy { get; set; }
     public string UpdateName { get; set; }
-    public DateTime? UpdateDate { get; set; }
-    public string Reason { get; set; }
-    public string Remark { get; set; }
   }
   public partial class CarRegisClDepositFormBody
   {

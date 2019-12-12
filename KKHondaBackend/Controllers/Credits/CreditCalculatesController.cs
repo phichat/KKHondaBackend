@@ -112,7 +112,6 @@ namespace KKHondaBackend.Controllers.Credits
 
       try
       {
-
         var bookItem = _context.BookingItem.SingleOrDefault(p => p.BookingId == bookingId && p.ItemDetailType == 1);
         var model = _context.ProductModel.SingleOrDefault(p => p.ModelId == bookItem.ModelId);
         var stockReceive = (from stock in _context.StockReceive

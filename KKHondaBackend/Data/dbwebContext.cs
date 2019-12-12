@@ -52,6 +52,7 @@ namespace KKHondaBackend.Data
     public virtual DbSet<CyclecountScan> CyclecountScan { get; set; }
     public virtual DbSet<ExpensesOtherRis> ExpensesOtherRis { get; set; }
     public virtual DbSet<ExpensesTypeOtherRis> ExpensesTypeOtherRis { get; set; }
+    public virtual DbSet<FinanceCompany> FinanceCompany { get; set; }
     public virtual DbSet<FinanceComList> FinanceComList { get; set; }
     public virtual DbSet<FinanceIntList> FinanceIntList { get; set; }
     public virtual DbSet<FinanceList> FinanceList { get; set; }
@@ -217,6 +218,7 @@ namespace KKHondaBackend.Data
         entity.Property(e => e.CancelRemark).HasColumnName("cancel_remark");
         entity.Property(e => e.CreateBy).HasColumnName("create_by");
         entity.Property(e => e.CreateDate).HasColumnName("create_date").HasColumnType("datetime");
+        entity.Property(e => e.CusSellCode).HasColumnName("cus_sell_code").HasMaxLength(50);
         entity.Property(e => e.CusSellName).HasColumnName("cus_sell_name");
         entity.Property(e => e.CusTaxBranch).HasColumnName("cus_tax_branch");
         entity.Property(e => e.CusTaxNo).HasColumnName("cus_tax_no");
@@ -527,10 +529,10 @@ namespace KKHondaBackend.Data
         entity.Property(e => e.WarExpire).HasColumnName("war_expire").HasColumnType("datetime");
         entity.Property(e => e.OwnerCode).HasColumnName("owner_code").HasMaxLength(50);
         entity.Property(e => e.VisitorCode).HasColumnName("visitor_code").HasMaxLength(50);
-        entity.Property(e => e.CateName).HasColumnName("cate_name").HasMaxLength(50);
-        entity.Property(e => e.BrandName).HasColumnName("brand_name").HasMaxLength(50);
-        entity.Property(e => e.ColorName).HasColumnName("color_name").HasMaxLength(50);
-        entity.Property(e => e.ModelName).HasColumnName("model_name").HasMaxLength(50);
+        entity.Property(e => e.TypeName).HasColumnName("type_name").HasMaxLength(100);
+        entity.Property(e => e.BrandName).HasColumnName("brand_name").HasMaxLength(100);
+        entity.Property(e => e.ColorName).HasColumnName("color_name").HasMaxLength(100);
+        entity.Property(e => e.ModelName).HasColumnName("model_name").HasMaxLength(100);
         entity.Property(e => e.EngineSize).HasColumnName("engine_size").HasMaxLength(50);
 
       });
@@ -830,38 +832,24 @@ namespace KKHondaBackend.Data
 
         entity.ToTable("_company");
 
-        entity.HasIndex(e => e.ComCode)
-                  .HasName("U_com_code")
-                  .IsUnique();
-
-        entity.HasIndex(e => e.CreateBy)
-                                  .HasName("I_create_by");
-
-        entity.HasIndex(e => e.UpdateBy)
-                                  .HasName("I_update_by");
-
+        entity.HasIndex(e => e.ComCode).HasName("U_com_code").IsUnique();
+        entity.HasIndex(e => e.CreateBy).HasName("I_create_by");
+        entity.HasIndex(e => e.UpdateBy).HasName("I_update_by");
         entity.Property(e => e.ComId).HasColumnName("com_id");
-
-        entity.Property(e => e.ComCode)
-                                  .IsRequired()
-                                  .HasColumnName("com_code")
-                                  .HasMaxLength(100);
-
-        entity.Property(e => e.ComName)
-                                  .HasColumnName("com_name")
-                                  .HasMaxLength(250);
-
+        entity.Property(e => e.ComCode).IsRequired().HasColumnName("com_code").HasMaxLength(100);
+        entity.Property(e => e.ComName).HasColumnName("com_name").HasMaxLength(250);
+        entity.Property(e => e.TypePersonal).HasColumnName("type_personal").HasMaxLength(50);
+        entity.Property(e => e.TaxId).HasColumnName("tax_id").HasMaxLength(50);
+        entity.Property(e => e.Phone).HasColumnName("phone").HasMaxLength(50);
+        entity.Property(e => e.Email).HasColumnName("email").HasMaxLength(100);
+        entity.Property(e => e.Address).HasColumnName("address").HasMaxLength(250);
+        entity.Property(e => e.AmphorCode).HasColumnName("amphor_code").HasMaxLength(50);
+        entity.Property(e => e.ProvinceCode).HasColumnName("province_code").HasMaxLength(50);
+        entity.Property(e => e.Zipcode).HasColumnName("zipcode").HasMaxLength(50);
         entity.Property(e => e.CreateBy).HasColumnName("create_by");
-
-        entity.Property(e => e.CreateDate)
-                                  .HasColumnName("create_date")
-                                  .HasColumnType("datetime");
-
+        entity.Property(e => e.CreateDate).HasColumnName("create_date").HasColumnType("datetime");
         entity.Property(e => e.UpdateBy).HasColumnName("update_by");
-
-        entity.Property(e => e.UpdateDate)
-                                  .HasColumnName("update_date")
-                                  .HasColumnType("datetime");
+        entity.Property(e => e.UpdateDate).HasColumnName("update_date").HasColumnType("datetime");
       });
 
       modelBuilder.Entity<CompanyInsurance>(entity =>
@@ -1470,6 +1458,25 @@ namespace KKHondaBackend.Data
         entity.Property(e => e.CreateDate).HasColumnType("datetime").HasColumnName("Create_Date").IsRequired();
         entity.Property(e => e.UpdateBy).HasColumnName("Update_By");
         entity.Property(e => e.UpdateDate).HasColumnType("datetime").HasColumnName("Update_Date");
+      });
+
+      modelBuilder.Entity<FinanceCompany>(entity =>
+      {
+        entity.HasKey(e => e.FicId);
+
+        entity.ToTable("_finance_company");
+
+        entity.Property(e => e.FicId).HasColumnName("fic_id");
+        entity.Property(e => e.FicCode).HasColumnName("fic_code").HasMaxLength(50);
+        entity.Property(e => e.FicName).HasColumnName("fic_name").HasMaxLength(50);
+        entity.Property(e => e.TypePersonal).HasColumnName("type_personal").HasMaxLength(50);
+        entity.Property(e => e.TaxId).HasColumnName("tax_id").HasMaxLength(50);
+        entity.Property(e => e.Phone).HasColumnName("phone").HasMaxLength(50);
+        entity.Property(e => e.Email).HasColumnName("email").HasMaxLength(100);
+        entity.Property(e => e.Address).HasColumnName("address").HasMaxLength(250);
+        entity.Property(e => e.AmphorCode).HasColumnName("amphor_code").HasMaxLength(50);
+        entity.Property(e => e.ProvinceCode).HasColumnName("province_code").HasMaxLength(50);
+        entity.Property(e => e.Zipcode).HasColumnName("zipcode").HasMaxLength(50);
       });
 
       modelBuilder.Entity<FinanceComList>(entity =>

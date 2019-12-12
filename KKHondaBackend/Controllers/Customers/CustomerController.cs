@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace KKHondaBackend.Controllers.Customers
 {
-  [ApiController]
+  // [ApiController]
   [Produces("application/json")]
   [Route("api/Customers/[controller]")]
   public class CustomerController : Controller

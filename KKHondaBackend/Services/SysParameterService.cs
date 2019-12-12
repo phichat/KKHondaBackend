@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 using KKHondaBackend.Data;
+using KKHondaBackend.Models;
 
 namespace KKHondaBackend.Services
 {
@@ -30,6 +31,10 @@ namespace KKHondaBackend.Services
         public SysParameterService(dbwebContext context)
         {
             ctx = context;
+        }
+
+        private Branch branch(int branchId) {
+          return ctx.Branch.Where(x => x.BranchId == branchId).FirstOrDefault();
         }
 
         public string GeerateeReturnDepositNo(int branchId)

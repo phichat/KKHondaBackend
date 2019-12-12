@@ -124,12 +124,13 @@ namespace KKHondaBackend.Controllers.Credits
 
         var __branch = ctx.Branch.SingleOrDefault(x => x.BranchId == 1);
 
-        var __company = ctx.Company.FirstOrDefault(x => x.ComId == 1);
+        var __company = ctx.MCustomer.FirstOrDefault(x => x.CustomerCode == "CRM-01-0000746");
 
         var booking = iBookService.GetBookingById(cont.BookingId);
         booking.CusTaxNo = __branch.BranchRegisterNo;
         booking.CusTaxBranch = __branch.BranchName;
-        booking.CusSellName = __company.ComName;
+        booking.CusSellCode = __company.CustomerCode;
+        booking.CusSellName = __company.CustomerName;
 
         var zoneId = ctx.Branch
             .Where(b => b.BranchId == booking.BranchId)

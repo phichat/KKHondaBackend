@@ -131,10 +131,10 @@ namespace KKHondaBackend.Controllers.Ris
       var list = (await RegisList(tag)).Where(item =>
         (value.Status1 != null && item.Status1 == value.Status1) ||
         (value.Status1 != null && item.Status2 == value.Status2) ||
-        (!string.IsNullOrEmpty(value.BookingNo) && item.BookingNo.Contains(value.BookingNo)) ||
-        (!string.IsNullOrEmpty(value.RevNo) && item.RevNo.IndexOf(value.RevNo) > -1) ||
-        (!string.IsNullOrEmpty(value.ENo) && item.ENo.IndexOf(value.ENo) > -1) ||
-        (!string.IsNullOrEmpty(value.FNo) && item.FNo.IndexOf(value.FNo) > -1)
+        (!string.IsNullOrEmpty(value.BookingNo) && item.BookingNo.ToLower().Contains(value.BookingNo.ToLower())) ||
+        (!string.IsNullOrEmpty(value.RevNo) && item.RevNo.ToLower().IndexOf(value.RevNo.ToLower()) > -1) ||
+        (!string.IsNullOrEmpty(value.ENo) && item.ENo.ToLower().IndexOf(value.ENo.ToLower()) > -1) ||
+        (!string.IsNullOrEmpty(value.FNo) && item.FNo.ToLower().IndexOf(value.FNo.ToLower()) > -1)
       );
 
       return Ok(list);
@@ -351,20 +351,55 @@ namespace KKHondaBackend.Controllers.Ris
     [HttpGet("GetCarBySellNo")]
     public async Task<IActionResult> GetCarBySellNo(string sellNo)
     {
-      var value = await (from bi in ctx.BookingItem
-                         join bk in ctx.Booking on bi.BookingId equals bk.BookingId
-                         join tl in ctx.TransferLog on bi.LogReceiveId equals tl.LogId
-                         where bi.LogReceiveId > 0 && bk.SellNo == sellNo
-                         select new
-                         {
-                           LogReceiveId = bi.LogReceiveId,
-                           ENo = tl.EngineNo,
-                           FNo = tl.FrameNo,
-                           FreeAct = bk.FreeAct,
-                           FreeTag = bk.FreeTag,
-                           FreeWarranty = bk.FreeWarranty
-                         })
-                   .FirstOrDefaultAsync();
+
+      var value = await (
+         from booking in ctx.Booking
+         join item in ctx.BookingItem on booking.BookingId equals item.BookingId
+
+         join com in ctx.Company on booking.CusSellCode equals com.ComCode into _com
+         from company in _com.DefaultIfEmpty()
+
+         join log in ctx.TransferLog on item.LogReceiveId equals log.LogId into _log
+         from tfLog in _log.DefaultIfEmpty()
+
+         join mod in ctx.ProductModel on item.ModelId equals mod.ModelId into _mod
+         from model in _mod.DefaultIfEmpty()
+
+         join col in ctx.ProductColor on item.ColorId equals col.ColorId into _col
+         from color in _col.DefaultIfEmpty()
+
+         join ban in ctx.ProductBrand on item.BrandId equals ban.BrandId into _ban
+         from brand in _ban.DefaultIfEmpty()
+
+         join typ in ctx.ProductType on item.TypeId equals typ.TypeId into _typ
+         from type in _typ.DefaultIfEmpty()
+
+         where item.ItemType == 1 &&
+         item.ItemDetailType == 1 &&
+         item.LogReceiveId > 0 &&
+         booking.SellNo == sellNo
+         select new BookingCarDetail
+         {
+           BookingId = booking.BookingId,
+           BookingPaymentType = (int)booking.BookingPaymentType,
+           OwnerCode = booking.CusSellCode,
+           OwnerName = booking.CusSellName,
+           TypeId = item.TypeId,
+           TypeName = type == null ? "" : type.TypeName,
+           BrandId = item.BrandId,
+           BrandName = brand == null ? "" : brand.BrandName,
+           ModelId = item.ModelId,
+           ModelName = model == null ? "" : model.ModelName,
+           ColorId = item.ColorId,
+           ColorName = color == null ? "" : color.ColorName,
+           EngineNo = tfLog == null ? "" : tfLog.EngineNo,
+           FrameNo = tfLog == null ? "" : tfLog.FrameNo,
+           LogReceiveId = tfLog == null ? default(int) : tfLog.LogId,
+           FreeAct = booking.FreeAct,
+           FreeWarranty = booking.FreeWarranty,
+           FreeTag = booking.FreeTag
+         }
+       ).SingleAsync();
 
       return Ok(value);
     }
