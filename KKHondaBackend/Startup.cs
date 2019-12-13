@@ -75,6 +75,14 @@ namespace KKHondaBackend
             } 
             else
             {
+                app.UseDeveloperExceptionPage();
+                app.UseCors(builder =>
+                {
+                    builder.WithOrigins("http://203.154.126.61/KK-Honda-Web")
+                           .AllowAnyOrigin()
+                           .AllowAnyHeader()
+                           .AllowAnyMethod();
+                });
                 SwaggerEndpoint = "../swagger/v1/swagger.json";
             }
 
