@@ -404,6 +404,7 @@ namespace KKHondaBackend.Controllers.Credits
 
           booking.PaymentPrice = calculate.DepositPrice;
           booking.PaymentType = booking.BookingDepositType;
+          booking.CusSellCode = _booking.CusSellCode;
           booking.CusSellName = _booking.CusSellName;
           booking.CusTaxNo = _booking.CusTaxNo;
           booking.CusTaxBranch = _booking.CusTaxBranch;

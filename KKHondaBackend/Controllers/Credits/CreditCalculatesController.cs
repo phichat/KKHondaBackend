@@ -225,7 +225,7 @@ namespace KKHondaBackend.Controllers.Credits
 
           // ค้นหาและอัพเดท stock ด้วย LogReceiveId(LogIg)
           var tfLog = _context.TransferLog.FirstOrDefault(x => x.LogId == calculate.LogReceiveId);
-          var stockReceive = _context.StockReceive.FirstOrDefault(x => x.ItemId == tfLog.LogId && tfLog.ReceiverId == x.BranchId);
+          var stockReceive = _context.StockReceive.FirstOrDefault(x => x.ItemId == tfLog.ItemId && tfLog.ReceiverId == x.BranchId);
 
           if (tfLog != null)
           {
