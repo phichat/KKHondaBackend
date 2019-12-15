@@ -374,8 +374,7 @@ namespace KKHondaBackend.Controllers.Ris
          join typ in ctx.ProductType on item.TypeId equals typ.TypeId into _typ
          from type in _typ.DefaultIfEmpty()
 
-         where item.ItemType == 1 &&
-         item.ItemDetailType == 1 &&
+         where item.ItemDetailType == 1 &&
          item.LogReceiveId > 0 &&
          booking.SellNo == sellNo
          select new BookingCarDetail
