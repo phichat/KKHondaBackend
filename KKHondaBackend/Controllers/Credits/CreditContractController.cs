@@ -8,6 +8,7 @@ using KKHondaBackend.Models;
 using KKHondaBackend.Services;
 using Microsoft.EntityFrameworkCore;
 using System.Data.SqlClient;
+using KKHondaBackend.Entities;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -122,31 +123,30 @@ namespace KKHondaBackend.Controllers.Credits
 
         var calcu = ctx.CreditCalculate.Where(p => p.CalculateId == cont.CalculateId).SingleOrDefault();
 
-        var __branch = ctx.Branch.SingleOrDefault(x => x.BranchId == 1);
-
-        var __company = ctx.MCustomer.FirstOrDefault(x => x.CustomerCode == "CRM-01-0000746");
-
         var booking = iBookService.GetBookingById(cont.BookingId);
-        booking.CusTaxNo = __branch.BranchRegisterNo;
-        booking.CusTaxBranch = __branch.BranchName;
-        booking.CusSellCode = __company.CustomerCode;
-        booking.CusSellName = __company.CustomerName;
+        if (booking.PaymentType == BookingPaymentType.HierPurchase)
+        {
+          var __branch = ctx.Branch.SingleOrDefault(x => x.BranchId == 1);
 
-        var zoneId = ctx.Branch
-            .Where(b => b.BranchId == booking.BranchId)
-            .Select(b => b.ZoneId)
-            .FirstOrDefault();
+          var __company = ctx.MCustomer.Where(x => x.CustomerCode == "CRM-01-0000746").FirstOrDefault();
+          booking.CusTaxNo = __branch.BranchRegisterNo;
+          booking.CusTaxBranch = __branch.BranchName;
+          booking.CusSellCode = __company.CustomerCode;
+          booking.CusSellName = __company.CustomerName;
 
-        cont.BranchId = cont.BranchId == null ? booking.BranchId : cont.BranchId;
-        cont.AreaPayment = cont.AreaPayment == null ? booking.BranchId : cont.AreaPayment;
-        cont.ContractPoint = cont.ContractPoint == null ? zoneId : cont.ContractPoint;
-        cont.ContractGroup = cont.ContractGroup == null ? __branch.ContractGroupCode : cont.ContractGroup;
-        cont.ContractType = cont.ContractType == null ? __branch.ContractTypeCode : cont.ContractType;
+          var zoneId = ctx.Branch.Where(b => b.BranchId == booking.BranchId).Select(b => b.ZoneId).FirstOrDefault();
 
-        cont.CreatedBy = cont.CreatedBy == null ? booking.CreateBy : cont.CreatedBy;
-        cont.CheckedBy = cont.CheckedBy == null ? booking.CreateBy : cont.CheckedBy;
-        cont.KeeperBy = cont.KeeperBy == null ? booking.CreateBy : cont.KeeperBy;
-        cont.ApprovedBy = cont.ApprovedBy == null ? booking.CreateBy : cont.ApprovedBy;
+          cont.ContractOwner = __company.CustomerCode;
+          cont.BranchId = cont.BranchId == null ? booking.BranchId : cont.BranchId;
+          cont.AreaPayment = cont.AreaPayment == null ? booking.BranchId : cont.AreaPayment;
+          cont.ContractPoint = cont.ContractPoint == null ? zoneId : cont.ContractPoint;
+          cont.ContractGroup = cont.ContractGroup == null ? __branch.ContractGroupCode : cont.ContractGroup;
+          cont.ContractType = cont.ContractType == null ? __branch.ContractTypeCode : cont.ContractType;
+          cont.CreatedBy = cont.CreatedBy == null ? booking.CreateBy : cont.CreatedBy;
+          cont.CheckedBy = cont.CheckedBy == null ? booking.CreateBy : cont.CheckedBy;
+          cont.KeeperBy = cont.KeeperBy == null ? booking.CreateBy : cont.KeeperBy;
+          cont.ApprovedBy = cont.ApprovedBy == null ? booking.CreateBy : cont.ApprovedBy;
+        }
 
         var userDropdown = iUserService.GetDropdowns();
 

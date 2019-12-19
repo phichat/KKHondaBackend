@@ -16,6 +16,7 @@ namespace KKHondaBackend.Models
     public string ContractType { get; set; }
     public string ContractGroup { get; set; }
     public string ContractHire { get; set; }
+    public string ContractOwner { get; set; }
     public string ContractMate { get; set; }
     public string ContractBooking { get; set; }
     public string ContractGurantor1 { get; set; }
@@ -50,6 +51,6 @@ namespace KKHondaBackend.Models
     public int? ContractGroup { get; set; }
     public int? ContractType { get; set; }
     public int? ContractPoint { get; set; }
-    public int BranchId {get;set;}
+    public int BranchId { get; set; }
   }
 }

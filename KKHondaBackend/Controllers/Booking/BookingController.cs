@@ -222,17 +222,17 @@ namespace KKHondaBackend.Controllers.Booking
       return Ok(sellName);
     }
 
-    [HttpGet("GetFinanceNameAutoComplete")]
-    public IActionResult GetFinanceNameAutoComplete()
-    {
-      var FinanceName = (from db in ctx.FinanceList
-                         select new
-                         {
-                           Value = db.FiId,
-                           Text = db.FiName
-                         }).ToList();
+    // [HttpGet("GetFinanceNameAutoComplete")]
+    // public IActionResult GetFinanceNameAutoComplete()
+    // {
+    //   var FinanceName = (from db in ctx.FinanceList
+    //                      select new
+    //                      {
+    //                        Value = db.FiId,
+    //                        Text = db.FiName
+    //                      }).ToList();
 
-      return Ok(FinanceName);
-    }
+    //   return Ok(FinanceName);
+    // }
   }
 }

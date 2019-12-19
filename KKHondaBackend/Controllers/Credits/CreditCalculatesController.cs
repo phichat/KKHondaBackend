@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using KKHondaBackend.Data;
 using KKHondaBackend.Models;
 using KKHondaBackend.Services;
+using KKHondaBackend.Entities;
 
 namespace KKHondaBackend.Controllers.Credits
 {
@@ -186,10 +187,16 @@ namespace KKHondaBackend.Controllers.Credits
           _context.CreditCalculate.Add(calculate);
           _context.SaveChanges();
 
+          var booking = _context.Booking.Where(x => x.BookingId == calculate.BookingId).First();
           // Contract
+          if (booking.BookingPaymentType == BookingPaymentType.HierPurchase)
+          {
+            contract.ContractNo = iSysParamService.GenerateContractNo((int)contract.BranchId);
+          } else {
+            contract.ContractNo = booking.SellNo;
+          }
           contract.CalculateId = calculate.CalculateId;
           contract.RefNo = GenerateReferenceContract(null);
-          contract.ContractNo = iSysParamService.GenerateContractNo((int)contract.BranchId);
           contract.CreateDate = DateTime.Now;
           _context.CreditContract.Add(contract);
           _context.SaveChanges();

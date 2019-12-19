@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using KKHondaBackend.Data;
 using KKHondaBackend.Models;
+using KKHondaBackend.Entities;
 
 namespace KKHondaBackend.Services
 {
@@ -50,8 +51,9 @@ namespace KKHondaBackend.Services
         public string GenerateContractNo(int branchId)
         {
             var contractNo = (from db in ctx.CreditContract
+                              join bk in ctx.Booking on db.BookingId equals bk.BookingId
                               orderby db.ContractNo descending
-                              where db.BranchId == branchId
+                              where db.BranchId == branchId && bk.BookingPaymentType == BookingPaymentType.HierPurchase
                               select db.ContractNo
                              ).FirstOrDefault();
 

@@ -7,7 +7,9 @@ namespace KKHondaBackend.Models
     public int CTH_Id { get; set; }
     public int ContractId { get; set; }
     public string ReceiptNo { get; set; }
+    // public int ReceiptStatus { get; set; }
     public string TaxInvNo { get; set; }
+    // public int TaxInvStatus { get; set; }
     public int? AccBankId { get; set; }
     public int Payeer { get; set; }
     public int PaymentType { get; set; }

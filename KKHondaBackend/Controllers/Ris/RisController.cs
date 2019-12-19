@@ -151,15 +151,17 @@ namespace KKHondaBackend.Controllers.Ris
 
       var list = (from bk in ctx.Booking
                   join bi in ctx.BookingItem on bk.BookingId equals bi.BookingId
+                  join ct in ctx.CreditContract on bk.BookingId equals ct.BookingId
                   join tl in ctx.TransferLog on bi.LogReceiveId equals tl.LogId
                   join u0 in ctx.User on bk.SellBy equals u0.Id into u1
                   from us in u1.DefaultIfEmpty()
 
-                  join f0 in ctx.FinanceList on bk.FiId equals f0.FiId into f1
-                  from fi in f1.DefaultIfEmpty()
+                  // join f0 in ctx.FinanceList on bk.FiId equals f0.FiId into f1
+                  // from fi in f1.DefaultIfEmpty()
 
                   where bi.LogReceiveId > 0 &&
                   bk.BookingStatus == BookingStatus.Sell &&
+                  ct.ContractStatus != 0 &&
                   (!carExcepts.Contains($"{tl.EngineNo}{tl.FrameNo}"))
 
                   select new CarRegisWaitingTagRes
@@ -181,7 +183,7 @@ namespace KKHondaBackend.Controllers.Ris
                     SellDate = bk.SellDate,
                     SellBy = bk.SellBy,
                     SellName = us.FullName,
-                    RegisName = bk.BookingPaymentType == BookingPaymentType.Leasing ? fi.FiName : bk.CusSellName,
+                    RegisName = ct.ContractOwner,
                     ENo = tl.EngineNo,
                     FNo = tl.FrameNo,
                     FiId = bk.FiId

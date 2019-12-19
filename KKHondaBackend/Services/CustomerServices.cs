@@ -13,12 +13,10 @@ namespace KKHondaBackend.Services
   public interface ICustomerServices
   {
     Task<IEnumerable<Dropdown>> GetDropdownByKey(string term);
-
     Task<IEnumerable<Dropdown>> GetDropdowns();
-
     Task<MCustomer> GetCustomerByCode(string custCode);
-
     Task<IEnumerable<Customer>> GetCustomer();
+    IEnumerable<MCustomer> GetLeasing { get; }
   }
 
   public class Customer
@@ -74,38 +72,6 @@ namespace KKHondaBackend.Services
                               MCustomerCard = card
                             }).SingleOrDefaultAsync();
 
-      // if (customer == null)
-      // {
-      //   customer = await ctx.Company.Where(x => x.ComCode == custCode)
-      //   .Select(x => new MCustomer
-      //   {
-      //     CustomerCode = x.ComCode,
-      //     CustomerName = x.ComName,
-      //     IdCard = x.TaxId,
-      //     TypePersonal = x.TypePersonal,
-      //     CustomerPhone = x.Phone,
-      //     MCustomerAddress = new List<MCustomerAddress> {
-      //       new MCustomerAddress { CustomerCode = x.ComCode, Address = x.Address }
-      //     }
-      //   }).FirstOrDefaultAsync();
-      // }
-
-      // if (customer == null)
-      // {
-      //   customer = await ctx.FinanceCompany.Where(x => x.FicCode == custCode)
-      //   .Select(x => new MCustomer
-      //   {
-      //     CustomerCode = x.FicCode,
-      //     CustomerName = x.FicName,
-      //     IdCard = x.TaxId,
-      //     TypePersonal = x.TypePersonal,
-      //     CustomerPhone = x.Phone,
-      //     MCustomerAddress = new List<MCustomerAddress> {
-      //       new MCustomerAddress { CustomerCode = x.FicCode, Address = x.Address }
-      //     }
-      //   }).FirstOrDefaultAsync();
-      // }
-
       return customer;
     }
 
@@ -129,7 +95,6 @@ namespace KKHondaBackend.Services
       return customerDropdowns;
     }
 
-
     public async Task<IEnumerable<Dropdown>> GetDropdowns()
     {
       List<Dropdown> customerDropdowns = new List<Dropdown>();
@@ -144,6 +109,11 @@ namespace KKHondaBackend.Services
                              .ToListAsync();
 
       return customerDropdowns;
+    }
+
+    public IEnumerable<MCustomer> GetLeasing
+    {
+      get => ctx.MCustomer.Where(x => x.TypeFinance == true);
     }
 
     public async Task<IEnumerable<Customer>> GetCustomer()
