@@ -5,7 +5,7 @@ namespace KKHondaBackend.Models
 {
     public class Credit
     {
-        public CreditCalculate creditCalculate { get; set; }
+        public SaleFormBody sale { get; set; }
         public CreditContract creditContract { get; set; }
         public CreditContractItem[] creditContactItem { get; set; }
     }

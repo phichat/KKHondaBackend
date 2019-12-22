@@ -121,7 +121,7 @@ namespace KKHondaBackend.Controllers.Credits
 
         var contItem = ListContractItems(id, cont.RefNo);
 
-        var calcu = ctx.CreditCalculate.Where(p => p.CalculateId == cont.CalculateId).SingleOrDefault();
+        var calcu = ctx.Sale.Where(p => p.SaleId == cont.SaleId).SingleOrDefault();
 
         var booking = iBookService.GetBookingById(cont.BookingId);
         if (booking.PaymentType == BookingPaymentType.HierPurchase)
@@ -165,7 +165,7 @@ namespace KKHondaBackend.Controllers.Credits
                     {"statusDesc", statusDesc},
                     {"creditContract", cont},
                     {"creditContractItem", contItem},
-                    {"creditCalculate", calcu},
+                    {"sale", calcu},
                     {"booking", booking},
                     {"statusDropdown", statusDropdown},
                     {"userDropdown", userDropdown},
@@ -282,7 +282,7 @@ namespace KKHondaBackend.Controllers.Credits
         booking.CusSellName = __company.ComName;
 
 
-        var calculate = ctx.CreditCalculate.Where(p => p.CalculateId == contract.CalculateId).SingleOrDefault();
+        var calculate = ctx.Sale.Where(p => p.SaleId == contract.SaleId).SingleOrDefault();
 
         var statusDropdown = iStatusService.GetDropdown();
         //statusDropdown = statusDropdown.Where(x => x.Value == "27" && x.Value == "33").ToArray();
@@ -303,7 +303,7 @@ namespace KKHondaBackend.Controllers.Credits
 
         var obj = new Dictionary<string, object>
                 {
-                    {"creditCalculate", calculate},
+                    {"Sale", calculate},
                     {"statusDropdown", statusDropdown},
                     {"creditContractDetail", detail},
                     {"booking", booking},
@@ -381,48 +381,6 @@ namespace KKHondaBackend.Controllers.Credits
           ctx.Update(creditContract);
           ctx.SaveChanges();
 
-          // Calculate
-          CreditCalculate calculate = new CreditCalculate();
-          calculate = ctx.CreditCalculate.SingleOrDefault(o => o.CalculateId == creditContract.CalculateId);
-
-          // Booking
-          Models.Booking booking = new Models.Booking();
-          booking = ctx.Booking.SingleOrDefault(b => b.BookingId == creditContract.BookingId);
-          booking.ReturnDepostit = calculate.ReturnDeposit;
-          // กรณีมีการคืนเงินมัดจำ
-          if (calculate.ReturnDeposit == 1)
-          {
-            booking.ReturnDepositPrice = calculate.ReturnDepositPrice;
-            booking.ReturnDepNo = iSysParamService.GeerateeReturnDepositNo((int)creditContract.BranchId);
-            booking.ReturnDepBy = creditContract.CreateBy;
-            booking.ReturnDepDate = DateTime.Now;
-
-          }
-
-          booking.SellDate = DateTime.Now;
-          booking.BookingStatus = 2; // สถานะขาย
-
-          booking.PaymentPrice = calculate.DepositPrice;
-          booking.PaymentType = booking.BookingDepositType;
-          booking.CusSellCode = _booking.CusSellCode;
-          booking.CusSellName = _booking.CusSellName;
-          booking.CusTaxNo = _booking.CusTaxNo;
-          booking.CusTaxBranch = _booking.CusTaxBranch;
-          booking.SellRemark = _booking.SellRemark;
-
-          booking.SellBy = creditContract.CreateBy;
-          booking.LStartDate = calculate.FirstPayment.ToString();
-          booking.LPayDay = calculate.DueDate;
-          booking.LTerm = calculate.InstalmentEnd;
-          booking.LInterest = calculate.Interest;
-          booking.SellNo = iSysParamService.GenerateSellNo((int)creditContract.BranchId);
-          booking.LPriceTerm = calculate.InstalmentPrice;
-          booking.VatNo = iSysParamService.GenerateVatNo((int)creditContract.BranchId);
-          booking.VatDate = DateTime.Now;
-          booking.VatBy = creditContract.CreateBy;
-          ctx.Update(booking);
-          ctx.SaveChanges();
-
           transaction.Commit();
 
           return Ok(creditContract);
@@ -453,8 +411,8 @@ namespace KKHondaBackend.Controllers.Credits
           ctx.SaveChanges();
 
           // Calculate
-          CreditCalculate calculate = new CreditCalculate();
-          calculate = ctx.CreditCalculate.SingleOrDefault(o => o.CalculateId == creditContract.CalculateId);
+          Sale calculate = new Sale();
+          calculate = ctx.Sale.SingleOrDefault(o => o.SaleId == creditContract.SaleId);
 
           // Booking
           Models.Booking booking = new Models.Booking();

@@ -13,15 +13,15 @@ namespace KKHondaBackend.Controllers.Credits
 {
   //   [ApiController]
   [Produces("application/json")]
-  [Route("api/Credit/Calculates")]
-  public class CreditCalculatesController : Controller
+  [Route("api/Credit/[controller]")]
+  public class SaleController : Controller
   {
     private readonly dbwebContext _context;
     private readonly IBookingServices iBookService;
     private readonly ISysParameterService iSysParamService;
     private readonly ICustomerServices iCustomerService;
 
-    public CreditCalculatesController(
+    public SaleController(
         dbwebContext context,
         IBookingServices iBookingService,
         ISysParameterService isysParamService,
@@ -34,24 +34,24 @@ namespace KKHondaBackend.Controllers.Credits
       iCustomerService = icustService;
     }
 
-    // GET: api/CreditCalculates
+    // GET: api/Sale
     [HttpGet]
-    public IEnumerable<CreditCalculate> GetCreditCalculate()
+    public IEnumerable<Sale> GetSale()
     {
-      return _context.CreditCalculate;
+      return _context.Sale;
     }
 
-    // GET: api/CreditCalculates/5
+    // GET: api/Sale/5
     [HttpGet("GetById")]
-    public IActionResult GetCreditCalculate(int calculateId)
+    public IActionResult GetSale(int SaleId)
     {
 
-      var calc = _context.CreditCalculate
-                         .Where(p => p.CalculateId == calculateId)
+      var calc = _context.Sale
+                         .Where(p => p.SaleId == SaleId)
                          .SingleOrDefault();
 
       var cont = _context.CreditContract
-                         .Where(p => p.CalculateId == calculateId)
+                         .Where(p => p.SaleId == SaleId)
                          .SingleOrDefault();
 
       var contItem = _context.CreditContractItem
@@ -63,7 +63,7 @@ namespace KKHondaBackend.Controllers.Credits
 
       var obj = new Dictionary<string, object>
             {
-                {"creditCalculate", calc},
+                {"sale", calc},
                 {"creditContract", cont},
                 {"creditContractItem", contItem},
                 {"booking", book}
@@ -72,21 +72,21 @@ namespace KKHondaBackend.Controllers.Credits
       return Ok(obj);
     }
 
-    // PUT: api/CreditCalculates/5
+    // PUT: api/Sale/5
     [HttpPut("{id}")]
-    public async Task<IActionResult> PutCreditCalculate([FromRoute] int id, [FromBody] CreditCalculate creditCalculate)
+    public async Task<IActionResult> PutSale([FromRoute] int id, [FromBody] Sale Sale)
     {
       if (!ModelState.IsValid)
       {
         return BadRequest(ModelState);
       }
 
-      if (id != creditCalculate.CalculateId)
+      if (id != Sale.SaleId)
       {
         return BadRequest();
       }
 
-      _context.Entry(creditCalculate).State = EntityState.Modified;
+      _context.Entry(Sale).State = EntityState.Modified;
 
       try
       {
@@ -94,7 +94,7 @@ namespace KKHondaBackend.Controllers.Credits
       }
       catch (DbUpdateConcurrencyException)
       {
-        if (!CreditCalculateExists(id))
+        if (!SaleExists(id))
         {
           return NotFound();
         }
@@ -172,30 +172,85 @@ namespace KKHondaBackend.Controllers.Credits
 
       using (var transaction = _context.Database.BeginTransaction())
       {
-        CreditCalculate calculate = new CreditCalculate();
+        Sale calculate = new Sale();
         CreditContract contract = new CreditContract();
         List<CreditContractItem> contractItems = new List<CreditContractItem>();
 
         try
         {
-          calculate = credit.creditCalculate;
+          var reserve = credit.sale;
+          calculate = credit.sale;
           contract = credit.creditContract;
           contractItems = credit.creditContactItem.ToList();
-
-          // Calculate
-          calculate.CreateDate = DateTime.Now;
-          _context.CreditCalculate.Add(calculate);
+          // Booking
+          var booking = _context.Booking.Where(x => x.BookingId == calculate.BookingId).Single();
+          booking.ReturnDepostit = reserve.ReturnDeposit;
+          // กรณีมีการคืนเงินมัดจำ
+          if (reserve.ReturnDeposit == 1)
+          {
+            booking.ReturnDepositPrice = reserve.ReturnDepositPrice;
+            booking.ReturnDepNo = iSysParamService.GeerateeReturnDepositNo((int)contract.BranchId);
+            booking.ReturnDepBy = calculate.SaleBy;
+            booking.ReturnDepDate = DateTime.Now;
+          }
+          booking.BookingStatus = 2; // สถานะขาย
+       
+          // booking.VatNo = iSysParamService.GenerateVatNo((int)creditContract.BranchId);
+          // booking.VatDate = DateTime.Now;
+          // booking.VatBy = creditContract.CreateBy;
+          _context.Update(booking);
           _context.SaveChanges();
 
-          var booking = _context.Booking.Where(x => x.BookingId == calculate.BookingId).First();
+          // Calculate
+          calculate.SellNo = iSysParamService.GenerateSellNo((int)booking.BranchId);
+          calculate.SaleDate = DateTime.Now;
+          if (booking.BookingPaymentType == BookingPaymentType.Leasing && reserve.ComPrice > 0)
+          {
+            calculate.ComNo = iSysParamService.GenerateTaxInvNo((int)booking.BranchId);
+          }
+          _context.Sale.Add(calculate);
+          _context.SaveChanges();
+
           // Contract
           if (booking.BookingPaymentType == BookingPaymentType.HierPurchase)
           {
             contract.ContractNo = iSysParamService.GenerateContractNo((int)contract.BranchId);
-          } else {
-            contract.ContractNo = booking.SellNo;
           }
-          contract.CalculateId = calculate.CalculateId;
+          // else
+          // {
+
+          //   //       booking_status = '2',
+
+          //   // --- เก็บที่ transaction_h
+          //   //       payment_price = payment_price,
+          //   //       payment_type = typePayment,
+          //   //       bank_code = acc_bank_id,
+          //   //       bank_ref_no = document_ref,
+
+          //   // --- เก็บที่ credit_contract
+          //   //       cus_sell_code = contract_hire,
+          //   //       cus_tax_no = owner_tax_no #new,
+          //   //       cus_tax_branch = owner_address,
+
+          //   // --- เก็บที่ credit_calculate 
+          //   //      sell_no = sell_no #new,
+          //   //      sell_remark = remark #new,
+          //   //      sell_date = create_date,
+          //   //      sell_by = create_by,
+          //   //      l_start_date = first_payment,
+          //   //      l_pay_day = due_date,
+          //   //      l_term = instalment_end,
+          //   //      l_interest = interest,
+          //   //      l_price_term = installment_price,
+          //   //      return_depostit = return_depostit,
+          //   //      return_deposit_price = return_deposit_price,
+          //   //      fi_id = fi_id #new,
+          //   //      fiintId = fiint_id #new
+          //   //      fiComId = fi_com_id #new
+          //   //      com_no = com_no #new,
+          //   //      l_com_price = comPrice #new,
+          // }
+          contract.SaleId = calculate.SaleId;
           contract.RefNo = GenerateReferenceContract(null);
           contract.CreateDate = DateTime.Now;
           _context.CreditContract.Add(contract);
@@ -276,21 +331,22 @@ namespace KKHondaBackend.Controllers.Credits
     {
       using (var transaction = _context.Database.BeginTransaction())
       {
-        CreditCalculate calculate = new CreditCalculate();
+        Sale calculate = new Sale();
         CreditContract contract = new CreditContract();
         List<CreditContractItem> contractItems = new List<CreditContractItem>();
         Models.Booking booking = new Models.Booking();
 
         try
         {
-          calculate = credit.creditCalculate;
+          var reserve = credit.sale;
+          calculate = credit.sale;
           contract = credit.creditContract;
           contractItems = credit.creditContactItem.ToList();
           booking = _context.Booking.FirstOrDefault(b => b.BookingId == contract.BookingId);
 
           // Calculate
           calculate.UpdateDate = DateTime.Now;
-          _context.CreditCalculate.Update(calculate);
+          _context.Sale.Update(calculate);
           _context.SaveChanges();
 
           // Contract
@@ -329,17 +385,17 @@ namespace KKHondaBackend.Controllers.Credits
           if (booking.SellDate == null)
             booking.SellDate = DateTime.Now;
 
-          booking.ReturnDepostit = calculate.ReturnDeposit;
+          booking.ReturnDepostit = reserve.ReturnDeposit;
           // กรณีมีการคืนเงินมัดจำ
-          if (calculate.ReturnDeposit == 1 && booking.ReturnDepostit == 0)
+          if (reserve.ReturnDeposit == 1 && booking.ReturnDepostit == 0)
           {
-            booking.ReturnDepositPrice = calculate.ReturnDepositPrice;
+            booking.ReturnDepositPrice = reserve.ReturnDepositPrice;
             booking.ReturnDepNo = iSysParamService.GeerateeReturnDepositNo((int)contract.BranchId);
             booking.ReturnDepBy = contract.CreateBy;
             booking.ReturnDepDate = DateTime.Now;
 
           }
-          else if (calculate.ReturnDeposit == 0)
+          else if (reserve.ReturnDeposit == 0)
           {
             booking.ReturnDepositPrice = 0;
           }
@@ -355,12 +411,12 @@ namespace KKHondaBackend.Controllers.Credits
           booking.LTerm = calculate.InstalmentEnd;
           booking.LInterest = calculate.Interest;
           booking.LPriceTerm = calculate.InstalmentPrice;
-          booking.ReturnDepositPrice = calculate.ReturnDeposit;
+          booking.ReturnDepositPrice = reserve.ReturnDeposit;
 
           // กรณีมีการคืนเงินมัดจำ
-          if (calculate.ReturnDeposit == 1 && booking.ReturnDepostit == 0)
+          if (reserve.ReturnDeposit == 1 && booking.ReturnDepostit == 0)
           {
-            booking.ReturnDepositPrice = calculate.ReturnDepositPrice;
+            booking.ReturnDepositPrice = reserve.ReturnDepositPrice;
             booking.ReturnDepNo = iSysParamService.GeerateeReturnDepositNo((int)contract.BranchId);
             booking.ReturnDepBy = contract.CreateBy;
             booking.ReturnDepDate = DateTime.Now;
@@ -392,13 +448,13 @@ namespace KKHondaBackend.Controllers.Credits
 
       using (var transaction = _context.Database.BeginTransaction())
       {
-        CreditCalculate calculate = new CreditCalculate();
+        Sale calculate = new Sale();
         CreditContract contract = new CreditContract();
         List<CreditContractItem> contractItems = new List<CreditContractItem>();
 
         try
         {
-          calculate = credit.creditCalculate;
+          calculate = credit.sale;
           contract = credit.creditContract;
           contractItems = credit.creditContactItem.ToList();
 
@@ -476,9 +532,9 @@ namespace KKHondaBackend.Controllers.Credits
       }
     }
 
-    private bool CreditCalculateExists(int id)
+    private bool SaleExists(int id)
     {
-      return _context.CreditCalculate.Any(e => e.CalculateId == id);
+      return _context.Sale.Any(e => e.SaleId == id);
     }
 
     public class ModelEngine

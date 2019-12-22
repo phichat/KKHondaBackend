@@ -12,7 +12,7 @@ namespace KKHondaBackend.Controllers.Ris
 {
   // [ApiController]
   [Produces("application/json")]
-  [Route("api/Ris/Cl")]
+  [Route("api/Ris/[controller]")]
   public class ClController : Controller
   {
     private readonly dbwebContext ctx;

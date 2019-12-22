@@ -47,7 +47,7 @@ namespace KKHondaBackend.Controllers.Booking
 
                       select new
                       {
-                        CalculateId = db.CalculateId,
+                        SaleId = db.SaleId,
                         BookingId = db.BookingId,
                         RefNo = db.RefNo,
                         ContractNo = db.ContractNo,

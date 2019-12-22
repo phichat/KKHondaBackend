@@ -13,7 +13,7 @@ namespace KKHondaBackend.Controllers.Credits
 {
   //   [ApiController]
   [Produces("application/json")]
-  [Route("api/Credit/Contract/CreditPayment")]
+  [Route("api/Credit/Contract/[controller]")]
   public class CreditPaymentController : Controller
   {
     private readonly dbwebContext ctx;
@@ -66,7 +66,7 @@ namespace KKHondaBackend.Controllers.Credits
                         select new
                         {
                           ContractId = id,
-                          db.CalculateId,
+                          db.SaleId,
                           db.BookingId,
                           db.RefNo,
                           db.ContractNo,
@@ -82,7 +82,7 @@ namespace KKHondaBackend.Controllers.Credits
           return StatusCode(404);
 
 
-        var calculate = ctx.CreditCalculate.SingleOrDefault(p => p.CalculateId == contract.CalculateId);
+        var calculate = ctx.Sale.SingleOrDefault(p => p.SaleId == contract.SaleId);
 
         if (calculate == null)
           return StatusCode(400);
@@ -249,7 +249,7 @@ namespace KKHondaBackend.Controllers.Credits
         try
         {
           var contract = ctx.CreditContract.FirstOrDefault(p => p.ContractId == payment.ContractId);
-          var calculate = ctx.CreditCalculate.FirstOrDefault(p => p.CalculateId == contract.CalculateId);
+          var calculate = ctx.Sale.FirstOrDefault(p => p.SaleId == contract.SaleId);
           // true ปิดบันชีเช่าซื้อ
           // false ชำระค่างวดปกติ
           var totalPaymentPrice = payment.CutBalance > 0
@@ -261,8 +261,8 @@ namespace KKHondaBackend.Controllers.Credits
                   .OrderBy(x => x.InstalmentNo)
                   .ToList();
 
-          var taxInvoiceNo = iSysParamService.GenerateHpsTransactionTaxInvNo(payment.BranchId);
-          var receiptNo = iSysParamService.GenerateHpsTransactionReceiptNo(payment.BranchId);
+          var taxInvoiceNo = iSysParamService.GenerateTaxInvNo(payment.BranchId);
+          var receiptNo = iSysParamService.GenerateReceiptNo(payment.BranchId);
           var CreditTransDTList = new List<CreditTransactionD>();
 
           var CreditTransHD = new CreditTransactionH
