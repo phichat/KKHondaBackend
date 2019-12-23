@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace KKHondaBackend.Models
 {
@@ -48,5 +47,13 @@ namespace KKHondaBackend.Models
     public int? FiId { get; set; }
     public int? FiintId { get; set; }
     public int? FiComId { get; set; }
+
+    public int? PaymentType { get; set; }
+    public decimal? PaymentPrice { get; set; }
+    public decimal? Discount { get; set; }
+    public decimal? TotalPaymentPrice { get; set; }
+    public DateTime? PaymentDate { get; set; }
+    public int? AccBankId { get; set; }
+    public string DocumentRef { get; set; }
   }
 }

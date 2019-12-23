@@ -1,8 +1,11 @@
 using System;
+using System.ComponentModel.DataAnnotations;
+
 namespace KKHondaBackend.Models
 {
   public partial class CarRegisSedList
   {
+    [Key]
     public int SedId { get; set; }
     public string SedNo { get; set; }
     public string ConList { get; set; }
