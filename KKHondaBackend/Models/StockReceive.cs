@@ -14,5 +14,7 @@ namespace KKHondaBackend.Models
         public DateTime? ReceiveDate { get; set; }
         public int? LogId { get; set; }
         public int? BalanceQty { get; set; }
+        public int? stock_onhand { get; set; }
+        public int? stock_variable { get; set; }
     }
 }

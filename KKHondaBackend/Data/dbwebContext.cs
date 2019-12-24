@@ -108,6 +108,14 @@ namespace KKHondaBackend.Data
         public virtual DbSet<WarehouseLocation> WarehouseLocation { get; set; }
         public virtual DbSet<Zone> Zone { get; set; }
 
+        public virtual DbSet<MDealer> MDealer { get; set; }
+        public virtual DbSet<PurchaseList> PurchaseList { get; set; }
+        public virtual DbSet<PurchaseListItem> PurchaseListItem { get; set; }
+
+        public virtual DbSet<ReceiveH> ReceiveH { get; set; }
+        public virtual DbSet<ReceiveD> ReceiveD { get; set; }
+        public virtual DbSet<Information> Information { get; set; }
+        
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -4047,6 +4055,10 @@ namespace KKHondaBackend.Data
                 entity.Property(e => e.ReceiveQty).HasColumnName("receive_qty");
 
                 entity.Property(e => e.WhlId).HasColumnName("whl_id");
+
+                entity.Property(e => e.stock_onhand).HasColumnName("stock_onhand");
+                entity.Property(e => e.stock_variable).HasColumnName("stock_variable");
+
             });
 
             modelBuilder.Entity<StockSale>(entity =>
@@ -4609,7 +4621,7 @@ namespace KKHondaBackend.Data
 
                 entity.Property(e => e.InvAmt)
                                     .HasColumnName("inv_amt")
-                                    .HasColumnType("numeric(18, 0)");
+                                    .HasColumnType("decimal(18, 2)");
 
                 entity.Property(e => e.ItemId).HasColumnName("item_id");
 
@@ -4653,7 +4665,11 @@ namespace KKHondaBackend.Data
 
                 entity.Property(e => e.VatAmt)
                                     .HasColumnName("vat_amt")
-                                    .HasColumnType("numeric(18, 0)");
+                                    .HasColumnType("decimal(18, 2)");
+                entity.Property(e => e.dealer_code)
+                                    .HasColumnName("dealer_code")
+                                    .HasMaxLength(250);
+                
             });
 
             modelBuilder.Entity<User>(entity =>
@@ -4825,6 +4841,181 @@ namespace KKHondaBackend.Data
                                     .HasColumnName("zone_name")
                                     .HasMaxLength(250);
             });
+
+            modelBuilder.Entity<MDealer>(entity =>
+            {
+                entity.HasKey(e => e.id);
+                entity.HasIndex(e => e.dealer_code).HasName("ix_dealer_code");
+                entity.ToTable("m_dealer");
+                entity.Property(e => e.dealer_id).HasColumnName("dealer_id").HasMaxLength(50);
+                entity.Property(e => e.dealer_code).HasColumnName("dealer_code").HasMaxLength(50);
+                entity.Property(e => e.prename_code).HasColumnName("prename_code").HasMaxLength(50);
+                entity.Property(e => e.dealer_name_th).HasColumnName("dealer_name_th").HasMaxLength(255);
+                entity.Property(e => e.dealer_name_en).HasColumnName("dealer_name_en").HasMaxLength(255);
+                entity.Property(e => e.dealer_contact).HasColumnName("dealer_contact").HasMaxLength(50);
+                entity.Property(e => e.dealer_address).HasColumnName("dealer_address").HasMaxLength(255);
+                entity.Property(e => e.amphor_code).HasColumnName("amphor_code").HasMaxLength(50);
+                entity.Property(e => e.province_code).HasColumnName("province_code").HasMaxLength(50);
+                entity.Property(e => e.zipcode).HasColumnName("zipcode").HasMaxLength(50);
+
+                entity.Property(e => e.phone).HasColumnName("phone").HasMaxLength(50);
+                entity.Property(e => e.fax).HasColumnName("fax").HasMaxLength(50);
+                entity.Property(e => e.taxid).HasColumnName("taxid").HasMaxLength(50);
+                entity.Property(e => e.issue_date).HasColumnName("issue_date").HasColumnType("datetime");
+                entity.Property(e => e.issue_by).HasColumnName("issue_by").HasMaxLength(50);
+                entity.Property(e => e.expiry_date).HasColumnName("expiry_date").HasColumnType("datetime");
+
+                entity.Property(e => e.total_deposit).HasColumnName("total_deposit").HasColumnType("decimal(18,2)");
+                entity.Property(e => e.branch_hq).HasColumnName("branch_hq").HasMaxLength(50);
+                entity.Property(e => e.branch_code).HasColumnName("branch_code").HasMaxLength(50);
+                entity.Property(e => e.branch_name).HasColumnName("branch_name").HasMaxLength(255);
+                entity.Property(e => e.bank_no).HasColumnName("bank_no").HasMaxLength(50);
+                entity.Property(e => e.bank_type).HasColumnName("bank_type").HasMaxLength(50);
+
+                entity.Property(e => e.bank_name).HasColumnName("bank_name").HasMaxLength(50);
+                entity.Property(e => e.bank_id).HasColumnName("bank_id");
+                entity.Property(e => e.bank_code).HasColumnName("bank_code").HasMaxLength(50);
+                entity.Property(e => e.bank_branch_code).HasColumnName("bank_branch_code").HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<PurchaseList>(entity =>
+            {
+                entity.HasKey(e => e.po_no);
+
+                entity.ToTable("_purchase_list");
+
+                entity.Property(e => e.po_no).HasColumnName("po_no").HasMaxLength(50).ValueGeneratedNever();
+                entity.Property(e => e.status).HasColumnName("status");
+                entity.Property(e => e.po_date).HasColumnName("po_date").HasColumnType("datetime");
+                entity.Property(e => e.due_date).HasColumnName("due_date").HasColumnType("datetime");
+                entity.Property(e => e.supplier_id).HasColumnName("supplier_id");
+                entity.Property(e => e.remark).HasColumnName("remark").HasMaxLength(255);
+
+                
+                entity.Property(e => e.create_id).HasColumnName("create_id");
+                entity.Property(e => e.create_date).HasColumnName("create_date").HasColumnType("datetime");
+                entity.Property(e => e.update_id).HasColumnName("update_id");
+                entity.Property(e => e.update_date).HasColumnName("update_date").HasColumnType("datetime");
+
+                entity.Property(e => e.cash_flag).HasColumnName("cash_flag").HasMaxLength(1);
+                entity.Property(e => e.cash_price).HasColumnName("cash_price").HasColumnType("decimal(18,2)");
+
+                entity.Property(e => e.cheque_flag).HasColumnName("cheque_flag").HasMaxLength(1);
+                entity.Property(e => e.cheque_bank_id).HasColumnName("cheque_bank_id");
+                entity.Property(e => e.cheque_branch).HasColumnName("cheque_branch").HasMaxLength(255);
+                entity.Property(e => e.cheque_no).HasColumnName("cheque_no").HasMaxLength(255);
+                entity.Property(e => e.cheque_date).HasColumnName("cheque_date").HasColumnType("datetime");
+                entity.Property(e => e.cheque_price).HasColumnName("cheque_price").HasColumnType("decimal(18,2)");
+
+                entity.Property(e => e.total_price).HasColumnName("total_price").HasColumnType("decimal(18,2)");
+                entity.Property(e => e.vat_flag).HasColumnName("vat_flag").HasMaxLength(1);
+                entity.Property(e => e.total_vat).HasColumnName("total_vat").HasColumnType("decimal(18,2)");                
+                entity.Property(e => e.total_vat_price).HasColumnName("total_vat_price").HasColumnType("decimal(18,2)");
+                entity.Property(e => e.total_net_price).HasColumnName("total_net_price").HasColumnType("decimal(18,2)");
+
+            });
+
+            modelBuilder.Entity<PurchaseListItem>(entity =>
+            {
+                entity.HasKey(e => e.po_no);
+
+                entity.ToTable("_purchase_list_item");
+
+                entity.Property(e => e.po_no).HasColumnName("po_no").HasMaxLength(50).ValueGeneratedNever();
+                entity.Property(e => e.cat_id).HasColumnName("cat_id");
+                entity.Property(e => e.brand_id).HasColumnName("brand_id");
+                entity.Property(e => e.model_id).HasColumnName("model_id");
+                entity.Property(e => e.type_id).HasColumnName("type_id");
+                entity.Property(e => e.color_id).HasColumnName("color_id");
+                entity.Property(e => e.unit_price).HasColumnName("unit_price").HasColumnType("decimal(18,2)");
+                entity.Property(e => e.unit_qty).HasColumnName("unit_qty").HasColumnType("decimal(18,2)");
+
+                entity.Property(e => e.create_id).HasColumnName("create_id");
+                entity.Property(e => e.create_date).HasColumnName("create_date").HasColumnType("datetime");
+                entity.Property(e => e.update_id).HasColumnName("update_id");
+                entity.Property(e => e.update_date).HasColumnName("update_date").HasColumnType("datetime");
+
+            });
+
+            modelBuilder.Entity<ReceiveH>(entity =>
+            {
+                entity.HasKey(e => e.id);
+                entity.HasIndex(e => e.receive_no).HasName("ix_receive_h_no");
+
+                entity.ToTable("_receive_h");
+                //entity.Property(e => e.id).HasColumnName("id");
+                entity.Property(e => e.receive_no).HasColumnName("receive_no").HasMaxLength(50);
+                entity.Property(e => e.receive_id).HasColumnName("receive_id");
+                entity.Property(e => e.receive_date).HasColumnName("receive_date").HasColumnType("datetime");
+                entity.Property(e => e.receive_status).HasColumnName("receive_status");
+                entity.Property(e => e.receive_type).HasColumnName("receive_type");
+                entity.Property(e => e.dealer_code).HasColumnName("dealer_code").HasMaxLength(50);
+                entity.Property(e => e.purchase_no).HasColumnName("purchase_no").HasMaxLength(50);
+                entity.Property(e => e.remark).HasColumnName("remark").HasMaxLength(255);
+                entity.Property(e => e.create_id).HasColumnName("create_id");
+                entity.Property(e => e.create_date).HasColumnName("create_date").HasColumnType("datetime");
+                entity.Property(e => e.update_id).HasColumnName("update_id");
+                entity.Property(e => e.update_date).HasColumnName("update_date").HasColumnType("datetime");
+
+                entity.Property(e => e.transfer_code).HasColumnName("transfer_code").HasMaxLength(50);
+                entity.Property(e => e.delivery_code).HasColumnName("delivery_code").HasMaxLength(50);
+                entity.Property(e => e.delivery_date).HasColumnName("delivery_date").HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<ReceiveD>(entity =>
+            {
+                entity.HasKey(e => e.id);
+                entity.HasIndex(e => e.receive_no).HasName("ix_receive_d_no");
+                entity.ToTable("_receive_d");
+                //entity.Property(e => e.id).HasColumnName("id");
+                entity.Property(e => e.receive_no).HasColumnName("receive_no").HasMaxLength(50);
+                entity.Property(e => e.dealer_no).HasColumnName("dealer_no").HasMaxLength(255);
+                entity.Property(e => e.cat_id).HasColumnName("cat_id");
+                entity.Property(e => e.brand_id).HasColumnName("brand_id");
+                entity.Property(e => e.model_id).HasColumnName("model_id");
+                entity.Property(e => e.type_id).HasColumnName("type_id");
+                entity.Property(e => e.color_id).HasColumnName("color_id");
+                entity.Property(e => e.frame_no).HasColumnName("frame_no");
+                entity.Property(e => e.engine_no).HasColumnName("engine_no");
+                entity.Property(e => e.delivery_no).HasColumnName("delivery_no");
+                entity.Property(e => e.delivery_date).HasColumnName("delivery_date").HasColumnType("datetime");
+                entity.Property(e => e.invoice_no).HasColumnName("invoice_no").HasMaxLength(50);
+                entity.Property(e => e.tax_invoice_no).HasColumnName("tax_invoice_no").HasMaxLength(50);
+                entity.Property(e => e.create_id).HasColumnName("create_id");
+                entity.Property(e => e.create_date).HasColumnName("create_date").HasColumnType("datetime");
+                entity.Property(e => e.update_id).HasColumnName("update_id");
+                entity.Property(e => e.update_date).HasColumnName("update_date").HasColumnType("datetime");
+                entity.Property(e => e.license_no).HasColumnName("license_no").HasMaxLength(50);
+                entity.Property(e => e.branch_id).HasColumnName("branch_id");
+                entity.Property(e => e.line_remark).HasColumnName("line_remark").HasMaxLength(255);
+                entity.Property(e => e.line_status).HasColumnName("line_status");
+                entity.Property(e => e.cost_inc_vat).HasColumnName("cost_inc_vat").HasColumnType("decimal(18,2)");
+                entity.Property(e => e.vat_flag).HasColumnName("vat_flag").HasMaxLength(1);
+                entity.Property(e => e.vat_rate).HasColumnName("vat_rate").HasColumnType("decimal(18,2)");
+                entity.Property(e => e.cost_vat).HasColumnName("cost_vat").HasColumnType("decimal(18,2)");
+                entity.Property(e => e.cost_exc_vat).HasColumnName("cost_exc_vat").HasColumnType("decimal(18,2)");
+                entity.Property(e => e.cost_other_exc_vat).HasColumnName("cost_other_exc_vat").HasColumnType("decimal(18,2)");
+                entity.Property(e => e.cost_repair_exc_vat).HasColumnName("cost_repair_exc_vat").HasColumnType("decimal(18,2)");
+                entity.Property(e => e.whl_id).HasColumnName("whl_id");
+                entity.Property(e => e.log_id).HasColumnName("log_id");
+                entity.Property(e => e.item_id).HasColumnName("item_id");
+                
+
+            });
+
+            modelBuilder.Entity<Information>(entity =>
+            {
+                entity.HasKey(e => e.id);
+                entity.ToTable("_information");
+                entity.Property(e => e.id).HasColumnName("id");
+                entity.Property(e => e.code_type).HasColumnName("code_type").HasMaxLength(50);
+                entity.Property(e => e.code_id).HasColumnName("code_id");
+                entity.Property(e => e.code_value).HasColumnName("code_value");
+                
+
+            });
+            
+
         }
     }
 }
