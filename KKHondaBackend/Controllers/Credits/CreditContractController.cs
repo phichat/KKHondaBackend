@@ -99,10 +99,7 @@ namespace KKHondaBackend.Controllers.Credits
     [HttpGet("GetContractItem")]
     public IActionResult GetContractItem(int contractId)
     {
-      var contract = ctx.CreditContract
-        .AsNoTracking()
-        .First(x => x.ContractId == contractId);
-
+      var contract = ctx.CreditContract.AsNoTracking().First(x => x.ContractId == contractId);
       return Ok(ListContractItems(contractId, contract.RefNo));
     }
 
@@ -124,19 +121,21 @@ namespace KKHondaBackend.Controllers.Credits
         var calcu = ctx.Sale.Where(p => p.SaleId == cont.SaleId).SingleOrDefault();
 
         var booking = iBookService.GetBookingById(cont.BookingId);
-        if (booking.PaymentType == BookingPaymentType.HierPurchase)
+        if (booking.BookingPaymentType == BookingPaymentType.HierPurchase)
         {
-          var __branch = ctx.Branch.SingleOrDefault(x => x.BranchId == 1);
+          var __branch = ctx.Branch.SingleOrDefault(x => x.BranchId == cont.BranchId);
 
-          var __company = ctx.MCustomer.Where(x => x.CustomerCode == "CRM-01-0000746").FirstOrDefault();
-          booking.CusTaxNo = __branch.BranchRegisterNo;
-          booking.CusTaxBranch = __branch.BranchName;
+          var __company = ctx.MCustomer.Where(x => x.CustomerCode == cont.ContractOwner).FirstOrDefault();
+          var ampher = ctx.MAmphor.Where(x => x.AmphorCode == cont.OwnerAmpherCode).FirstOrDefault();
+          var province = ctx.MProvince.Where(x => x.ProvinceCode == cont.OwnerProvinceCode).FirstOrDefault();
+          booking.CusTaxNo = cont.OwnerTaxNo;
+          booking.CusTaxBranch = $"{cont.OwnerAddress} อำเภอ{ampher.AmphorName} จังหวัด{province.ProvinceNameTh} {cont.OwnerZipCode}";
           booking.CusSellCode = __company.CustomerCode;
-          booking.CusSellName = __company.CustomerName;
+          booking.CusSellName = $"{__company.CustomerPrename} {__company.CustomerName}";
 
-          var zoneId = ctx.Branch.Where(b => b.BranchId == booking.BranchId).Select(b => b.ZoneId).FirstOrDefault();
+          var zoneId = ctx.Branch.Where(b => b.BranchId == cont.BranchId).Select(b => b.ZoneId).FirstOrDefault();
 
-          cont.ContractOwner = __company.CustomerCode;
+          // cont.ContractOwner = __company.CustomerCode;
           cont.BranchId = cont.BranchId == null ? booking.BranchId : cont.BranchId;
           cont.AreaPayment = cont.AreaPayment == null ? booking.BranchId : cont.AreaPayment;
           cont.ContractPoint = cont.ContractPoint == null ? zoneId : cont.ContractPoint;
@@ -161,19 +160,19 @@ namespace KKHondaBackend.Controllers.Credits
         var statusDropdown = iStatusService.GetDropdown();
 
         var obj = new Dictionary<string, object>
-                {
-                    {"statusDesc", statusDesc},
-                    {"creditContract", cont},
-                    {"creditContractItem", contItem},
-                    {"sale", calcu},
-                    {"booking", booking},
-                    {"statusDropdown", statusDropdown},
-                    {"userDropdown", userDropdown},
-                    {"contractGroupDropdown", contractGroupDropdown},
-                    {"contractTypeDropdown", contractTypeDropdown},
-                    {"zoneDropdown", zoneDropdown},
-                    {"branchDropdown", branchDropdown}
-                };
+        {
+          {"statusDesc", statusDesc},
+          {"creditContract", cont},
+          {"creditContractItem", contItem},
+          {"sale", calcu},
+          {"booking", booking},
+          {"statusDropdown", statusDropdown},
+          {"userDropdown", userDropdown},
+          {"contractGroupDropdown", contractGroupDropdown},
+          {"contractTypeDropdown", contractTypeDropdown},
+          {"zoneDropdown", zoneDropdown},
+          {"branchDropdown", branchDropdown}
+        };
 
         return Ok(obj);
 
@@ -373,7 +372,7 @@ namespace KKHondaBackend.Controllers.Credits
         try
         {
           var creditContract = c.contract;
-          var _booking = c.booking;
+          // var _booking = c.booking;
           // Contract
           creditContract.UpdateDate = DateTime.Now;
           // อยู่ระหว่างผ่อนชำระ
@@ -411,45 +410,45 @@ namespace KKHondaBackend.Controllers.Credits
           ctx.SaveChanges();
 
           // Calculate
-          Sale calculate = new Sale();
-          calculate = ctx.Sale.SingleOrDefault(o => o.SaleId == creditContract.SaleId);
+          // Sale calculate = new Sale();
+          // calculate = ctx.Sale.SingleOrDefault(o => o.SaleId == creditContract.SaleId);
 
           // Booking
-          Models.Booking booking = new Models.Booking();
-          booking = ctx.Booking.SingleOrDefault(b => b.BookingId == creditContract.BookingId);
+          // Models.Booking booking = new Models.Booking();
+          // booking = ctx.Booking.SingleOrDefault(b => b.BookingId == creditContract.BookingId);
 
           // // ค้นหาชื่อเช่าซื้อด้วยรหัส
           // var customer = iCustService.GetCustomerByCode(creditContract.ContractHire);
 
-          if (booking.SellDate == null)
-            booking.SellDate = DateTime.Now;
+          // if (booking.SellDate == null)
+          //   booking.SellDate = DateTime.Now;
 
           // update booking ให้เป็นสถานะขาย
-          booking.BookingStatus = 2;
-          booking.PaymentPrice = calculate.DepositPrice;
-          booking.PaymentType = booking.BookingDepositType;
-          booking.CusSellName = _booking.CusSellName;
-          booking.CusTaxNo = _booking.CusTaxNo;
-          booking.CusTaxBranch = _booking.CusTaxBranch;
-          booking.SellRemark = _booking.SellRemark;
+          // booking.BookingStatus = 2;
+          // booking.PaymentPrice = calculate.DepositPrice;
+          // booking.PaymentType = booking.BookingDepositType;
+          // booking.CusSellName = _booking.CusSellName;
+          // booking.CusTaxNo = _booking.CusTaxNo;
+          // booking.CusTaxBranch = _booking.CusTaxBranch;
+          // booking.SellRemark = _booking.SellRemark;
 
-          booking.SellBy = creditContract.CreateBy;
-          booking.LStartDate = calculate.FirstPayment.ToString();
-          booking.LPayDay = calculate.DueDate;
-          booking.LTerm = calculate.InstalmentEnd;
-          booking.LInterest = calculate.Interest;
-          booking.LPriceTerm = calculate.InstalmentPrice;
+          // booking.SellBy = creditContract.CreateBy;
+          // booking.LStartDate = calculate.FirstPayment.ToString();
+          // booking.LPayDay = calculate.DueDate;
+          // booking.LTerm = calculate.InstalmentEnd;
+          // booking.LInterest = calculate.Interest;
+          // booking.LPriceTerm = calculate.InstalmentPrice;
 
-          if (booking.SellNo == null)
-            booking.SellNo = iSysParamService.GenerateSellNo((int)creditContract.BranchId);
+          // if (booking.SellNo == null)
+          //   booking.SellNo = iSysParamService.GenerateSellNo((int)creditContract.BranchId);
 
-          if (booking.VatNo == null)
-            booking.VatNo = iSysParamService.GenerateVatNo((int)creditContract.BranchId);
+          // if (booking.VatNo == null)
+          //   booking.VatNo = iSysParamService.GenerateVatNo((int)creditContract.BranchId);
 
-          booking.VatDate = DateTime.Now;
-          booking.VatBy = creditContract.CreateBy;
-          ctx.Update(booking);
-          ctx.SaveChanges();
+          // booking.VatDate = DateTime.Now;
+          // booking.VatBy = creditContract.CreateBy;
+          // ctx.Update(booking);
+          // ctx.SaveChanges();
 
           transaction.Commit();
 
@@ -480,11 +479,11 @@ namespace KKHondaBackend.Controllers.Credits
           cc.UpdateBy = c.UpdateBy;
           cc.UpdateDate = DateTime.Now;
 
-          var bk = ctx.Booking.SingleOrDefault(x => x.BookingId == cc.BookingId);
-          bk.BookingStatus = 9;
-          bk.CancelRemark = "ยกเลิกสัญญา";
-          bk.UpdateBy = c.UpdateBy;
-          bk.UpdateDate = DateTime.Now;
+          // var bk = ctx.Booking.SingleOrDefault(x => x.BookingId == cc.BookingId);
+          // bk.BookingStatus = 9;
+          // bk.CancelRemark = "ยกเลิกสัญญา";
+          // bk.UpdateBy = c.UpdateBy;
+          // bk.UpdateDate = DateTime.Now;
 
           ctx.SaveChanges();
 

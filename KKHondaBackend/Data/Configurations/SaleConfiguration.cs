@@ -39,6 +39,12 @@ namespace KKHondaBackend.Data.Configurations
       entity.Property(e => e.UpdateDate).HasColumnName("update_date").HasColumnType("datetime");
       entity.Property(e => e.LogReceiveId).HasColumnName("log_receive_id");
       entity.Property(e => e.Reason).HasColumnName("reason").HasMaxLength(255);
+      entity.Property(e => e.SellNo).HasColumnName("sell_no").HasMaxLength(50);
+      entity.Property(e => e.ReturnDepositNo).HasColumnName("return_deposit_no").HasMaxLength(50);
+      entity.Property(e => e.InvTaxRecNo).HasColumnName("inv_tax_rec_no").HasMaxLength(50);
+      entity.Property(e => e.ReceiptNo).HasColumnName("receipt_no").HasMaxLength(50);
+      entity.Property(e => e.ComNo).HasColumnName("com_no").HasMaxLength(50);
+      entity.Property(e => e.ApproveId).HasColumnName("approve_id");
     }
   }
 }

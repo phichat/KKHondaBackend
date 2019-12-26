@@ -13,7 +13,9 @@ namespace KKHondaBackend.Data.Configurations
       entity.Property(e => e.CTH_Id).HasColumnName("cth_id");
       entity.Property(e => e.ContractId).HasColumnName("contract_id");
       entity.Property(e => e.ReceiptNo).HasColumnName("receipt_no").HasMaxLength(50);
+      entity.Property(e => e.ReceiptStatus).HasColumnName("receipt_status").HasColumnType("bit").HasDefaultValue(true);
       entity.Property(e => e.TaxInvNo).HasColumnName("tax_inv_no").HasMaxLength(50);
+      entity.Property(e => e.TaxInvStatus).HasColumnName("tax_inv_status").HasColumnType("bit").HasDefaultValue(true);
       entity.Property(e => e.PaymentName).HasColumnName("payment_name").HasMaxLength(255);
       entity.Property(e => e.AccBankId).HasColumnName("acc_bank_id");
       entity.Property(e => e.Payeer).HasColumnName("payeer").IsRequired();

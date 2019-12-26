@@ -68,6 +68,8 @@ namespace KKHondaBackend.Data.Configurations
                                 .HasColumnName("zipcode")
                                 .HasMaxLength(50);
 
+      entity.Property(e => e.AddressDefault).HasColumnName("address_default").HasColumnType("bit");
+
       entity.HasOne(d => d.CustomerCodeNavigation)
                                 .WithMany(p => p.MCustomerAddress)
                                 .HasForeignKey(d => d.CustomerCode)

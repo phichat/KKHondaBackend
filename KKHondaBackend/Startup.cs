@@ -50,6 +50,11 @@ namespace KKHondaBackend
             services.AddTransient<IStatusService, StatusService>();
             services.AddTransient<IBankingService, BankingService>();
             services.AddTransient<IMSendbackService, MSendbackService>();
+            services.AddTransient<IReserveReturnService, ReserveReturnService>();
+            services.AddTransient<ISaleCommissionService, SaleCommissionService>();
+            services.AddTransient<ISaleInvTaxRecService, SaleInvTaxRecService>();
+            services.AddTransient<ISaleReceiptService, SaleReceiptService>();
+            services.AddTransient<ISaleTaxService, SaleTaxService>();
 
             services.AddSwaggerGen(options =>
             {

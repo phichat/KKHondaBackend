@@ -9,7 +9,6 @@ namespace KKHondaBackend.Models
     public string ReceiptNo { get; set; }
     public bool ReceiptStatus { get; set; }
     public string TaxInvNo { get; set; }
-    public string TaxAddress { get; set; }
     public bool TaxInvStatus { get; set; }
     public int? AccBankId { get; set; }
     public int Payeer { get; set; }
@@ -37,7 +36,9 @@ namespace KKHondaBackend.Models
   public class CreditTransactionReceipt
   {
     public string ReceiptNo { get; set; }
+    public bool ReceiptStatus { get; set; }
     public string TaxInvNo { get; set; }
+    public bool TaxInvStatus { get; set; }
 
   }
 }

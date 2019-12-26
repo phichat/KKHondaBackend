@@ -6,7 +6,6 @@ namespace KKHondaBackend.Models
   {
     public int SaleId { get; set; }
     public int BookingId { get; set; }
-    public string SellNo { get; set; }
     public decimal OutStandingPrice { get; set; }
     public decimal NetPrice { get; set; }
     public int SellTypeId { get; set; }
@@ -32,11 +31,13 @@ namespace KKHondaBackend.Models
     public DateTime? UpdateDate { get; set; }
     public int? LogReceiveId { get; set; }
     public string Remark { get; set; }
+    public string Reason { get; set; }
+    public string SellNo { get; set; }
     public string ReturnDepositNo { get; set; }
     public string InvTaxRecNo { get; set; }
     public string ReceiptNo { get; set; }
     public string ComNo { get; set; }
-    public string Reason { get; set; }
+    public int? ApproveId { get; set; }
   }
 
   public partial class SaleFormBody : Sale
@@ -48,11 +49,11 @@ namespace KKHondaBackend.Models
     public int? FiintId { get; set; }
     public int? FiComId { get; set; }
 
-    public int? PaymentType { get; set; }
-    public decimal? PaymentPrice { get; set; }
+    public int PaymentType { get; set; }
+    public decimal PaymentPrice { get; set; }
     public decimal? Discount { get; set; }
-    public decimal? TotalPaymentPrice { get; set; }
-    public DateTime? PaymentDate { get; set; }
+    public decimal TotalPaymentPrice { get; set; }
+    public DateTime PaymentDate { get; set; }
     public int? AccBankId { get; set; }
     public string DocumentRef { get; set; }
   }

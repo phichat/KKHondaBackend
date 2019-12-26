@@ -37,6 +37,7 @@ namespace KKHondaBackend.Services
 
     public async Task<MCustomer> GetCustomerByCode(string custCode)
     {
+
       var address = await ctx.MCustomerAddress.Where(x => x.CustomerCode == custCode).ToListAsync();
       var card = await ctx.MCustomerCard.Where(x => x.CustomerCode == custCode).ToListAsync();
       var customer = await (from db in ctx.MCustomer

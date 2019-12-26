@@ -23,7 +23,16 @@ namespace KKHondaBackend.Data.Configurations
       entity.Property(e => e.ContractGurantor1).HasColumnName("contract_gurantor1").HasMaxLength(50);
       entity.Property(e => e.ContractGurantor2).HasColumnName("contract_gurantor2").HasMaxLength(50);
       entity.Property(e => e.ContractHire).HasColumnName("contract_hire").HasMaxLength(50);
+      entity.Property(e => e.HireAddress).HasColumnName("hire_address").HasMaxLength(50);
+      entity.Property(e => e.HireProvinceCode).HasColumnName("hire_province_code").HasMaxLength(2);
+      entity.Property(e => e.HireAmpherCode).HasColumnName("hire_ampher_code").HasMaxLength(2);
+      entity.Property(e => e.HireZipCode).HasColumnName("hire_zip_code").HasMaxLength(10);
       entity.Property(e => e.ContractOwner).HasColumnName("contract_owner").HasMaxLength(50);
+      entity.Property(e => e.OwnerTaxNo).HasColumnName("owner_tax_no").HasMaxLength(50);
+      entity.Property(e => e.OwnerAddress).HasColumnName("owner_address").HasMaxLength(255);
+      entity.Property(e => e.OwnerProvinceCode).HasColumnName("owner_province_code").HasMaxLength(2);
+      entity.Property(e => e.OwnerAmpherCode).HasColumnName("owner_ampher_code").HasMaxLength(2);
+      entity.Property(e => e.OwnerZipCode).HasColumnName("owner_zip_code").HasMaxLength(10);
       entity.Property(e => e.ContractMate).HasColumnName("contract_mate").HasMaxLength(50);
       entity.Property(e => e.ContractNo).HasColumnName("contract_no").HasMaxLength(50);
       entity.Property(e => e.ContractPoint).HasColumnName("contract_point");

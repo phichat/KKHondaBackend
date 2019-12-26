@@ -104,10 +104,9 @@ namespace KKHondaBackend.Services
 
     private string SetRunningCode(string module, string prefix, int branchId)
     {
-
       var paramHd = ctx.MParameter
-        .Where(x => x.Prefix == prefix)
-        .FirstOrDefault();
+          .Where(x => x.Prefix == prefix)
+          .FirstOrDefault();
 
       if (paramHd == null)
       {
@@ -119,10 +118,11 @@ namespace KKHondaBackend.Services
 
       string year = (DateTime.Now.Year + 543).ToString().Substring(2, 2);
       string month = (DateTime.Now.Month).ToString("00");
+      string runningNo = string.Empty;
 
       var branchCode = ctx.Branch
         .Where(x => x.BranchId == branchId)
-        .Select(x => x.BranchCode)
+        .Select(x => int.Parse(x.BranchCode).ToString("00"))
         .FirstOrDefault();
 
       var paramDt = ctx.MParameterD
@@ -144,7 +144,7 @@ namespace KKHondaBackend.Services
         };
         ctx.Add(p);
         ctx.SaveChanges();
-        return $"{r}/0001";
+        runningNo = (1).ToString("0000");
       }
       else
       {
@@ -160,8 +160,10 @@ namespace KKHondaBackend.Services
         }
         ctx.Update(paramDt);
         ctx.SaveChanges();
-        return $"{r}/{paramDt.RunningNo.ToString("0000")}";
+        runningNo = paramDt.RunningNo.ToString("0000");
       }
+      return $"{r}/{runningNo}";
+
     }
   }
 }
