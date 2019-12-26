@@ -111,11 +111,10 @@ namespace KKHondaBackend.Data
     public virtual DbSet<Warehouse> Warehouse { get; set; }
     public virtual DbSet<WarehouseLocation> WarehouseLocation { get; set; }
     public virtual DbSet<Zone> Zone { get; set; }
-    
+
     public virtual DbSet<MDealer> MDealer { get; set; }
     public virtual DbSet<PurchaseList> PurchaseList { get; set; }
     public virtual DbSet<PurchaseListItem> PurchaseListItem { get; set; }
-
     public virtual DbSet<ReceiveH> ReceiveH { get; set; }
     public virtual DbSet<ReceiveD> ReceiveD { get; set; }
     public virtual DbSet<Information> Information { get; set; }
@@ -123,186 +122,101 @@ namespace KKHondaBackend.Data
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
       modelBuilder.ApplyConfiguration(new BankingConfiguration());
-
       modelBuilder.ApplyConfiguration(new BankingAccConfiguration());
-
       modelBuilder.ApplyConfiguration(new BookingReasonCodeConfiguration());
-
       modelBuilder.ApplyConfiguration(new BookingConfiguration());
-
       modelBuilder.ApplyConfiguration(new BookingItemConfiguration());
-
       modelBuilder.ApplyConfiguration(new BranchConfiguration());
-
       modelBuilder.ApplyConfiguration(new CarHistoryConfiguration());
-
       modelBuilder.ApplyConfiguration(new CarRegisListConfiguration());
-
       modelBuilder.ApplyConfiguration(new CarRegisListItemConfiguration());
-
       modelBuilder.ApplyConfiguration(new CarRegisListItemDocConfiguration());
-
       modelBuilder.ApplyConfiguration(new CarRegisMSendbackConfiguration());
-
       modelBuilder.ApplyConfiguration(new CarRegisRevListConfiguration());
-
       modelBuilder.ApplyConfiguration(new CarRegisAlListConfiguration());
-
       modelBuilder.ApplyConfiguration(new CarRegisClListConfiguration());
-
       modelBuilder.ApplyConfiguration(new CarRegisClDepositConfiguration());
-
       modelBuilder.ApplyConfiguration(new CampaignHConfiguration());
-
       modelBuilder.ApplyConfiguration(new CompanyConfiguration());
-
       modelBuilder.ApplyConfiguration(new CompanyInsuranceConfiguration());
-
       modelBuilder.ApplyConfiguration(new SaleConfiguration());
-
       modelBuilder.ApplyConfiguration(new CreditContractConfiguration());
-
       modelBuilder.ApplyConfiguration(new CreditContractItemConfiguration());
-
       modelBuilder.ApplyConfiguration(new CreditTransactionDConfiguration());
-
       modelBuilder.ApplyConfiguration(new CreditTransactionHConfiguration());
-
       modelBuilder.ApplyConfiguration(new CreditTermListConfiguration());
-
       modelBuilder.ApplyConfiguration(new CyclecountConfiguration());
-
       modelBuilder.ApplyConfiguration(new CyclecountLocationItemConfiguration());
-
       modelBuilder.ApplyConfiguration(new CyclecountScanConfiguration());
-
       modelBuilder.ApplyConfiguration(new ExpensesOtherRisConfiguration());
-
       modelBuilder.ApplyConfiguration(new ExpensesTypeOtherRisConfiguration());
-
       modelBuilder.ApplyConfiguration(new FinanceComListConfiguration());
-
       modelBuilder.ApplyConfiguration(new FinanceIntListConfiguration());
-
       modelBuilder.ApplyConfiguration(new FinanceListConfiguration());
-
       modelBuilder.ApplyConfiguration(new GroupPageConfiguration());
-
       modelBuilder.ApplyConfiguration(new GroupPagePermissionConfiguration());
-
       modelBuilder.ApplyConfiguration(new PageListConfiguration());
-
       modelBuilder.ApplyConfiguration(new LogAdminConfiguration());
-
       modelBuilder.ApplyConfiguration(new MAmphorConfiguration());
-
       modelBuilder.ApplyConfiguration(new MBranchConfiguration());
-
       modelBuilder.ApplyConfiguration(new MBranchCompanyConfiguration());
-
       modelBuilder.ApplyConfiguration(new MContractGroupConfiguration());
-
       modelBuilder.ApplyConfiguration(new MContractTypeConfiguration());
-
       modelBuilder.ApplyConfiguration(new MCustomerConfiguration());
-
       modelBuilder.ApplyConfiguration(new MCustomerAddressConfiguration());
-
       modelBuilder.ApplyConfiguration(new MCustomerCardConfiguration());
-
       modelBuilder.ApplyConfiguration(new MCustomerLevelConfiguration());
-
       modelBuilder.ApplyConfiguration(new MGroupConfiguration());
-
       modelBuilder.ApplyConfiguration(new MGroupBrandConfiguration());
-
       modelBuilder.ApplyConfiguration(new MGroupCategoryConfiguration());
-
       modelBuilder.ApplyConfiguration(new MGroupColorConfiguration());
-
       modelBuilder.ApplyConfiguration(new MGroupModelConfiguration());
-
       modelBuilder.ApplyConfiguration(new MGroupTypeConfiguration());
-
       modelBuilder.ApplyConfiguration(new MItemConfiguration());
-
       modelBuilder.ApplyConfiguration(new MLocationConfiguration());
-
       modelBuilder.ApplyConfiguration(new MLoginConfiguration());
-
       modelBuilder.ApplyConfiguration(new MParameterConfiguration());
-
       modelBuilder.ApplyConfiguration(new MParameterDConfiguration());
-
       modelBuilder.ApplyConfiguration(new MPositionConfiguration());
-
       modelBuilder.ApplyConfiguration(new MProvinceConfiguration());
-
       modelBuilder.ApplyConfiguration(new MRelationConfiguration());
-
       modelBuilder.ApplyConfiguration(new MStatusConfiguration());
-
       modelBuilder.ApplyConfiguration(new MWorkgroupConfiguration());
-
       modelBuilder.ApplyConfiguration(new ProductConfiguration());
-
       modelBuilder.ApplyConfiguration(new ProductBrandConfiguration());
-
       modelBuilder.ApplyConfiguration(new ProductCategoryConfiguration());
-
       modelBuilder.ApplyConfiguration(new ProductClassConfiguration());
-
       modelBuilder.ApplyConfiguration(new ProductColorConfiguration());
-
       modelBuilder.ApplyConfiguration(new ProductModelConfiguration());
-
       modelBuilder.ApplyConfiguration(new ProductTypeConfiguration());
-
       modelBuilder.ApplyConfiguration(new PurchaseHConfiguration());
-
       modelBuilder.ApplyConfiguration(new ReceiptHConfiguration());
-
       modelBuilder.ApplyConfiguration(new SellActivityConfiguration());
-
       modelBuilder.ApplyConfiguration(new SellTypeConfiguration());
-
       modelBuilder.ApplyConfiguration(new SellunitConfiguration());
-
       modelBuilder.ApplyConfiguration(new SaleReceiptConfiguration());
-
       modelBuilder.ApplyConfiguration(new ReserveReturnConfiguration());
-
       modelBuilder.ApplyConfiguration(new SaleCommissionConfiguration());
-
       modelBuilder.ApplyConfiguration(new SaleInvTaxRecConfiguration());
-
       modelBuilder.ApplyConfiguration(new SaleTaxConfiguration());
-
       modelBuilder.ApplyConfiguration(new StockConfiguration());
-
       modelBuilder.ApplyConfiguration(new StockInventoryConfiguration());
-
       modelBuilder.ApplyConfiguration(new StockOpeningConfiguration());
-
       modelBuilder.ApplyConfiguration(new StockReceiveConfiguration());
-
       modelBuilder.ApplyConfiguration(new StockSaleConfiguration());
-
       modelBuilder.ApplyConfiguration(new TransactionLogConfiguration());
-
       modelBuilder.ApplyConfiguration(new TransferDConfiguration());
-
       modelBuilder.ApplyConfiguration(new TransferHConfiguration());
-
       modelBuilder.ApplyConfiguration(new TransferLogConfiguration());
-
       modelBuilder.ApplyConfiguration(new UserConfiguration());
-
       modelBuilder.ApplyConfiguration(new WarehouseConfiguration());
-
       modelBuilder.ApplyConfiguration(new WarehouseLocationConfiguration());
-
       modelBuilder.ApplyConfiguration(new ZoneConfiguration());
+      modelBuilder.ApplyConfiguration(new MDealerConfiguration());
+      modelBuilder.ApplyConfiguration(new PurchaseListConfiguration());
+      modelBuilder.ApplyConfiguration(new PurchaseListItemConfiguration());
+      modelBuilder.ApplyConfiguration(new ReceiveDConfiguration());
+      modelBuilder.ApplyConfiguration(new InformationConfiguration());
     }
   }
 }
