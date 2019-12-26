@@ -44,6 +44,7 @@ namespace KKHondaBackend.Data.Configurations
       entity.Property(e => e.UpdateBy).HasColumnName("update_by");
       entity.Property(e => e.UpdateDate).HasColumnName("update_date").HasColumnType("datetime");
       entity.Property(e => e.VatAmt).HasColumnName("vat_amt").HasColumnType("numeric(18, 0)");
+      entity.Property(e => e.DealerCode).HasColumnName("dealer_code").HasMaxLength(255);
     }
   }
 }

@@ -8,17 +8,17 @@
     <Folder Include="wwwroot\" />
     <Folder Include="Controllers\Customers\" />
     <Folder Include="Controllers\Users\" />
-    <Folder Include="Services\" />
   </ItemGroup>
 
   <ItemGroup>
     <!-- <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.0.3" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.4" /> -->
-     <PackageReference Include="Microsoft.AspNetCore.App">
-       <PrivateAssets Condition="'%(PackageReference.Version)' == ''">all</PrivateAssets>
-       <Publish Condition="'%(PackageReference.Version)' == ''">true</Publish>
-     </PackageReference>
+    <PackageReference Include="DotNetCore.NPOI" Version="1.2.2" />
+    <PackageReference Include="Microsoft.AspNetCore.App">
+      <PrivateAssets Condition="'%(PackageReference.Version)' == ''">all</PrivateAssets>
+      <Publish Condition="'%(PackageReference.Version)' == ''">true</Publish>
+    </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.1.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer.Design" Version="1.1.6" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.1.1">
@@ -39,5 +39,11 @@
   <ItemGroup>
     <Compile Remove="Controllers\Users\usersController.cs" />
     <Compile Remove="Services\EmptyInterface.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Web.Extensions">
+      <HintPath>C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1\System.Web.Extensions.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>

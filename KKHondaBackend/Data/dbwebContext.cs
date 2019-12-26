@@ -111,6 +111,14 @@ namespace KKHondaBackend.Data
     public virtual DbSet<Warehouse> Warehouse { get; set; }
     public virtual DbSet<WarehouseLocation> WarehouseLocation { get; set; }
     public virtual DbSet<Zone> Zone { get; set; }
+    
+    public virtual DbSet<MDealer> MDealer { get; set; }
+    public virtual DbSet<PurchaseList> PurchaseList { get; set; }
+    public virtual DbSet<PurchaseListItem> PurchaseListItem { get; set; }
+
+    public virtual DbSet<ReceiveH> ReceiveH { get; set; }
+    public virtual DbSet<ReceiveD> ReceiveD { get; set; }
+    public virtual DbSet<Information> Information { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -261,13 +269,13 @@ namespace KKHondaBackend.Data
       modelBuilder.ApplyConfiguration(new SellunitConfiguration());
 
       modelBuilder.ApplyConfiguration(new SaleReceiptConfiguration());
-      
+
       modelBuilder.ApplyConfiguration(new ReserveReturnConfiguration());
 
       modelBuilder.ApplyConfiguration(new SaleCommissionConfiguration());
 
       modelBuilder.ApplyConfiguration(new SaleInvTaxRecConfiguration());
-      
+
       modelBuilder.ApplyConfiguration(new SaleTaxConfiguration());
 
       modelBuilder.ApplyConfiguration(new StockConfiguration());

@@ -24,6 +24,7 @@ namespace KKHondaBackend.Services
     string GenerateClNo(int branchId);
     string GenerateRegisRevNo(int branchId);
     string GenerateRegisCLDepositNo(int branchId);
+    string GenerateReceiveNo(int branchId);
   }
 
   public class SysParameterService : ISysParameterService
@@ -95,6 +96,12 @@ namespace KKHondaBackend.Services
     public string GenerateRegisCLDepositNo(int branchId)
     {
       return SetRunningCode("RIS", "PFD", branchId);
+    }
+
+
+    public string GenerateReceiveNo(int branchId)
+    {
+      return SetRunningCode("STOCK", "GR", branchId);
     }
 
     public string GetSysParameter(string prefix)
