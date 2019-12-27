@@ -13,7 +13,7 @@ namespace KKHondaBackend.Controllers.Ris
 {
   // [ApiController]
   [Produces("application/json")]
-  [Route("api/Ris")]
+  [Route("api/[controller]")]
   public class RisController : Controller
   {
     private readonly dbwebContext ctx;
@@ -131,10 +131,10 @@ namespace KKHondaBackend.Controllers.Ris
       var list = (await RegisList(tag)).Where(item =>
         (value.Status1 != null && item.Status1 == value.Status1) ||
         (value.Status1 != null && item.Status2 == value.Status2) ||
-        (!string.IsNullOrEmpty(value.BookingNo) && item.BookingNo.Contains(value.BookingNo)) ||
-        (!string.IsNullOrEmpty(value.RevNo) && item.RevNo.IndexOf(value.RevNo) > -1) ||
-        (!string.IsNullOrEmpty(value.ENo) && item.ENo.IndexOf(value.ENo) > -1) ||
-        (!string.IsNullOrEmpty(value.FNo) && item.FNo.IndexOf(value.FNo) > -1)
+        (!string.IsNullOrEmpty(value.BookingNo) && item.BookingNo.ToLower().Contains(value.BookingNo.ToLower())) ||
+        (!string.IsNullOrEmpty(value.RevNo) && item.RevNo.ToLower().IndexOf(value.RevNo.ToLower()) > -1) ||
+        (!string.IsNullOrEmpty(value.ENo) && item.ENo.ToLower().IndexOf(value.ENo.ToLower()) > -1) ||
+        (!string.IsNullOrEmpty(value.FNo) && item.FNo.ToLower().IndexOf(value.FNo.ToLower()) > -1)
       );
 
       return Ok(list);
@@ -151,27 +151,32 @@ namespace KKHondaBackend.Controllers.Ris
 
       var list = (from bk in ctx.Booking
                   join bi in ctx.BookingItem on bk.BookingId equals bi.BookingId
+                  join sl in ctx.Sale on bk.BookingId equals sl.BookingId
+                  join ct in ctx.CreditContract on bk.BookingId equals ct.BookingId
+                  join own in ctx.MCustomer on ct.ContractOwner equals own.CustomerCode
+                  join hir in ctx.MCustomer on ct.ContractHire equals hir.CustomerCode
                   join tl in ctx.TransferLog on bi.LogReceiveId equals tl.LogId
                   join u0 in ctx.User on bk.SellBy equals u0.Id into u1
                   from us in u1.DefaultIfEmpty()
 
-                  join f0 in ctx.FinanceList on bk.FiId equals f0.FiId into f1
-                  from fi in f1.DefaultIfEmpty()
+                  // join f0 in ctx.FinanceList on bk.FiId equals f0.FiId into f1
+                  // from fi in f1.DefaultIfEmpty()
 
                   where bi.LogReceiveId > 0 &&
                   bk.BookingStatus == BookingStatus.Sell &&
+                  ct.ContractStatus != 0 &&
                   (!carExcepts.Contains($"{tl.EngineNo}{tl.FrameNo}"))
 
                   select new CarRegisWaitingTagRes
                   {
                     BookingPaymentType = bk.BookingPaymentType,
                     PaymentTypeDesc = BookingPaymentType.Status.FirstOrDefault(x => x.Id == bk.BookingPaymentType).Desc,
-                    SellNo = bk.SellNo,
+                    SellNo = sl.SellNo,
                     BookingNo = bk.BookingNo,
-                    CusSellName = bk.CusSellName,
-                    BookTitleName = bk.BookTitleName,
-                    BookFName = bk.BookFName,
-                    BookSName = bk.BookSName,
+                    // CusSellName = bk.CusSellName,
+                    // BookTitleName = bk.BookTitleName,
+                    // BookFName = bk.BookFName,
+                    // BookSName = bk.BookSName,
                     BookIdCard = bk.BookIdCard,
                     BookContactNo = bk.BookContactNo,
                     FreeAct = bk.FreeAct,
@@ -181,19 +186,24 @@ namespace KKHondaBackend.Controllers.Ris
                     SellDate = bk.SellDate,
                     SellBy = bk.SellBy,
                     SellName = us.FullName,
-                    RegisName = bk.BookingPaymentType == BookingPaymentType.Leasing ? fi.FiName : bk.CusSellName,
+                    OwnerCode = ct.ContractOwner,
+                    OwnerFullName = $"{own.CustomerPrename}{own.CustomerName} {own.CustomerSurname}",
+                    HireCode = ct.ContractHire,
+                    HireIdCard = hir.IdCard,
+                    HireFullName = $"{hir.CustomerPrename}{hir.CustomerName} {hir.CustomerSurname}",
+                    // RegisName = ct.ContractOwner,
                     ENo = tl.EngineNo,
                     FNo = tl.FrameNo,
-                    FiId = bk.FiId
+                    FiId = 0
                   }
       );
 
       list = list.Where(x =>
         (value.BookingPaymentType.Any() && value.BookingPaymentType.Contains(x.BookingPaymentType)) ||
         (!string.IsNullOrEmpty(value.SellNo) && x.SellNo.IndexOf(value.SellNo) > -1) ||
-        (!string.IsNullOrEmpty(value.RegisName) && x.RegisName.IndexOf(value.RegisName) > -1) ||
-        (!string.IsNullOrEmpty(value.BookName) && ($"{x.BookTitleName}{x.BookFName}{x.BookSName}").IndexOf(value.BookName) > -1) ||
-        (!string.IsNullOrEmpty(value.BookIdCard) && x.BookIdCard.IndexOf(value.BookIdCard) > -1) ||
+        (!string.IsNullOrEmpty(value.RegisName) && x.OwnerFullName.IndexOf(value.RegisName) > -1) ||
+        (!string.IsNullOrEmpty(value.BookName) && x.HireFullName.IndexOf(value.BookName) > -1) ||
+        (!string.IsNullOrEmpty(value.BookIdCard) && x.HireIdCard.IndexOf(value.BookIdCard) > -1) ||
         (!string.IsNullOrEmpty(value.ENo) && x.ENo.IndexOf(value.ENo) > -1) ||
         (!string.IsNullOrEmpty(value.FNo) && x.FNo.IndexOf(value.FNo) > -1)
       ).OrderBy(x => x.SellDate);
@@ -351,20 +361,54 @@ namespace KKHondaBackend.Controllers.Ris
     [HttpGet("GetCarBySellNo")]
     public async Task<IActionResult> GetCarBySellNo(string sellNo)
     {
-      var value = await (from bi in ctx.BookingItem
-                         join bk in ctx.Booking on bi.BookingId equals bk.BookingId
-                         join tl in ctx.TransferLog on bi.LogReceiveId equals tl.LogId
-                         where bi.LogReceiveId > 0 && bk.SellNo == sellNo
-                         select new
-                         {
-                           LogReceiveId = bi.LogReceiveId,
-                           ENo = tl.EngineNo,
-                           FNo = tl.FrameNo,
-                           FreeAct = bk.FreeAct,
-                           FreeTag = bk.FreeTag,
-                           FreeWarranty = bk.FreeWarranty
-                         })
-                   .FirstOrDefaultAsync();
+
+      var value = await (
+         from booking in ctx.Booking
+         join item in ctx.BookingItem on booking.BookingId equals item.BookingId
+
+         join com in ctx.Company on booking.CusSellCode equals com.ComCode into _com
+         from company in _com.DefaultIfEmpty()
+
+         join log in ctx.TransferLog on item.LogReceiveId equals log.LogId into _log
+         from tfLog in _log.DefaultIfEmpty()
+
+         join mod in ctx.ProductModel on item.ModelId equals mod.ModelId into _mod
+         from model in _mod.DefaultIfEmpty()
+
+         join col in ctx.ProductColor on item.ColorId equals col.ColorId into _col
+         from color in _col.DefaultIfEmpty()
+
+         join ban in ctx.ProductBrand on item.BrandId equals ban.BrandId into _ban
+         from brand in _ban.DefaultIfEmpty()
+
+         join typ in ctx.ProductType on item.TypeId equals typ.TypeId into _typ
+         from type in _typ.DefaultIfEmpty()
+
+         where item.ItemDetailType == 1 &&
+         item.LogReceiveId > 0 &&
+         booking.SellNo == sellNo
+         select new BookingCarDetail
+         {
+           BookingId = booking.BookingId,
+           BookingPaymentType = (int)booking.BookingPaymentType,
+           OwnerCode = booking.CusSellCode,
+           OwnerName = booking.CusSellName,
+           TypeId = item.TypeId,
+           TypeName = type == null ? "" : type.TypeName,
+           BrandId = item.BrandId,
+           BrandName = brand == null ? "" : brand.BrandName,
+           ModelId = item.ModelId,
+           ModelName = model == null ? "" : model.ModelName,
+           ColorId = item.ColorId,
+           ColorName = color == null ? "" : color.ColorName,
+           EngineNo = tfLog == null ? "" : tfLog.EngineNo,
+           FrameNo = tfLog == null ? "" : tfLog.FrameNo,
+           LogReceiveId = tfLog == null ? default(int) : tfLog.LogId,
+           FreeAct = booking.FreeAct,
+           FreeWarranty = booking.FreeWarranty,
+           FreeTag = booking.FreeTag
+         }
+       ).SingleAsync();
 
       return Ok(value);
     }

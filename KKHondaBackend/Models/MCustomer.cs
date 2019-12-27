@@ -25,11 +25,12 @@ namespace KKHondaBackend.Models
     public string Occupation { get; set; }
     public string EmergencyContactName { get; set; }
     public string EmergencyContactPhone { get; set; }
-    public string TypePersonal { get; set; }
-    public string TypeCorporate { get; set; }
-    public string TypeDealer { get; set; }
-    public string TypeSupplier { get; set; }
-    public string TypeOther { get; set; }
+    public bool TypePersonal { get; set; }
+    public bool TypeCorporate { get; set; }
+    public bool TypeDealer { get; set; }
+    public bool TypeSupplier { get; set; }
+    public bool TypeOther { get; set; }
+    public bool TypeFinance { get; set; }
     public string IdCard { get; set; }
     public string CreateBy { get; set; }
     public DateTime? CreateDate { get; set; }

@@ -5,33 +5,42 @@ using Microsoft.AspNetCore.Mvc;
 using KKHondaBackend.Data;
 using KKHondaBackend.Models;
 using KKHondaBackend.Services;
+using KKHondaBackend.Entities;
 using Microsoft.EntityFrameworkCore;
-using System.Collections;
 using System.Threading.Tasks;
 
 namespace KKHondaBackend.Controllers.Credits
 {
   //   [ApiController]
   [Produces("application/json")]
-  [Route("api/Credit/Contract/CreditPayment")]
+  [Route("api/Credit/Contract/[controller]")]
   public class CreditPaymentController : Controller
   {
     private readonly dbwebContext ctx;
     private readonly ISysParameterService iSysParamService;
     private readonly IStatusService iStatusService;
     private readonly IBankingService iBankingService;
+    private readonly ICustomerServices iCustomerService;
+    private readonly ISaleReceiptService iSaleReceipt;
+    private readonly ISaleTaxService iSaleTax;
 
     public CreditPaymentController(
         dbwebContext _ctx,
         ISysParameterService isysParamService,
         IStatusService istatusService,
-        IBankingService ibankingService
+        IBankingService ibankingService,
+        ICustomerServices icustService,
+        ISaleReceiptService _iSaleReceipt,
+        ISaleTaxService _iSaleTax
     )
     {
       ctx = _ctx;
       iSysParamService = isysParamService;
       iStatusService = istatusService;
       iBankingService = ibankingService;
+      iCustomerService = icustService;
+      iSaleReceipt = _iSaleReceipt;
+      iSaleTax = _iSaleTax;
     }
 
     // GET: api/CreditPayment/5
@@ -40,13 +49,6 @@ namespace KKHondaBackend.Controllers.Credits
     {
       try
       {
-        // var bankingsDropdown = iBankingService.GetDropdowns();
-
-        // var statusDropdown = iStatusService.GetDropdown();
-        // statusDropdown = statusDropdown
-        //     .Where(db => db.Value == "10" || db.Value == "11" || db.Value == "12" || db.Value == "13")
-        //     .ToArray();
-
         var contract = (from db in ctx.CreditContract
 
                         join _branch in ctx.Branch on db.BranchId equals _branch.BranchId into a1
@@ -58,7 +60,7 @@ namespace KKHondaBackend.Controllers.Credits
                         join _contrachHire in ctx.MCustomer on db.ContractHire equals _contrachHire.CustomerCode into a7
                         from contrachHire in a7.DefaultIfEmpty()
 
-                        join _sale in ctx.User on db.CreatedBy equals _sale.Id into a14
+                        join _sale in ctx.User on db.CreateBy equals _sale.Id into a14
                         from sale in a14.DefaultIfEmpty()
 
                         where db.ContractId == id
@@ -66,7 +68,7 @@ namespace KKHondaBackend.Controllers.Credits
                         select new
                         {
                           ContractId = id,
-                          db.CalculateId,
+                          db.SaleId,
                           db.BookingId,
                           db.RefNo,
                           db.ContractNo,
@@ -82,7 +84,7 @@ namespace KKHondaBackend.Controllers.Credits
           return StatusCode(404);
 
 
-        var calculate = ctx.CreditCalculate.SingleOrDefault(p => p.CalculateId == contract.CalculateId);
+        var calculate = ctx.Sale.SingleOrDefault(p => p.SaleId == contract.SaleId);
 
         if (calculate == null)
           return StatusCode(400);
@@ -96,23 +98,6 @@ namespace KKHondaBackend.Controllers.Credits
 
         if (_contractItem == null)
           return StatusCode(400);
-
-
-        _contractItem.ForEach(x =>
-        {
-          var DueDate = (DateTime)x.DueDate;
-          var DelayDue = (int)(DateTime.Now.Date - DueDate).TotalDays;
-          if (DelayDue > 0 && x.Status == 13)
-          {
-            x.FineSum = 100;
-            x.FineSumRemain = 100;
-            x.DelayDueDate = DelayDue;
-            x.CheckDueDate = (DateTime.Now.Date);
-          }
-        });
-        ctx.CreditContractItem.UpdateRange(_contractItem);
-        ctx.SaveChanges();
-
 
         var deposit = _contractItem.SingleOrDefault(x => x.InstalmentNo == 0);
 
@@ -149,6 +134,24 @@ namespace KKHondaBackend.Controllers.Credits
                          DepositIsOutstanding = deposit.Status == 13 ? deposit.RemainNetPrice : 0,
                        }).FirstOrDefault();
 
+        if (booking.BookingPaymentType == BookingPaymentType.HierPurchase)
+        {
+          _contractItem.ForEach(x =>
+          {
+            var DueDate = (DateTime)x.DueDate;
+            var DelayDue = (int)(DateTime.Now.Date - DueDate).TotalDays;
+            if (DelayDue > 0 && x.Status == 13)
+            {
+              x.FineSum = 100;
+              x.FineSumRemain = 100;
+              x.DelayDueDate = DelayDue;
+              x.CheckDueDate = (DateTime.Now.Date);
+            }
+          });
+          ctx.CreditContractItem.UpdateRange(_contractItem);
+          ctx.SaveChanges();
+        }
+
         var isPay = _contractItem.Where(x => x.InstalmentNo > 0 && x.RemainNetPrice == 0)
                        .GroupBy(o => new { o.ContractId })
                        .Select(g => new
@@ -157,14 +160,6 @@ namespace KKHondaBackend.Controllers.Credits
                          IsPayTerm = g.Count()
                        }).FirstOrDefault();
 
-        // var isPay = ctx.CreditContractPayment.Where(x => x.ContractId == id && x.InstalmentNo > 0)
-        //     .GroupBy(x => x.ContractId)
-        //     .Select(x => new {
-        //         IsPayPrice = x.Sum(o => o.PayNetPrice),
-        //         IsPayTerm = x.Count()
-        //     }).FirstOrDefault();
-
-
         var isOutstanding = _contractItem.Where(x => x.InstalmentNo > 0)
                                .GroupBy(o => new { o.ContractId })
                                .Select(g => new
@@ -172,7 +167,6 @@ namespace KKHondaBackend.Controllers.Credits
                                  IsOutstandingPrice = g.Sum(x => x.RemainNetPrice),
                                  IsOutstandingTerm = g.Count()
                                }).FirstOrDefault();
-
 
         var contractItem = (from db in _contractItem
 
@@ -201,6 +195,7 @@ namespace KKHondaBackend.Controllers.Credits
         var obj = new Dictionary<string, object>
                 {
                     {"contract", contract},
+                    {"sale", calculate},
                     {"booking", booking},
                     {"contractItem", contractItem},
                     {"isPay", isPay},
@@ -231,7 +226,9 @@ namespace KKHondaBackend.Controllers.Credits
                         select new CreditTransactionReceipt
                         {
                           TaxInvNo = hd.TaxInvNo,
-                          ReceiptNo = hd.ReceiptNo
+                          TaxInvStatus = hd.TaxInvStatus,
+                          ReceiptNo = hd.ReceiptNo,
+                          ReceiptStatus = hd.ReceiptStatus
                         })
                         .Distinct()
                         .ToListAsync();
@@ -249,7 +246,7 @@ namespace KKHondaBackend.Controllers.Credits
         try
         {
           var contract = ctx.CreditContract.FirstOrDefault(p => p.ContractId == payment.ContractId);
-          var calculate = ctx.CreditCalculate.FirstOrDefault(p => p.CalculateId == contract.CalculateId);
+          var calculate = ctx.Sale.FirstOrDefault(p => p.SaleId == contract.SaleId);
           // true ปิดบันชีเช่าซื้อ
           // false ชำระค่างวดปกติ
           var totalPaymentPrice = payment.CutBalance > 0
@@ -261,15 +258,23 @@ namespace KKHondaBackend.Controllers.Credits
                   .OrderBy(x => x.InstalmentNo)
                   .ToList();
 
-          var taxInvoiceNo = iSysParamService.GenerateHpsTransactionTaxInvNo(payment.BranchId);
-          var receiptNo = iSysParamService.GenerateHpsTransactionReceiptNo(payment.BranchId);
-          var CreditTransDTList = new List<CreditTransactionD>();
+          var cHire = iCustomerService.GetCustomerByCode(contract.ContractHire).Result;
+          var tax = iSaleTax.SetSaleTax(cHire, payment.BranchId);
+          tax.TaxNo = iSysParamService.GenerateTaxInvNo(payment.BranchId);
+          ctx.SaleTax.Add(tax);
+          ctx.SaveChanges();
 
+          var receiptNo = iSaleReceipt.SetSaleReceipt(cHire, payment.BranchId);
+          receiptNo.ReceiptNo = iSysParamService.GenerateReceiptNo(payment.BranchId);
+          ctx.SaleReceipt.Add(receiptNo);
+          ctx.SaveChanges();
+
+          var CreditTransDTList = new List<CreditTransactionD>();
           var CreditTransHD = new CreditTransactionH
           {
             ContractId = payment.ContractId,
-            ReceiptNo = receiptNo,
-            TaxInvNo = taxInvoiceNo,
+            ReceiptNo = receiptNo.ReceiptNo,
+            TaxInvNo = tax.TaxNo,
             AccBankId = payment.AccBankId,
             Payeer = payment.Payeer,
             PaymentType = payment.PaymentType,
@@ -437,57 +442,54 @@ namespace KKHondaBackend.Controllers.Credits
     }
 
     // DELETE: api/ApiWithActions/5
-    [HttpPost("CancelItemPayment")]
-    public IActionResult CancelItemPayment([FromBody] ICancelPayment cancel)
+    [HttpPost("[Action]")]
+    public IActionResult CancelReceiptNo([FromBody] ICancelPayment cancel)
     {
       using (var transaction = ctx.Database.BeginTransaction())
       {
         try
         {
-          var cthd = ctx.CreditTransactionH
-            .Where(e => e.ContractId == cancel.ContractId && e.ReceiptNo == cancel.ReceiptNo && e.Status != 13);
+          var cthd = ctx.CreditTransactionH.Where(e =>
+            e.ContractId == cancel.ContractId &&
+            e.ReceiptNo == cancel.SlipNo &&
+            e.Status != 13);
 
           if (!cthd.Any())
           {
             return NotFound();
           }
 
+          var receipt = ctx.SaleReceipt.Where(x => x.ReceiptNo == cancel.SlipNo).Single();
+          receipt.Status = false;
+          receipt.Reason = cancel.Reason;
+          receipt.ApproveId = cancel.ApproveBy;
+          receipt.UpdateBy = cancel.UpdateBy;
+          receipt.UpdateDate = DateTime.Now;
+          ctx.SaleReceipt.Update(receipt);
+          ctx.SaveChanges();
+
           var hd = cthd.Single();
-          hd.Status = 0;
-          hd.Reason = cancel.Reason;
+          hd.ReceiptStatus = false;
           hd.UpdateBy = cancel.UpdateBy;
           hd.UpdateDate = DateTime.Now;
-          hd.ApproveBy = cancel.ApproveBy;
+          if (hd.TaxInvStatus == false && hd.ReceiptStatus == false)
+          {
+            hd.Status = 0;
+
+            var cItem = SetCreditContractItem(hd.CTH_Id, cancel.UpdateBy);
+            ctx.UpdateRange(cItem);
+            ctx.SaveChanges();
+
+            var ct = ctx.CreditContract.SingleOrDefault(x => x.ContractId == cancel.ContractId);
+            // เปลี่ยนสถานะ อยู่ระหว่างการผ่อนชำระ
+            ct.ContractStatus = 31;
+            ct.EndContractDate = DateTime.Now;
+            ctx.CreditContract.Update(ct);
+            ctx.SaveChanges();
+          }
+
           ctx.CreditTransactionH.Update(hd);
           ctx.SaveChanges();
-
-          var ctdt = ctx.CreditTransactionD.Where(e => e.CTH_Id == hd.CTH_Id);
-
-          var cItem = new List<CreditContractItem>();
-          foreach (var dt in ctdt)
-          {
-            var item = ctx.CreditContractItem.Single(_item => _item.ContractItemId == dt.ContractItemId);
-            item.Remain += dt.PayPrice;
-            item.RemainVatPrice += dt.PayVatPrice;
-            item.RemainNetPrice += dt.PayNetPrice;
-            item.FineSumRemain += dt.FineSum;
-            item.FineSumOther += dt.FineSumOther;
-            item.FineSumStatus = null;
-            item.Status = item.RemainNetPrice < item.PayNetPrice ? 12 : 13;
-            item.UpdateBy = cancel.UpdateBy;
-            item.UpdateDate = DateTime.Now;
-            cItem.Add(item);
-          }
-          ctx.UpdateRange(cItem);
-          ctx.SaveChanges();
-
-          var ct = ctx.CreditContract.SingleOrDefault(x => x.ContractId == cancel.ContractId);
-          // เปลี่ยนสถานะ อยู่ระหว่างการผ่อนชำระ
-          ct.ContractStatus = 31;
-          ct.EndContractDate = DateTime.Now;
-          ctx.CreditContract.Update(ct);
-          ctx.SaveChanges();
-
           transaction.Commit();
 
           return NoContent();
@@ -500,10 +502,91 @@ namespace KKHondaBackend.Controllers.Credits
       }
     }
 
+    [HttpPost("[Action]")]
+    public IActionResult CancelTaxInvNo([FromBody] ICancelPayment cancel)
+    {
+      using (var transaction = ctx.Database.BeginTransaction())
+      {
+        try
+        {
+          var cthd = ctx.CreditTransactionH.Where(e =>
+            e.ContractId == cancel.ContractId &&
+            e.TaxInvNo == cancel.SlipNo &&
+            e.Status != 13);
+
+          if (!cthd.Any())
+          {
+            return NotFound();
+          }
+
+          var taxInv = ctx.SaleTax.Where(x => x.TaxNo == cancel.SlipNo).Single();
+          taxInv.Status = false;
+          taxInv.Reason = cancel.Reason;
+          taxInv.ApproveId = cancel.ApproveBy;
+          taxInv.UpdateBy = cancel.UpdateBy;
+          taxInv.UpdateDate = DateTime.Now;
+          ctx.SaleTax.Update(taxInv);
+          ctx.SaveChanges();
+
+          var hd = cthd.Single();
+          hd.TaxInvStatus = false;
+          hd.UpdateBy = cancel.UpdateBy;
+          hd.UpdateDate = DateTime.Now;
+
+          if (hd.TaxInvStatus == false && hd.ReceiptStatus == false)
+          {
+            hd.Status = 0;
+            var cItem = SetCreditContractItem(hd.CTH_Id, cancel.UpdateBy);
+            ctx.UpdateRange(cItem);
+            ctx.SaveChanges();
+
+            var ct = ctx.CreditContract.SingleOrDefault(x => x.ContractId == cancel.ContractId);
+            // เปลี่ยนสถานะ อยู่ระหว่างการผ่อนชำระ
+            ct.ContractStatus = 31;
+            ct.EndContractDate = DateTime.Now;
+            ctx.CreditContract.Update(ct);
+            ctx.SaveChanges();
+          }
+
+          ctx.CreditTransactionH.Update(hd);
+          ctx.SaveChanges();
+          transaction.Commit();
+
+          return NoContent();
+        }
+        catch (Exception ex)
+        {
+          transaction.Rollback();
+          return StatusCode(500, ex.Message);
+        }
+      }
+    }
+
+    private List<CreditContractItem> SetCreditContractItem(int cTH_Id, int updateBy)
+    {
+      var ctdt = ctx.CreditTransactionD.Where(e => e.CTH_Id == cTH_Id);
+      var cItem = new List<CreditContractItem>();
+      foreach (var dt in ctdt)
+      {
+        var item = ctx.CreditContractItem.Single(_item => _item.ContractItemId == dt.ContractItemId);
+        item.Remain += dt.PayPrice;
+        item.RemainVatPrice += dt.PayVatPrice;
+        item.RemainNetPrice += dt.PayNetPrice;
+        item.FineSumRemain += dt.FineSum;
+        item.FineSumOther += dt.FineSumOther;
+        item.FineSumStatus = null;
+        item.Status = item.RemainNetPrice < item.PayNetPrice ? 12 : 13;
+        item.UpdateBy = updateBy;
+        item.UpdateDate = DateTime.Now;
+        cItem.Add(item);
+      }
+      return cItem;
+    }
+
     public class ICancelPayment
     {
       public int ContractId { get; set; }
-      public string ReceiptNo { get; set; }
+      public string SlipNo { get; set; }
       public string Reason { get; set; }
       public int UpdateBy { get; set; }
       public int ApproveBy { get; set; }
@@ -520,7 +603,6 @@ namespace KKHondaBackend.Controllers.Credits
 
     public class IPayment
     {
-
       public int ContractId { get; set; }
       public decimal Outstanding { get; set; }
       public List<int> InstalmentNo { get; set; }

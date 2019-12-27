@@ -138,7 +138,7 @@ namespace KKHondaReport.MCS {
         
         [Browsable(false)]
         [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.Shared.IParameterField Parameter_branch_ids {
+        public CrystalDecisions.Shared.IParameterField Parameter_txt {
             get {
                 return this.DataDefinition.ParameterFields[0];
             }
@@ -146,7 +146,7 @@ namespace KKHondaReport.MCS {
         
         [Browsable(false)]
         [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.Shared.IParameterField Parameter_brandId {
+        public CrystalDecisions.Shared.IParameterField Parameter_branch_ids {
             get {
                 return this.DataDefinition.ParameterFields[1];
             }
@@ -154,7 +154,7 @@ namespace KKHondaReport.MCS {
         
         [Browsable(false)]
         [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.Shared.IParameterField Parameter_modelId {
+        public CrystalDecisions.Shared.IParameterField Parameter_sDate {
             get {
                 return this.DataDefinition.ParameterFields[2];
             }
@@ -162,7 +162,7 @@ namespace KKHondaReport.MCS {
         
         [Browsable(false)]
         [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.Shared.IParameterField Parameter_typeId {
+        public CrystalDecisions.Shared.IParameterField Parameter_eDate {
             get {
                 return this.DataDefinition.ParameterFields[3];
             }
@@ -170,49 +170,9 @@ namespace KKHondaReport.MCS {
         
         [Browsable(false)]
         [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.Shared.IParameterField Parameter_colorId {
-            get {
-                return this.DataDefinition.ParameterFields[4];
-            }
-        }
-        
-        [Browsable(false)]
-        [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.Shared.IParameterField Parameter_booking_type {
-            get {
-                return this.DataDefinition.ParameterFields[5];
-            }
-        }
-        
-        [Browsable(false)]
-        [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.Shared.IParameterField Parameter_sDate {
-            get {
-                return this.DataDefinition.ParameterFields[6];
-            }
-        }
-        
-        [Browsable(false)]
-        [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.Shared.IParameterField Parameter_eDate {
-            get {
-                return this.DataDefinition.ParameterFields[7];
-            }
-        }
-        
-        [Browsable(false)]
-        [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
         public CrystalDecisions.Shared.IParameterField Parameter_toprank {
             get {
-                return this.DataDefinition.ParameterFields[8];
-            }
-        }
-        
-        [Browsable(false)]
-        [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.Shared.IParameterField Parameter_txt {
-            get {
-                return this.DataDefinition.ParameterFields[9];
+                return this.DataDefinition.ParameterFields[4];
             }
         }
     }

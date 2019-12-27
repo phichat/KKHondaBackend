@@ -109,8 +109,8 @@ namespace KKHondaBackend.Controllers.Ris
     {
       var list = ClDepositList.Where(x =>
         (value.Status != null && x.Status == value.Status) ||
-        (!string.IsNullOrEmpty(value.ReceiptNo) && !string.IsNullOrEmpty(x.ReceiptNo) && x.ReceiptNo.IndexOf(value.ReceiptNo) > -1) ||
-        (!string.IsNullOrEmpty(value.CreateName) && x.CreateName.IndexOf(value.CreateName) > -1) ||
+        (!string.IsNullOrEmpty(x.ReceiptNo) && x.ReceiptNo.ToLower().IndexOf(value.ReceiptNo.ToLower()) > -1) ||
+        (!string.IsNullOrEmpty(value.CreateName) && x.CreateName.ToLower().IndexOf(value.CreateName.ToLower()) > -1) ||
         (value.ExpenseTag.Any() && value.ExpenseTag.Contains(x.ExpenseTag)) ||
         (value.PaymentType.Any() && value.PaymentType.Contains(x.PaymentType))
       );

@@ -12,7 +12,7 @@ namespace KKHondaBackend.Controllers.Credits
 {
   [ApiController]
     [Produces("application/json")]
-    [Route("api/Credit/RptSumCloseContract")]
+    [Route("api/Credit/[controller]")]
     public class RptSumCloseContractController : Controller
     {
         private readonly dbwebContext ctx;

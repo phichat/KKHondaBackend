@@ -8,7 +8,7 @@ namespace KKHondaBackend.Models
   {
     [Key]
     public int ContractId { get; set; }
-    public int CalculateId { get; set; }
+    public int SaleId { get; set; }
     public string Branch { get; set; }
     public int? BookingPaymentType { get; set; }
     public string ContractNo { get; set; }

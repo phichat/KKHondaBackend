@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace KKHondaBackend.Controllers.Customers
 {
-  [ApiController]
+  // [ApiController]
   [Produces("application/json")]
   [Route("api/Customers/[controller]")]
   public class CustomerController : Controller
@@ -67,6 +67,48 @@ namespace KKHondaBackend.Controllers.Customers
         return NoContent();
 
       return Ok(await iCust.GetCustomerByCode(custCode));
+    }
+
+    [HttpGet("[Action]")]
+    public async Task<IActionResult> GetLeasingByBranch(int branchId)
+    {
+      var financeComList = await (from fcl in ctx.FinanceComList
+                                  join minCt in ctx.CreditTermList on fcl.MinCtId equals minCt.CtId
+                                  join maxCt in ctx.CreditTermList on fcl.MaxCtId equals maxCt.CtId
+                                  select new
+                                  {
+                                    FicomId = fcl.FicomId,
+                                    FiId = fcl.FiId,
+                                    FiintId = fcl.FiintId,
+                                    MinCtId = fcl.MinCtId,
+                                    MaxCtId = fcl.MaxCtId,
+                                    MinDown = fcl.MinDown,
+                                    MaxDown = fcl.MaxDown,
+                                    ComPrice = fcl.ComPrice,
+                                    MinCtNo = minCt.CtNo,
+                                    MaxCtNo = maxCt.CtNo
+                                  }).ToListAsync();
+
+      var list = await (from fi in ctx.FinanceList
+                        join cus in iCust.GetLeasing on fi.FiCode equals cus.CustomerCode
+                        where fi.FiStatus == 1 && fi.BranchId == branchId
+                        select new
+                        {
+                          FiId = fi.FiId,
+                          LeasingCode = cus.CustomerCode,
+                          LeasingName = $"{cus.CustomerPrename}{cus.CustomerName}",
+                          LeasingIntList = ctx.FinanceIntList
+                            .Select(fil => new {
+                              FiintId = fil.FiintId,
+                              FiId = fil.FiId,
+                              FiintNo = fil.FiintNo,
+                              LeasingComList = financeComList
+                                .Where(fcl => fcl.FiId == fi.FiId && fcl.FiintId == fil.FiintId)
+                            })
+                            .Where(fil => fil.FiId == fi.FiId)
+                        }).ToListAsync();
+
+      return Ok(list);
     }
 
   }

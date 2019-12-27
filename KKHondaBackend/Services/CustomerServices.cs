@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,12 +13,10 @@ namespace KKHondaBackend.Services
   public interface ICustomerServices
   {
     Task<IEnumerable<Dropdown>> GetDropdownByKey(string term);
-
     Task<IEnumerable<Dropdown>> GetDropdowns();
-
     Task<MCustomer> GetCustomerByCode(string custCode);
-
     Task<IEnumerable<Customer>> GetCustomer();
+    IEnumerable<MCustomer> GetLeasing { get; }
   }
 
   public class Customer
@@ -38,6 +37,7 @@ namespace KKHondaBackend.Services
 
     public async Task<MCustomer> GetCustomerByCode(string custCode)
     {
+
       var address = await ctx.MCustomerAddress.Where(x => x.CustomerCode == custCode).ToListAsync();
       var card = await ctx.MCustomerCard.Where(x => x.CustomerCode == custCode).ToListAsync();
       var customer = await (from db in ctx.MCustomer
@@ -63,6 +63,7 @@ namespace KKHondaBackend.Services
                               TypeDealer = db.TypeDealer,
                               TypeSupplier = db.TypeSupplier,
                               TypeOther = db.TypeOther,
+                              TypeFinance = db.TypeFinance,
                               IdCard = db.IdCard,
                               CreateBy = db.CreateBy,
                               CreateDate = db.CreateDate,
@@ -71,28 +72,29 @@ namespace KKHondaBackend.Services
                               MCustomerAddress = address,
                               MCustomerCard = card
                             }).SingleOrDefaultAsync();
+
       return customer;
     }
 
     public async Task<IEnumerable<Dropdown>> GetDropdownByKey(string term)
     {
-      List<Dropdown> customerDropdowns = new List<Dropdown>();
+      var customerDropdowns = new List<Dropdown>();
       var fullName = new StringBuilder();
-      customerDropdowns = await ctx.MCustomer
-                             .Where(o => o.CustomerCode.Contains(term) ||
-                             ($"{o.CustomerPrename}{o.CustomerName} {o.CustomerSurname}").Contains(term)
-                             ).Select(o => new Dropdown
-                             {
-                               Value = o.CustomerCode,
-                               Text = $"{o.CustomerPrename}{o.CustomerName} {o.CustomerSurname}"
-                             })
-                             .Take(50)
-                             .ToListAsync();
+      var p1 = new SqlParameter("@term", term);
+      var sqlText = @"select top 50 customer_code, customer_prename, customer_name, customer_surname 
+      from dbo.m_customer 
+      where customer_code like '%'+@term+'%' or
+      CONCAT(customer_prename, customer_name, ' ', customer_surname) like '%'+@term+'%'";
+      customerDropdowns = await ctx.MCustomer.FromSql(sqlText, p1)
+      .Select(o => new Dropdown
+      {
+        Value = o.CustomerCode,
+        Text = $"{o.CustomerPrename}{o.CustomerName} {o.CustomerSurname}"
+      })
+      .ToListAsync();
 
       return customerDropdowns;
     }
-
-    // private stringBuilder()
 
     public async Task<IEnumerable<Dropdown>> GetDropdowns()
     {
@@ -108,6 +110,11 @@ namespace KKHondaBackend.Services
                              .ToListAsync();
 
       return customerDropdowns;
+    }
+
+    public IEnumerable<MCustomer> GetLeasing
+    {
+      get => ctx.MCustomer.Where(x => x.TypeFinance == true);
     }
 
     public async Task<IEnumerable<Customer>> GetCustomer()

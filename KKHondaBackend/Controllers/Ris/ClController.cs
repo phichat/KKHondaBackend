@@ -12,7 +12,7 @@ namespace KKHondaBackend.Controllers.Ris
 {
   // [ApiController]
   [Produces("application/json")]
-  [Route("api/Ris/Cl")]
+  [Route("api/Ris/[controller]")]
   public class ClController : Controller
   {
     private readonly dbwebContext ctx;
@@ -76,12 +76,13 @@ namespace KKHondaBackend.Controllers.Ris
     [HttpGet("SearchClList")]
     public IActionResult SearchClList(SearchClList value)
     {
-      var list = ClListRes.Where(x =>
-        (!string.IsNullOrEmpty(value.SedNo) && x.SedNo.IndexOf(value.SedNo) > -1) ||
-        (!string.IsNullOrEmpty(value.AlNo) && x.AlNo.IndexOf(value.AlNo) > -1) ||
-        (!string.IsNullOrEmpty(value.ClNo) && x.AlNo.IndexOf(value.ClNo) > -1) ||
-        (!string.IsNullOrEmpty(value.CreateName) && x.CreateName.IndexOf(value.CreateName) > -1) ||
-        (!string.IsNullOrEmpty(value.RefundName) && x.RefundName.IndexOf(value.RefundName) > -1) ||
+      var list = ClListRes
+      .Where(x =>
+        (!string.IsNullOrEmpty(value.SedNo) && x.SedNo.ToLower().IndexOf(value.SedNo.ToLower()) > -1) ||
+        (!string.IsNullOrEmpty(value.AlNo) && x.AlNo.ToLower().IndexOf(value.AlNo.ToLower()) > -1) ||
+        (!string.IsNullOrEmpty(value.ClNo) && x.AlNo.ToLower().IndexOf(value.ClNo.ToLower()) > -1) ||
+        (!string.IsNullOrEmpty(value.CreateName) && x.CreateName.ToLower().IndexOf(value.CreateName.ToLower()) > -1) ||
+        (!string.IsNullOrEmpty(value.RefundName) && x.RefundName.ToLower().IndexOf(value.RefundName.ToLower()) > -1) ||
         (value.CreateDate != null && x.CreateDate.Date == value.CreateDate?.Date) ||
         (value.Status != null && x.Status == value.Status)
       );

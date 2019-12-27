@@ -75,8 +75,8 @@ namespace KKHondaBackend.Controllers.Ris
     public IActionResult SearchRevList(SearchRevList value)
     {
       var list = RevList.Where(x =>
-          (!string.IsNullOrEmpty(value.RevNo) && x.RevNo.IndexOf(value.RevNo) > -1) ||
-          (!string.IsNullOrEmpty(value.CreateName) && x.CreateName.IndexOf(value.CreateName) > -1) ||
+          (!string.IsNullOrEmpty(value.RevNo) && x.RevNo.ToLower().IndexOf(value.RevNo.ToLower()) > -1) ||
+          (!string.IsNullOrEmpty(value.CreateName) && x.CreateName.ToLower().IndexOf(value.CreateName.ToLower()) > -1) ||
           (value.CreateDate != null && x.CreateDate.Date == value.CreateDate?.Date) ||
           (value.Status != null && x.Status == value.Status)
       );

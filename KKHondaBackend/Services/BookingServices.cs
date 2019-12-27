@@ -5,18 +5,19 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using KKHondaBackend.Data;
+using KKHondaBackend.Models;
 
 namespace KKHondaBackend.Services
 {
   public interface IBookingServices
   {
-    Booking GetBookingById(int id);
+    BookingRes GetBookingById(int id);
 
     BookingList[] GetBookingLists();
 
   }
 
-  public class Booking
+  public class BookingRes : Booking
   {
     public string Address { get; set; }
     public string ContractNo { get; set; }
@@ -30,13 +31,6 @@ namespace KKHondaBackend.Services
     public int? GenderCode { get; set; }
     public string GenderName { get; set; }
     public string IdCard { get; set; }
-    public string BookingDate { get; set; }
-    public int? BookingDepositType { get; set; }    // 1=เงินสด, 2=โอน, 3=เช็ค, 4=บัตรเครดิต, 5=เครดิตเทอม
-    public int? BookingId { get; set; }
-    public string BookingNo { get; set; }
-    public int? BookingPaymentType { get; set; }    // ประเภทการซื้อ 1=สด, 2=สินเชื่อ, 3=เช่าซื้อ, 4=ขายเชื่อ
-    public int? BookingStatus { get; set; }          // 1=จอง,2=ขาย,9=ยกเลิก
-    public int? BookingType { get; set; }            // 1=รถ, 2=อื่นๆ, 3=ศูนย์บริการ
     public decimal? NetPrice { get; set; }
     public string NickName { get; set; }
     public decimal? OutStandingPrice { get; set; }
@@ -46,55 +40,18 @@ namespace KKHondaBackend.Services
     public decimal? TotalDiscount { get; set; }
     public decimal? Vat { get; set; }
     public decimal? VatPrice { get; set; }
-    public int? FreeAct { get; set; }
-    public int? FreeTag { get; set; }
-    public int? FreeWarranty { get; set; }
-    public int? BranchId { get; set; }
-    public int? CreateBy { get; set; }
-    public BookingItem[] BookingItem { get; set; }
+    public BookingItemRes[] BookingItem { get; set; }
 
-    public string CusSellName { get; set; }
-    public string CusTaxNo { get; set; }
-    public string CusTaxBranch { get; set; }
-    public string SellRemark { get; set; }
   }
 
-  public class BookingItem
+  public class BookingItemRes : BookingItem
   {
-    public int? BookingId { get; set; }
     public string BrandName { get; set; }
-    public int? CatId { get; set; }
     public string CatName { get; set; }
     public string ClassName { get; set; }
     public string ColorName { get; set; }
-    public decimal? CostNet { get; set; }
-    public decimal? CostPrice { get; set; }
-    public decimal? CostVat { get; set; }
-    public decimal? CostVatPrice { get; set; }
-    public int? ItemDetailType { get; set; }
-    public int? ItemId { get; set; }
-    public decimal? ItemQty { get; set; }
-    public decimal? ItemType { get; set; }
     public string ModelCode { get; set; }
     public string ModelName { get; set; }
-    public string PartClass { get; set; }
-    public string PartCode { get; set; }
-    public string PartName { get; set; }
-    public string PartSource { get; set; }
-    public string PartSpareCode { get; set; }
-    public decimal? RealDiscountB { get; set; }
-    public decimal? RealDiscountP { get; set; }
-    public decimal? RealVat { get; set; }
-    public decimal? RealNetPrice { get; set; }
-    public decimal? RealVatPrice { get; set; }
-    public decimal? RealSellPrice { get; set; }
-    public decimal? RealTotalDiscount { get; set; }
-    public decimal? RealDiscountPPrice { get; set; }
-    public int? RunId { get; set; }
-    public decimal? SellNet { get; set; }
-    public decimal? SellVat { get; set; }
-    public decimal? SellPrice { get; set; }
-    public decimal? SellVatPrice { get; set; }
     public string TypeName { get; set; }
     public string UnitName { get; set; }
     public string EngineNo { get; set; }
@@ -137,10 +94,10 @@ namespace KKHondaBackend.Services
     }
 
 
-    public Booking GetBookingById(int id)
+    public BookingRes GetBookingById(int id)
     {
-      Booking booking = new Booking();
-      BookingItem[] bookingItems = new BookingItem[] { };
+      var booking = new BookingRes();
+      var bookingItems = new BookingItemRes[] { };
 
 
       bookingItems = (from item in ctx.BookingItem
@@ -170,7 +127,7 @@ namespace KKHondaBackend.Services
                       join _transferlog in ctx.TransferLog on item.LogReceiveId equals _transferlog.LogId into a8
                       from tflog in a8.DefaultIfEmpty()
 
-                      select new BookingItem
+                      select new BookingItemRes
                       {
                         BookingId = item.BookingId,
                         BrandName = brand.BrandName,
@@ -216,7 +173,7 @@ namespace KKHondaBackend.Services
 
       booking = (from book in ctx.Booking
                  where book.BookingId == id
-                 select new Booking
+                 select new BookingRes
                  {
                    Address = book.BookAddress,
                    ContractNo = book.BookContactNo,

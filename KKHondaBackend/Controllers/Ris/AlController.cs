@@ -7,12 +7,13 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using KKHondaBackend.Services;
 using KKHondaBackend.Entities;
+using System.Data.SqlClient;
 
 namespace KKHondaBackend.Controllers.Ris
 {
   // [ApiController]
   [Produces("application/json")]
-  [Route("api/Ris/Al")]
+  [Route("api/Ris/[controller]")]
   public class AlController : Controller
   {
     private readonly dbwebContext ctx;
@@ -39,7 +40,7 @@ namespace KKHondaBackend.Controllers.Ris
           }).AsNoTracking();
     }
 
-    private IEnumerable<CarRegisAlListRes> AlListRes
+    private IQueryable<CarRegisAlListRes> AlListRes
     {
       get => (from al in ctx.CarRegisAlList
               join sd in ctx.CarRegisSedList on al.SedNo equals sd.SedNo
@@ -95,14 +96,15 @@ namespace KKHondaBackend.Controllers.Ris
     [HttpGet("SearchAlList")]
     public IActionResult SearchAlList(SearchAlList value)
     {
-      var list = AlListRes.Where(x =>
-        (!string.IsNullOrEmpty(value.SedNo) && x.SedNo.IndexOf(value.SedNo) > -1) ||
-        (!string.IsNullOrEmpty(value.AlNo) && x.AlNo.IndexOf(value.AlNo) > -1) ||
-        (!string.IsNullOrEmpty(value.CreateName) && x.CreateName.IndexOf(value.CreateName) > -1) ||
-        (!string.IsNullOrEmpty(value.BorrowerName) && x.BorrowerName.IndexOf(value.BorrowerName) > -1) ||
-        (value.CreateDate != null && x.CreateDate.Date == value.CreateDate?.Date) ||
+      var list = AlListRes
+       .Where(x =>
+        (!string.IsNullOrEmpty(value.SedNo) && x.SedNo.ToLower().Contains(value.SedNo.ToLower())) ||
+        (!string.IsNullOrEmpty(value.AlNo) && x.AlNo.ToLower().Contains(value.AlNo.ToLower())) ||
+        (!string.IsNullOrEmpty(value.CreateName) && x.CreateName.ToLower().Contains(value.CreateName.ToLower())) ||
+        (!string.IsNullOrEmpty(value.BorrowerName) && x.BorrowerName.ToLower().Contains(value.BorrowerName.ToLower())) ||
+        (value.CreateDate != null && x.CreateDate.Date == ((DateTime)value.CreateDate).Date) ||
         (value.Status != null && x.Status == value.Status)
-      );
+       );
       return Ok(list.ToList());
     }
 

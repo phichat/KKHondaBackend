@@ -7,50 +7,96 @@ using Microsoft.EntityFrameworkCore;
 using KKHondaBackend.Data;
 using KKHondaBackend.Models;
 using KKHondaBackend.Services;
+using KKHondaBackend.Entities;
+using System.Data.SqlClient;
 
 namespace KKHondaBackend.Controllers.Credits
 {
   //   [ApiController]
   [Produces("application/json")]
-  [Route("api/Credit/Calculates")]
-  public class CreditCalculatesController : Controller
+  [Route("api/Credit/[controller]")]
+  public class SaleController : Controller
   {
     private readonly dbwebContext _context;
     private readonly IBookingServices iBookService;
     private readonly ISysParameterService iSysParamService;
     private readonly ICustomerServices iCustomerService;
+    private readonly IReserveReturnService iReserveReturn;
+    private readonly ISaleCommissionService iSaleCommission;
+    private readonly ISaleInvTaxRecService iSaleInvTaxRec;
+    private readonly ISaleReceiptService iSaleReceipt;
 
-    public CreditCalculatesController(
+    public SaleController(
         dbwebContext context,
         IBookingServices iBookingService,
         ISysParameterService isysParamService,
-        ICustomerServices icustService
+        ICustomerServices icustService,
+        IReserveReturnService _iReserveReturn,
+        ISaleCommissionService _iSaleCommission,
+        ISaleInvTaxRecService _iSaleInvTaxRec,
+        ISaleReceiptService _iSaleReceipt
     )
     {
       _context = context;
       iBookService = iBookingService;
       iSysParamService = isysParamService;
       iCustomerService = icustService;
+      iReserveReturn = _iReserveReturn;
+      iSaleCommission = _iSaleCommission;
+      iSaleInvTaxRec = _iSaleInvTaxRec;
+      iSaleReceipt = _iSaleReceipt;
     }
 
-    // GET: api/CreditCalculates
+    [HttpGet("[Action]")]
+    public async Task<IActionResult> SearchSale(SearchSale form)
+    {
+      var commandText = @"EXEC SP_SearchSale @BranchId
+        ,@Status 
+        ,@SellNo 
+        ,@SellDate 
+        ,@HireName 
+        ,@HireIdCard 
+        ,@ENo 
+        ,@FNo 
+        ,@BookingPaymentType";
+      var p1 = new SqlParameter("@BranchId", form.BranchId.ToString());
+      var p2 = new SqlParameter("@Status", form.Status != null ? form.Status.ToString() : "");
+      var p3 = new SqlParameter("@SellNo", form.SellNo != null ? form.SellNo : "");
+      var p4 = new SqlParameter("@SellDate", form.SellDate != null ? form.SellDate?.ToString("yyyy-MM-dd") : "");
+      var p5 = new SqlParameter("@HireName", form.HireName != null ? form.HireName : "");
+      var p6 = new SqlParameter("@HireIdCard", form.HireIdCard != null ? form.HireIdCard : "");
+      var p7 = new SqlParameter("@ENo", form.ENo != null ? form.ENo : "");
+      var p8 = new SqlParameter("@FNo", form.FNo != null ? form.FNo : "");
+      var p9 = new SqlParameter("@BookingPaymentType", form.BookingPaymentType != null ? form.BookingPaymentType.ToString() : "");
+
+      var reslut = _context.SpSearchSale.FromSql(commandText, p1, p2, p3, p4, p5, p6, p7, p8, p9);
+      return Ok(await reslut.ToListAsync());
+    }
+
+    // GET: api/Sale
     [HttpGet]
-    public IEnumerable<CreditCalculate> GetCreditCalculate()
+    public IEnumerable<Sale> GetSale()
     {
-      return _context.CreditCalculate;
+      return _context.Sale;
     }
 
-    // GET: api/CreditCalculates/5
+    [HttpGet("{saleId}")]
+    public IActionResult GetAction(int saleId)
+    {
+      return Ok(_context.Sale.SingleOrDefault(x => x.SaleId == saleId));
+    }
+
+    // GET: api/Sale/5
     [HttpGet("GetById")]
-    public IActionResult GetCreditCalculate(int calculateId)
+    public IActionResult GetSale(int SaleId)
     {
 
-      var calc = _context.CreditCalculate
-                         .Where(p => p.CalculateId == calculateId)
+      var calc = _context.Sale
+                         .Where(p => p.SaleId == SaleId)
                          .SingleOrDefault();
 
       var cont = _context.CreditContract
-                         .Where(p => p.CalculateId == calculateId)
+                         .Where(p => p.SaleId == SaleId)
                          .SingleOrDefault();
 
       var contItem = _context.CreditContractItem
@@ -62,7 +108,7 @@ namespace KKHondaBackend.Controllers.Credits
 
       var obj = new Dictionary<string, object>
             {
-                {"creditCalculate", calc},
+                {"sale", calc},
                 {"creditContract", cont},
                 {"creditContractItem", contItem},
                 {"booking", book}
@@ -71,21 +117,21 @@ namespace KKHondaBackend.Controllers.Credits
       return Ok(obj);
     }
 
-    // PUT: api/CreditCalculates/5
+    // PUT: api/Sale/5
     [HttpPut("{id}")]
-    public async Task<IActionResult> PutCreditCalculate([FromRoute] int id, [FromBody] CreditCalculate creditCalculate)
+    public async Task<IActionResult> PutSale([FromRoute] int id, [FromBody] Sale Sale)
     {
       if (!ModelState.IsValid)
       {
         return BadRequest(ModelState);
       }
 
-      if (id != creditCalculate.CalculateId)
+      if (id != Sale.SaleId)
       {
         return BadRequest();
       }
 
-      _context.Entry(creditCalculate).State = EntityState.Modified;
+      _context.Entry(Sale).State = EntityState.Modified;
 
       try
       {
@@ -93,7 +139,7 @@ namespace KKHondaBackend.Controllers.Credits
       }
       catch (DbUpdateConcurrencyException)
       {
-        if (!CreditCalculateExists(id))
+        if (!SaleExists(id))
         {
           return NotFound();
         }
@@ -112,7 +158,6 @@ namespace KKHondaBackend.Controllers.Credits
 
       try
       {
-
         var bookItem = _context.BookingItem.SingleOrDefault(p => p.BookingId == bookingId && p.ItemDetailType == 1);
         var model = _context.ProductModel.SingleOrDefault(p => p.ModelId == bookItem.ModelId);
         var stockReceive = (from stock in _context.StockReceive
@@ -155,64 +200,225 @@ namespace KKHondaBackend.Controllers.Credits
       // return Ok(credit);
     }
 
-    [HttpPost("Edit")]
-    public IActionResult Edit([FromBody] Credit credit)
+    [HttpPost("[Action]")]
+    public IActionResult CancelReceipt([FromBody] CancelSlip form)
     {
-      return Edited(credit);
+      var slip = _context.SaleReceipt.Where(x => x.ReceiptNo == form.SlipNo).Single();
+      slip.Status = false;
+      slip.ApproveId = form.ApproveId;
+      slip.Reason = form.Reason;
+
+      var sale = _context.Sale.Where(x => x.ReceiptNo == form.SlipNo).Single();
+      sale.ReceiptStatus = slip.Status;
+
+      _context.SaveChanges();
+
+      return NoContent();
     }
 
-    [HttpPost("Revice")]
-    public IActionResult Revice([FromBody] Credit credit)
+    [HttpPost("[Action]")]
+    public IActionResult CancelSale([FromBody] CancelSlip form)
     {
-      return Reviced(credit);
+      var slip = _context.Sale.Where(x => x.SellNo == form.SlipNo).Single();
+      slip.SellStatus = false;
+      slip.ApproveId = form.ApproveId;
+      slip.Reason = form.Reason;
+      _context.SaveChanges();
+
+      return NoContent();
     }
+
+    [HttpPost("[Action]")]
+    public IActionResult CancelCommisstion([FromBody] CancelSlip form)
+    {
+      var slip = _context.SaleCommission.Where(x => x.ComNo == form.SlipNo).Single();
+      slip.Status = false;
+      slip.ApproveId = form.ApproveId;
+      slip.Reason = form.Reason;
+
+      var sale = _context.Sale.Where(x => x.ComNo == form.SlipNo).Single();
+      sale.ComStatus = slip.Status;
+
+      _context.SaveChanges();
+
+      return NoContent();
+    }
+
+    [HttpPost("[Action]")]
+    public IActionResult CancelReserveReturn([FromBody] CancelSlip form)
+    {
+      var slip = _context.ReserveReturn.Where(x => x.ReturnDepositNo == form.SlipNo).Single();
+      slip.Status = false;
+      slip.ApproveId = form.ApproveId;
+      slip.Reason = form.Reason;
+
+      var sale = _context.Sale.Where(x => x.ReturnDepositNo == form.SlipNo).Single();
+      sale.ReturnDepositStatus = slip.Status;
+
+      _context.SaveChanges();
+
+      return NoContent();
+    }
+
+    [HttpPost("[Action]")]
+    public IActionResult CancelInvTaxRec([FromBody] CancelSlip form)
+    {
+      var slip = _context.SaleInvTaxRec.Where(x => x.InvTaxRecNo == form.SlipNo).Single();
+      slip.Status = false;
+      slip.ApproveId = form.ApproveId;
+      slip.Reason = form.Reason;
+
+      var sale = _context.Sale.Where(x => x.InvTaxRecNo == form.SlipNo).Single();
+      sale.InvTaxRecStatus = slip.Status;
+
+      _context.SaveChanges();
+
+      return NoContent();
+    }
+
+    // [HttpPost("Edit")]
+    // public IActionResult Edit([FromBody] Credit credit)
+    // {
+    //   return Edited(credit);
+    // }
+
+    // [HttpPost("Revice")]
+    // public IActionResult Revice([FromBody] Credit credit)
+    // {
+    //   return Reviced(credit);
+    // }
 
     private IActionResult Created(Credit credit)
     {
-
       using (var transaction = _context.Database.BeginTransaction())
       {
-        CreditCalculate calculate = new CreditCalculate();
-        CreditContract contract = new CreditContract();
-        List<CreditContractItem> contractItems = new List<CreditContractItem>();
-
+        var calculate = new Sale();
+        var contract = new CreditContract();
+        var contractItems = new List<CreditContractItem>();
         try
         {
-          calculate = credit.creditCalculate;
+          var reserve = credit.sale;
+          calculate = credit.sale;
           contract = credit.creditContract;
           contractItems = credit.creditContactItem.ToList();
 
-          // Calculate
-          calculate.CreateDate = DateTime.Now;
-          _context.CreditCalculate.Add(calculate);
+          // Booking
+          var booking = _context.Booking.Where(x => x.BookingId == calculate.BookingId).Single();
+          booking.BookingStatus = 2; // สถานะขาย
+          _context.Update(booking);
           _context.SaveChanges();
 
-          // Contract
-          contract.CalculateId = calculate.CalculateId;
+          var cBooking = iCustomerService.GetCustomerByCode(booking.CustomerCode).Result;
+          var cHire = cBooking;
+          if (booking.CustomerCode != contract.ContractHire)
+            cHire = iCustomerService.GetCustomerByCode(contract.ContractHire).Result;
+
+          if (reserve.ReturnDeposit == 1 && reserve.ReturnDepositPrice > 0)
+          {
+            // กรณีมีการคืนเงินมัดจำ
+            var deposit = iReserveReturn.SetReserve(reserve, cBooking);
+            deposit.ReturnDepositNo = iSysParamService.GeerateeReturnDepositNo((int)contract.BranchId);
+            // ใบคืนเงินมัดจำ
+            calculate.ReturnDepositNo = deposit.ReturnDepositNo;
+            calculate.ReturnDepositStatus = deposit.Status;
+            _context.ReserveReturn.Add(deposit);
+            _context.SaveChanges();
+          }
+
+          if (reserve.ComPrice > 0)
+          {
+            // ใบเสร็จค่าคอมมิชั่น
+            var saleCom = iSaleCommission.SetSaleCommission(reserve, cHire, (int)contract.BranchId);
+            saleCom.ComNo = iSysParamService.GenerateTaxInvNo((int)contract.BranchId);
+            calculate.ComNo = saleCom.ComNo;
+            calculate.ComStatus = saleCom.Status;
+            _context.SaleCommission.Add(saleCom);
+            _context.SaveChanges();
+          }
+
+          // ใบส่งของ/ใบกำกับภาษี/ใบเสร็จรับเงิน
+          var invTaxRec = iSaleInvTaxRec.SetSaleInvTaxRec(cHire, (int)contract.BranchId);
+          invTaxRec.InvTaxRecNo = iSysParamService.GenerateVatNo((int)contract.BranchId);
+          calculate.InvTaxRecNo = invTaxRec.InvTaxRecNo;
+          calculate.InvTaxRecStatus = invTaxRec.Status;
+          _context.SaleInvTaxRec.Add(invTaxRec);
+          _context.SaveChanges();
+
+          switch (booking.BookingPaymentType)
+          {
+            case BookingPaymentType.Cash:
+              // ใบเสร็จรับเงิน
+              var receipt = iSaleReceipt.SetSaleReceipt(cHire, (int)contract.BranchId);
+              receipt.ReceiptNo = iSysParamService.GenerateReceiptNo((int)contract.BranchId);
+              calculate.ReceiptNo = receipt.ReceiptNo;
+              calculate.ReceiptStatus = receipt.Status;
+              _context.SaleReceipt.Add(receipt);
+              _context.SaveChanges();
+              // ชำระครบรอโอนทะเบียน
+              contract.ContractStatus = 30;
+              break;
+
+            case BookingPaymentType.Leasing:
+            case BookingPaymentType.Credit:
+              contract.ContractStatus = 31;
+              break;
+          }
+
+          // ใบขาย
+          calculate.SellNo = iSysParamService.GenerateSellNo((int)booking.BranchId);
+          calculate.SellStatus = true;
+          calculate.SaleDate = DateTime.Now;
+          _context.Sale.Add(calculate);
+          _context.SaveChanges();
+
+          if (booking.BookingPaymentType == BookingPaymentType.HierPurchase)
+          {
+            contract.ContractNo = iSysParamService.GenerateContractNo((int)contract.BranchId);
+            var owner = _context.Branch
+              .Where(x => x.BranchId == (int)contract.BranchId)
+              .AsNoTracking()
+              .FirstOrDefault();
+            contract.OwnerTaxNo = owner.BranchRegisterNo;
+          }
+          else
+          {
+            var owner = _context.MCustomer
+              .Where(x => x.CustomerCode == contract.ContractOwner)
+              .AsNoTracking()
+              .FirstOrDefault();
+            contract.OwnerTaxNo = owner.IdCard;
+          }
+
+          var hAddress = cHire.MCustomerAddress.FirstOrDefault(x => x.AddressDefault == true);
+          contract.HireAddress = hAddress.Address;
+          contract.HireAmpherCode = hAddress.AmphorCode;
+          contract.HireProvinceCode = hAddress.ProvinceCode;
+          contract.HireZipCode = hAddress.Zipcode;
+          contract.ContractDate = DateTime.Now;
+          contract.EndContractDate = contractItems[contractItems.Count - 1].DueDate;
+          contract.SaleId = calculate.SaleId;
           contract.RefNo = GenerateReferenceContract(null);
-          contract.ContractNo = iSysParamService.GenerateContractNo((int)contract.BranchId);
           contract.CreateDate = DateTime.Now;
           _context.CreditContract.Add(contract);
           _context.SaveChanges();
 
-          // ContractItem
-          foreach (var item in contractItems)
+          if (contractItems.Any())
           {
-            item.ContractId = contract.ContractId;
-            item.RefNo = contract.RefNo;
-
-            item.PayPrice = item.Balance;
-            item.PayVatPrice = item.BalanceVatPrice;
-            item.PayNetPrice = item.BalanceNetPrice;
-
-            item.Status = 13; // สถานะยังไม่ชำระ
-
-            item.CreateBy = contract.CreateBy;
-            item.CreateDate = DateTime.Now;
+            // ContractItem
+            foreach (var item in contractItems)
+            {
+              item.ContractId = contract.ContractId;
+              item.RefNo = contract.RefNo;
+              item.PayPrice = item.Balance;
+              item.PayVatPrice = item.BalanceVatPrice;
+              item.PayNetPrice = item.BalanceNetPrice;
+              item.Status = 13; // สถานะยังไม่ชำระ
+              item.CreateBy = contract.CreateBy;
+              item.CreateDate = DateTime.Now;
+            }
+            _context.CreditContractItem.AddRange(contractItems);
+            _context.SaveChanges();
           }
-
-          _context.CreditContractItem.AddRange(contractItems);
-          _context.SaveChanges();
 
           // หลังจากเลือกรายการที่ค้นหาแล้วให้เอา log_id ที่ได้มาเก็บตอนทำการขาย      
           // มีเงื่อนไขโดย itemDetailType==1(สินค้าประเภทรถ)
@@ -226,7 +432,7 @@ namespace KKHondaBackend.Controllers.Credits
 
           // ค้นหาและอัพเดท stock ด้วย LogReceiveId(LogIg)
           var tfLog = _context.TransferLog.FirstOrDefault(x => x.LogId == calculate.LogReceiveId);
-          var stockReceive = _context.StockReceive.FirstOrDefault(x => x.ItemId == tfLog.LogId && tfLog.ReceiverId == x.BranchId);
+          var stockReceive = _context.StockReceive.FirstOrDefault(x => x.ItemId == tfLog.ItemId && tfLog.ReceiverId == x.BranchId);
 
           if (tfLog != null)
           {
@@ -237,7 +443,6 @@ namespace KKHondaBackend.Controllers.Credits
 
           if (stockReceive != null)
           {
-            // stockReceive.BalanceQty = stockReceive.BalanceQty - 1;
             var viable = stockReceive.StockAviable;
             var onHand = stockReceive.StockOnhand;
             stockReceive.StockAviable -= 1;
@@ -247,12 +452,7 @@ namespace KKHondaBackend.Controllers.Credits
           }
 
           transaction.Commit();
-
-          var obj = new Dictionary<string, object>
-                    {
-                        {"contractId", contract.ContractId}
-                    };
-
+          var obj = new Dictionary<string, object> { { "contractId", contract.ContractId } };
           return Ok(obj);
 
         }
@@ -270,21 +470,22 @@ namespace KKHondaBackend.Controllers.Credits
     {
       using (var transaction = _context.Database.BeginTransaction())
       {
-        CreditCalculate calculate = new CreditCalculate();
+        Sale calculate = new Sale();
         CreditContract contract = new CreditContract();
         List<CreditContractItem> contractItems = new List<CreditContractItem>();
         Models.Booking booking = new Models.Booking();
 
         try
         {
-          calculate = credit.creditCalculate;
+          var reserve = credit.sale;
+          calculate = credit.sale;
           contract = credit.creditContract;
           contractItems = credit.creditContactItem.ToList();
           booking = _context.Booking.FirstOrDefault(b => b.BookingId == contract.BookingId);
 
           // Calculate
           calculate.UpdateDate = DateTime.Now;
-          _context.CreditCalculate.Update(calculate);
+          _context.Sale.Update(calculate);
           _context.SaveChanges();
 
           // Contract
@@ -323,17 +524,17 @@ namespace KKHondaBackend.Controllers.Credits
           if (booking.SellDate == null)
             booking.SellDate = DateTime.Now;
 
-          booking.ReturnDepostit = calculate.ReturnDeposit;
+          booking.ReturnDepostit = reserve.ReturnDeposit;
           // กรณีมีการคืนเงินมัดจำ
-          if (calculate.ReturnDeposit == 1 && booking.ReturnDepostit == 0)
+          if (reserve.ReturnDeposit == 1 && booking.ReturnDepostit == 0)
           {
-            booking.ReturnDepositPrice = calculate.ReturnDepositPrice;
+            booking.ReturnDepositPrice = reserve.ReturnDepositPrice;
             booking.ReturnDepNo = iSysParamService.GeerateeReturnDepositNo((int)contract.BranchId);
             booking.ReturnDepBy = contract.CreateBy;
             booking.ReturnDepDate = DateTime.Now;
 
           }
-          else if (calculate.ReturnDeposit == 0)
+          else if (reserve.ReturnDeposit == 0)
           {
             booking.ReturnDepositPrice = 0;
           }
@@ -349,12 +550,12 @@ namespace KKHondaBackend.Controllers.Credits
           booking.LTerm = calculate.InstalmentEnd;
           booking.LInterest = calculate.Interest;
           booking.LPriceTerm = calculate.InstalmentPrice;
-          booking.ReturnDepositPrice = calculate.ReturnDeposit;
+          booking.ReturnDepositPrice = reserve.ReturnDeposit;
 
           // กรณีมีการคืนเงินมัดจำ
-          if (calculate.ReturnDeposit == 1 && booking.ReturnDepostit == 0)
+          if (reserve.ReturnDeposit == 1 && booking.ReturnDepostit == 0)
           {
-            booking.ReturnDepositPrice = calculate.ReturnDepositPrice;
+            booking.ReturnDepositPrice = reserve.ReturnDepositPrice;
             booking.ReturnDepNo = iSysParamService.GeerateeReturnDepositNo((int)contract.BranchId);
             booking.ReturnDepBy = contract.CreateBy;
             booking.ReturnDepDate = DateTime.Now;
@@ -383,16 +584,15 @@ namespace KKHondaBackend.Controllers.Credits
 
     private IActionResult Edited(Credit credit)
     {
-
       using (var transaction = _context.Database.BeginTransaction())
       {
-        CreditCalculate calculate = new CreditCalculate();
+        Sale calculate = new Sale();
         CreditContract contract = new CreditContract();
         List<CreditContractItem> contractItems = new List<CreditContractItem>();
 
         try
         {
-          calculate = credit.creditCalculate;
+          calculate = credit.sale;
           contract = credit.creditContract;
           contractItems = credit.creditContactItem.ToList();
 
@@ -448,9 +648,7 @@ namespace KKHondaBackend.Controllers.Credits
           return StatusCode(500, ex.Message);
         }
       }
-
     }
-
 
     private string GenerateReferenceContract(int? contractId)
     {
@@ -470,9 +668,9 @@ namespace KKHondaBackend.Controllers.Credits
       }
     }
 
-    private bool CreditCalculateExists(int id)
+    private bool SaleExists(int id)
     {
-      return _context.CreditCalculate.Any(e => e.CalculateId == id);
+      return _context.Sale.Any(e => e.SaleId == id);
     }
 
     public class ModelEngine

@@ -5,6 +5,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using KKHondaBackend.Models;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 
 namespace KKHondaBackend.Controllers.Ris
 {
@@ -65,12 +66,13 @@ namespace KKHondaBackend.Controllers.Ris
     [HttpGet("SearchByEngine")]
     public IActionResult SearchByEngine(string term)
     {
+      var p1 = new SqlParameter("@term", term);
       var query = $@"SELECT h.*
             FROM dbweb.dbo._car_history as h
                 INNER JOIN (SELECT MAX(car_id) car_id, e_no, f_no
                 FROM dbweb.dbo._car_history
                 GROUP BY e_no, f_no) as g on h.car_id = g.car_id
-            WHERE g.e_no LIKE '%{term}%' OR g.f_no LIKE '%{term}%'";
+            WHERE g.e_no LIKE '%'+@term+'%' OR g.f_no LIKE '%'+@term+'%'";
 
       var list = ctx.CarHistory.FromSql(query).AsNoTracking().ToList();
       return Ok(list);

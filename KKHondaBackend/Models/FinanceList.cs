@@ -6,7 +6,7 @@ namespace KKHondaBackend.Models
     public partial class FinanceList
     {
         public int FiId { get; set; }
-        public string FiName { get; set; }
+        public string FiCode { get; set; }
         public int? FiFix { get; set; }
         public int? BranchId { get; set; }
         public int? FiStatus { get; set; }
