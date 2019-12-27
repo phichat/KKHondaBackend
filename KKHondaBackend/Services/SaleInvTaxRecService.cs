@@ -14,10 +14,8 @@ namespace KKHondaBackend.Services
   public class SaleInvTaxRecService : ISaleInvTaxRecService
   {
     private readonly dbwebContext _context;
-    private readonly ISysParameterService iSysParamService;
     public SaleInvTaxRecService(
-      dbwebContext context,
-      ISysParameterService isysParamService
+      dbwebContext context
     )
     {
       _context = context;

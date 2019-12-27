@@ -59,35 +59,7 @@ namespace KKHondaBackend.Controllers.Credits
       iStatusService = istatusService;
     }
 
-    [HttpGet("SearchContract")]
-    public async Task<IActionResult> SearchContract(SearchContract form)
-    {
-      var commandText = @"EXEC SP_SearchContractHPS @BranchId
-        ,@Status
-        ,@ContractNo
-        ,@ContractDate
-        ,@HireName
-        ,@HireIdCard
-        ,@ENo
-        ,@FNo
-        ,@ContractGroup
-        ,@ContractType
-        ,@ContractPoint";
-      var p1 = new SqlParameter("@BranchId", form.BranchId.ToString());
-      var p2 = new SqlParameter("@Status", form.Status != null ? form.Status.ToString() : "");
-      var p3 = new SqlParameter("@ContractNo", form.ContractNo != null ? form.ContractNo : "");
-      var p4 = new SqlParameter("@ContractDate", form.ContractDate != null ? form.ContractDate?.ToString("yyyy-MM-dd") : "");
-      var p5 = new SqlParameter("@HireName", form.HireName != null ? form.HireName : "");
-      var p6 = new SqlParameter("@HireIdCard", form.HireIdCard != null ? form.HireIdCard : "");
-      var p7 = new SqlParameter("@ENo", form.ENo != null ? form.ENo : "");
-      var p8 = new SqlParameter("@FNo", form.FNo != null ? form.FNo : "");
-      var p9 = new SqlParameter("@ContractGroup", form.ContractGroup != null ? form.ContractGroup.ToString() : "");
-      var p10 = new SqlParameter("@ContractType", form.ContractType != null ? form.ContractType.ToString() : "");
-      var p11 = new SqlParameter("@ContractPoint", form.ContractPoint != null ? form.ContractPoint.ToString() : "");
-
-      var reslut = ctx.SpSearchContractHps.FromSql(commandText, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11);
-      return Ok(await reslut.ToListAsync());
-    }
+    
 
     private IEnumerable<CreditContractItem> ListContractItems(int contractId, string refNo)
     {
@@ -223,12 +195,6 @@ namespace KKHondaBackend.Controllers.Credits
 
                       join _gurantor2 in ctx.MCustomer on db.ContractGurantor2 equals _gurantor2.CustomerCode into a11
                       from gurantor2 in a11.DefaultIfEmpty()
-
-                        //   join _relation1 in ctx.MRelation on db.GurantorRelation1 equals _relation1.Id into a12
-                        //   from relation1 in a12.DefaultIfEmpty()
-
-                        //   join _relation2 in ctx.MRelation on db.GurantorRelation2 equals _relation2.Id into a13
-                        //   from relation2 in a13.DefaultIfEmpty()
 
                       join _created in ctx.User on db.CreatedBy equals _created.Id into a14
                       from created in a14.DefaultIfEmpty()

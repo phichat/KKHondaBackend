@@ -14,10 +14,8 @@ namespace KKHondaBackend.Services
   public class SaleReceiptService : ISaleReceiptService
   {
     private readonly dbwebContext _context;
-    private readonly ISysParameterService iSysParamService;
     public SaleReceiptService(
-      dbwebContext context,
-      ISysParameterService isysParamService
+      dbwebContext context
     )
     {
       _context = context;

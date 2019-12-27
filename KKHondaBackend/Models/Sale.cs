@@ -37,7 +37,25 @@ namespace KKHondaBackend.Models
     public string InvTaxRecNo { get; set; }
     public string ReceiptNo { get; set; }
     public string ComNo { get; set; }
+    public bool? SellStatus { get; set; }
+    public bool? ReturnDepositStatus { get; set; }
+    public bool? InvTaxRecStatus { get; set; }
+    public bool? ReceiptStatus { get; set; }
+    public bool? ComStatus { get; set; }
     public int? ApproveId { get; set; }
+  }
+
+  public class SearchSale
+  {
+    public int? Status { get; set; }
+    public string SellNo { get; set; }
+    public DateTime? SellDate { get; set; }
+    public string HireName { get; set; }
+    public string HireIdCard { get; set; }
+    public string ENo { get; set; }
+    public string FNo { get; set; }
+    public int? BookingPaymentType { get; set; }
+    public int BranchId { get; set; }
   }
 
   public partial class SaleFormBody : Sale
@@ -56,5 +74,12 @@ namespace KKHondaBackend.Models
     public DateTime PaymentDate { get; set; }
     public int? AccBankId { get; set; }
     public string DocumentRef { get; set; }
+  }
+
+  public partial class CancelSlip
+  {
+    public string SlipNo { get; set; }
+    public string Reason { get; set; }
+    public int ApproveId { get; set; }
   }
 }

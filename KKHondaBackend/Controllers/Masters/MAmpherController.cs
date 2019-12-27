@@ -29,9 +29,9 @@ namespace KKHondaBackend.Controllers.Master
     }
 
     [HttpGet("[Action]")]
-    public async Task<IActionResult> GetAmpherByCode(string ampherCode)
+    public async Task<IActionResult> GetAmpherByCode(string ampherCode, string provinceCode)
     {
-      return Ok(await ctx.MAmphor.Where(x => x.AmphorCode == ampherCode).SingleAsync());
+      return Ok(await ctx.MAmphor.Where(x => x.AmphorCode == ampherCode && x.ProvinceCode == provinceCode).SingleOrDefaultAsync());
     }
   }
 }

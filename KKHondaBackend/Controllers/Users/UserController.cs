@@ -32,17 +32,20 @@ namespace KKHondaBackend.Controllers.Users
       return Ok();
     }
 
-
-    private IEnumerable<UserDropdown> GetForDropdown()
+    private IEnumerable<UserDropdown> GetForDropdown
     {
-      var user = (from db in ctx.User
-                  select new UserDropdown
-                  {
-                    Id = db.Id,
-                    FullName = db.FullName
-                  }).ToList();
+      get => (from db in ctx.User
+              select new UserDropdown
+              {
+                Id = db.Id,
+                FullName = db.FullName
+              }).ToList();
+    }
 
-      return user;
+    [HttpGet("[Action]")]
+    public IActionResult GetUserDropdownById(int id)
+    {
+      return Ok(GetForDropdown.SingleOrDefault(x => x.Id == id));
     }
 
     // GET api/values/5

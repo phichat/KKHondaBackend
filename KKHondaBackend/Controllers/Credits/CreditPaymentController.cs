@@ -60,7 +60,7 @@ namespace KKHondaBackend.Controllers.Credits
                         join _contrachHire in ctx.MCustomer on db.ContractHire equals _contrachHire.CustomerCode into a7
                         from contrachHire in a7.DefaultIfEmpty()
 
-                        join _sale in ctx.User on db.CreatedBy equals _sale.Id into a14
+                        join _sale in ctx.User on db.CreateBy equals _sale.Id into a14
                         from sale in a14.DefaultIfEmpty()
 
                         where db.ContractId == id

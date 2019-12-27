@@ -18,6 +18,7 @@ namespace KKHondaBackend.Data
     public virtual DbSet<SpDashboardBookingPaymentType> SpDashboardBookingPaymentType { get; set; }
     public virtual DbSet<SpDashboardBookingDetail> SpDashboardBookingDetail { get; set; }
     public virtual DbSet<SpSearchContractHps> SpSearchContractHps { get; set; }
+    public virtual DbSet<SpSearchSale> SpSearchSale { get; set; }
 
     public virtual DbSet<Banking> Bankings { get; set; }
     public virtual DbSet<BankingAcc> BankingAcc { get; set; }

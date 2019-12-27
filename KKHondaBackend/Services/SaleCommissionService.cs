@@ -14,10 +14,8 @@ namespace KKHondaBackend.Services
   public class SaleCommissionService : ISaleCommissionService
   {
     private readonly dbwebContext _context;
-    private readonly ISysParameterService iSysParamService;
     public SaleCommissionService(
-      dbwebContext context,
-      ISysParameterService isysParamService
+      dbwebContext context
     )
     {
       _context = context;

@@ -62,4 +62,6 @@ namespace KKHondaBackend.Models
     public int? ContractPoint { get; set; }
     public int BranchId { get; set; }
   }
+
+  
 }
