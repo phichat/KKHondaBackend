@@ -73,7 +73,7 @@ namespace KKHondaBackend.Controllers.mcs
                     total_vat_price = h.total_vat_price,
                     total_net_price = h.total_net_price,
 
-                  }).OrderByDescending(x => x.po_id).AsNoTracking();
+                  }).OrderByDescending(x => x.po_id);
 
       return Ok(list);
     }
@@ -237,7 +237,7 @@ namespace KKHondaBackend.Controllers.mcs
                     update_id = h.update_id,
                     update_name = upd.FullName,
                     update_date = h.update_date,
-                  }).OrderByDescending(x => x.id).AsNoTracking();
+                  }).OrderByDescending(x => x.id);
 
       return Ok(list);
     }

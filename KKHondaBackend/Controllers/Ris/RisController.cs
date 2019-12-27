@@ -151,7 +151,10 @@ namespace KKHondaBackend.Controllers.Ris
 
       var list = (from bk in ctx.Booking
                   join bi in ctx.BookingItem on bk.BookingId equals bi.BookingId
+                  join sl in ctx.Sale on bk.BookingId equals sl.BookingId
                   join ct in ctx.CreditContract on bk.BookingId equals ct.BookingId
+                  join own in ctx.MCustomer on ct.ContractOwner equals own.CustomerCode
+                  join hir in ctx.MCustomer on ct.ContractHire equals hir.CustomerCode
                   join tl in ctx.TransferLog on bi.LogReceiveId equals tl.LogId
                   join u0 in ctx.User on bk.SellBy equals u0.Id into u1
                   from us in u1.DefaultIfEmpty()
@@ -168,12 +171,12 @@ namespace KKHondaBackend.Controllers.Ris
                   {
                     BookingPaymentType = bk.BookingPaymentType,
                     PaymentTypeDesc = BookingPaymentType.Status.FirstOrDefault(x => x.Id == bk.BookingPaymentType).Desc,
-                    SellNo = bk.SellNo,
+                    SellNo = sl.SellNo,
                     BookingNo = bk.BookingNo,
-                    CusSellName = bk.CusSellName,
-                    BookTitleName = bk.BookTitleName,
-                    BookFName = bk.BookFName,
-                    BookSName = bk.BookSName,
+                    // CusSellName = bk.CusSellName,
+                    // BookTitleName = bk.BookTitleName,
+                    // BookFName = bk.BookFName,
+                    // BookSName = bk.BookSName,
                     BookIdCard = bk.BookIdCard,
                     BookContactNo = bk.BookContactNo,
                     FreeAct = bk.FreeAct,
@@ -183,19 +186,24 @@ namespace KKHondaBackend.Controllers.Ris
                     SellDate = bk.SellDate,
                     SellBy = bk.SellBy,
                     SellName = us.FullName,
-                    RegisName = ct.ContractOwner,
+                    OwnerCode = ct.ContractOwner,
+                    OwnerFullName = $"{own.CustomerPrename}{own.CustomerName} {own.CustomerSurname}",
+                    HireCode = ct.ContractHire,
+                    HireIdCard = hir.IdCard,
+                    HireFullName = $"{hir.CustomerPrename}{hir.CustomerName} {hir.CustomerSurname}",
+                    // RegisName = ct.ContractOwner,
                     ENo = tl.EngineNo,
                     FNo = tl.FrameNo,
-                    FiId = bk.FiId
+                    FiId = 0
                   }
       );
 
       list = list.Where(x =>
         (value.BookingPaymentType.Any() && value.BookingPaymentType.Contains(x.BookingPaymentType)) ||
         (!string.IsNullOrEmpty(value.SellNo) && x.SellNo.IndexOf(value.SellNo) > -1) ||
-        (!string.IsNullOrEmpty(value.RegisName) && x.RegisName.IndexOf(value.RegisName) > -1) ||
-        (!string.IsNullOrEmpty(value.BookName) && ($"{x.BookTitleName}{x.BookFName}{x.BookSName}").IndexOf(value.BookName) > -1) ||
-        (!string.IsNullOrEmpty(value.BookIdCard) && x.BookIdCard.IndexOf(value.BookIdCard) > -1) ||
+        (!string.IsNullOrEmpty(value.RegisName) && x.OwnerFullName.IndexOf(value.RegisName) > -1) ||
+        (!string.IsNullOrEmpty(value.BookName) && x.HireFullName.IndexOf(value.BookName) > -1) ||
+        (!string.IsNullOrEmpty(value.BookIdCard) && x.HireIdCard.IndexOf(value.BookIdCard) > -1) ||
         (!string.IsNullOrEmpty(value.ENo) && x.ENo.IndexOf(value.ENo) > -1) ||
         (!string.IsNullOrEmpty(value.FNo) && x.FNo.IndexOf(value.FNo) > -1)
       ).OrderBy(x => x.SellDate);

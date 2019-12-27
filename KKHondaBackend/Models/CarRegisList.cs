@@ -65,10 +65,10 @@ namespace KKHondaBackend.Models
     public string PaymentTypeDesc { get; set; }
     public string SellNo { get; set; }
     public string BookingNo { get; set; }
-    public string CusSellName { get; set; }
-    public string BookTitleName { get; set; }
-    public string BookFName { get; set; }
-    public string BookSName { get; set; }
+    // public string CusSellName { get; set; }
+    // public string BookTitleName { get; set; }
+    // public string BookFName { get; set; }
+    // public string BookSName { get; set; }
     public string BookIdCard { get; set; }
     public string BookContactNo { get; set; }
     public int? FreeAct { get; set; }
@@ -78,7 +78,12 @@ namespace KKHondaBackend.Models
     public DateTime? SellDate { get; set; }
     public int? SellBy { get; set; }
     public string SellName { get; set; }
-    public string RegisName { get; set; }
+    public string OwnerCode { get; set; }
+    public string OwnerFullName { get; set; }
+    public string HireCode { get; set; }
+    public string HireIdCard { get; set; }
+    public string HireFullName { get; set; }
+    // public string RegisName { get; set; }
     public string ENo { get; set; }
     public string FNo { get; set; }
     public int? FiId { get; set; }
