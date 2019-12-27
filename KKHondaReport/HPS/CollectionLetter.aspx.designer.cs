@@ -9,7 +9,8 @@
 
 namespace KKHondaReport.HPS {
     
-    public partial class CollectionLetter {
+    
+    public partial class CollectionLetter1 {
         
         /// <summary>
         /// form1 control.

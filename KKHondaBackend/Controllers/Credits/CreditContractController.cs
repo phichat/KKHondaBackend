@@ -8,6 +8,7 @@ using KKHondaBackend.Models;
 using KKHondaBackend.Services;
 using Microsoft.EntityFrameworkCore;
 using System.Data.SqlClient;
+using KKHondaBackend.Entities;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -145,17 +146,6 @@ namespace KKHondaBackend.Controllers.Credits
           cont.KeeperBy = cont.KeeperBy == null ? booking.CreateBy : cont.KeeperBy;
           cont.ApprovedBy = cont.ApprovedBy == null ? booking.CreateBy : cont.ApprovedBy;
         }
-
-                cont.BranchId = cont.BranchId == null ? booking.BranchId : cont.BranchId;
-                cont.AreaPayment = cont.AreaPayment == null ? booking.BranchId : cont.AreaPayment;
-                cont.ContractPoint = cont.ContractPoint == null ? zoneId : cont.ContractPoint;
-                cont.ContractGroup = cont.ContractGroup == null ? __branch.ContractGroupCode : cont.ContractGroup;
-                cont.ContractType = cont.ContractType == null ? __branch.ContractTypeCode : cont.ContractType;
-
-                cont.CreatedBy = cont.CreatedBy == null ? booking.CreateBy : cont.CreatedBy;
-                cont.CheckedBy = cont.CheckedBy == null ? booking.CreateBy : cont.CheckedBy;
-                cont.KeeperBy = cont.KeeperBy == null ? booking.CreateBy : cont.KeeperBy;
-                cont.ApprovedBy = cont.ApprovedBy == null ? booking.CreateBy : cont.ApprovedBy;
 
                 var userDropdown = iUserService.GetDropdowns();
 
