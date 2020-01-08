@@ -37,6 +37,10 @@ namespace KKHondaBackend.Models
         public int? whl_id { get; set; }
         public int? log_id { get; set; }
         public int? item_id { get; set; }
+
+        public string province_code { get; set; }
+        public int? receive_qty { get; set; }
+
     }
 
     public partial class ReceiveDRes
@@ -85,6 +89,13 @@ namespace KKHondaBackend.Models
         public string whl_code { get; set; }
         public int? log_id { get; set; }
         public int? item_id { get; set; }
+        public string province_code { get; set; }
+        public int? receive_qty { get; set; }
+
+        public string part_code { get; set; }
+        public string part_name { get; set; }
+        
+
     }
 
 

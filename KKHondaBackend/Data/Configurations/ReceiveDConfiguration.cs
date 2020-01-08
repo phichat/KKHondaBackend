@@ -43,6 +43,8 @@ namespace KKHondaBackend.Data.Configurations
       entity.Property(e => e.whl_id).HasColumnName("whl_id");
       entity.Property(e => e.log_id).HasColumnName("log_id");
       entity.Property(e => e.item_id).HasColumnName("item_id");
+      entity.Property(e => e.province_code).HasColumnName("province_code").HasMaxLength(50);
+      entity.Property(e => e.receive_qty).HasColumnName("receive_qty");
     }
   }
 }

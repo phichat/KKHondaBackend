@@ -11,21 +11,22 @@ using System.Data;
 using Microsoft.AspNetCore.Hosting;
 using System.IO;
 using System.Net.Http;
+// using System.Web.Script.Serialization;
 
 namespace KKHondaBackend.Controllers.mcs
 {
 
 
 
-    [Route("api/mcs")]
-    public class mcsController : Controller
+    [Route("api/pss")]
+    public class pssController : Controller
     {
         private readonly dbwebContext ctx;
         private readonly ISysParameterService iSysParamService;
         private readonly ICustomerServices iCustomer;
         private readonly IHostingEnvironment _hostingEnvironment;
 
-        public mcsController(dbwebContext _ctx,
+        public pssController(dbwebContext _ctx,
             ISysParameterService isysParamService,
             ICustomerServices _iCustomer,
             IHostingEnvironment hostingEnvironment
@@ -37,156 +38,6 @@ namespace KKHondaBackend.Controllers.mcs
             _hostingEnvironment = hostingEnvironment;
         }
 
-        [HttpGet("all")]
-        public IActionResult All()
-        {
-
-            var list = (from h in ctx.PurchaseList
-                        join _cr in ctx.User on h.create_id equals _cr.Id into cr1
-                        join _up in ctx.User on h.update_id equals _up.Id into up1
-                        from cre in cr1.DefaultIfEmpty()
-                        from upd in up1.DefaultIfEmpty()
-
-                        select new PurchaseListRes
-                        {
-                            po_id = h.po_id,
-                            po_no = h.po_no,
-                            status = h.status,
-                            status_desc = StatusPurchase.status.FirstOrDefault(o => o.Id == h.status).Desc,
-                            po_date = h.po_date,
-                            due_date = h.due_date,
-                            supplier_id = h.supplier_id,
-                            supplier_name = DealerPurchase.dealer.FirstOrDefault(o => o.Id == h.supplier_id).Desc,
-                            remark = h.remark,
-                            create_id = h.create_id,
-                            create_name = cre.FullName,
-                            create_date = h.create_date,
-                            update_id = h.update_id,
-                            update_name = upd.FullName,
-                            update_date = h.update_date,
-                            cash_flag = h.cash_flag,
-                            cash_price = h.cash_price,
-                            cheque_flag = h.cheque_flag,
-                            cheque_bank_id = h.cheque_bank_id,
-                            cheque_branch = h.cheque_branch,
-                            cheque_no = h.cheque_no,
-                            cheque_date = h.cheque_date,
-                            cheque_price = h.cheque_price,
-                            total_price = h.total_price,
-                            vat_flag = h.vat_flag,
-                            total_vat_price = h.total_vat_price,
-                            total_net_price = h.total_net_price,
-
-                        }).OrderByDescending(x => x.po_id).AsNoTracking();
-
-            return Ok(list);
-        }
-
-        [HttpGet("GetDetail")]
-        public IActionResult GetDetail(string po_no)
-        {
-
-            var detail_list = (from d in ctx.PurchaseListItem
-
-                               join _cat in ctx.ProductCategory on d.cat_id equals _cat.CatId into cat1
-                               from cat in cat1.DefaultIfEmpty()
-
-                               join _brand in ctx.ProductBrand on d.brand_id equals _brand.BrandId into brand1
-                               from brand in brand1.DefaultIfEmpty()
-
-                               join _model in ctx.ProductModel on d.model_id equals _model.ModelId into model1
-                               from model in model1.DefaultIfEmpty()
-
-                               join _type in ctx.ProductType on d.type_id equals _type.TypeId into type1
-                               from type in type1.DefaultIfEmpty()
-
-                               join _color in ctx.ProductColor on d.color_id equals _color.ColorId into color1
-                               from color in color1.DefaultIfEmpty()
-
-                               join _cr in ctx.User on d.create_id equals _cr.Id into cr1
-                               from cre in cr1.DefaultIfEmpty()
-
-                               join _up in ctx.User on d.update_id equals _up.Id into up1
-                               from upd in up1.DefaultIfEmpty()
-
-                               where d.po_no == po_no
-
-                               select new PurchaseListItemRes
-                               {
-                                   po_id = d.po_id,
-                                   po_no = d.po_no,
-
-                                   cat_id = d.cat_id,
-                                   cat_name = cat.CatName,
-                                   brand_id = d.brand_id,
-                                   brand_name = brand.BrandName,
-                                   model_id = d.model_id,
-                                   model_name = model.ModelName,
-                                   type_id = d.type_id,
-                                   type_name = type.TypeName,
-                                   color_id = d.color_id,
-                                   color_name = color.ColorName,
-                                   unit_price = d.unit_price,
-                                   unit_qty = d.unit_qty,
-
-                                   create_id = d.create_id,
-                                   create_name = cre.FullName,
-                                   create_date = d.create_date,
-                                   update_id = d.update_id,
-                                   update_name = upd.FullName,
-                                   update_date = d.update_date,
-
-                               }).OrderByDescending(x => x.po_id).AsNoTracking();
-
-
-            var list = (from h in ctx.PurchaseList
-
-                        join _cr in ctx.User on h.create_id equals _cr.Id into cr1
-                        from cre in cr1.DefaultIfEmpty()
-
-                        join _up in ctx.User on h.update_id equals _up.Id into up1
-                        from upd in up1.DefaultIfEmpty()
-
-                        where h.po_no == po_no
-
-                        select new PurchaseListDetailRes
-                        {
-                            po_id = h.po_id,
-                            po_no = h.po_no,
-                            status = h.status,
-                            status_desc = StatusPurchase.status.FirstOrDefault(o => o.Id == h.status).Desc,
-                            po_date = h.po_date,
-                            due_date = h.due_date,
-                            supplier_id = h.supplier_id,
-                            supplier_name = DealerPurchase.dealer.FirstOrDefault(o => o.Id == h.supplier_id).Desc,
-                            remark = h.remark,
-
-                            cash_flag = h.cash_flag,
-                            cash_price = h.cash_price,
-                            cheque_flag = h.cheque_flag,
-                            cheque_bank_id = h.cheque_bank_id,
-                            cheque_branch = h.cheque_branch,
-                            cheque_no = h.cheque_no,
-                            cheque_date = h.cheque_date,
-                            cheque_price = h.cheque_price,
-                            total_price = h.total_price,
-                            vat_flag = h.vat_flag,
-                            total_vat_price = h.total_vat_price,
-                            total_net_price = h.total_net_price,
-
-                            create_id = h.create_id,
-                            create_name = cre.FullName,
-                            create_date = h.create_date,
-                            update_id = h.update_id,
-                            update_name = upd.FullName,
-                            update_date = h.update_date,
-
-                            detail = detail_list.ToList()
-
-                        }).OrderByDescending(x => x.po_id).AsNoTracking();
-
-            return Ok(list.SingleOrDefault());
-        }
 
         [HttpGet("receive_list")]
         public IActionResult receive_list()
@@ -219,7 +70,7 @@ namespace KKHondaBackend.Controllers.mcs
                         from cre in cr1.DefaultIfEmpty()
                         join _up in ctx.User on h.update_id equals _up.Id into up1
                         from upd in up1.DefaultIfEmpty()
-                        where h.receive_no.StartsWith("GR")
+                        where h.receive_no.StartsWith("RC")
                         select new ReceiveHRes
                         {
                             id = h.id,
@@ -252,20 +103,23 @@ namespace KKHondaBackend.Controllers.mcs
 
             var detail_list = (from d in ctx.ReceiveD
 
-                               join _cat in ctx.ProductCategory on d.cat_id equals _cat.CatId into cat1
-                               from cat in cat1.DefaultIfEmpty()
+                               join _product in ctx.Product on d.item_id equals _product.ItemId into product1
+                               from product in product1.DefaultIfEmpty()
 
-                               join _brand in ctx.ProductBrand on d.brand_id equals _brand.BrandId into brand1
-                               from brand in brand1.DefaultIfEmpty()
+                                   //join _cat in ctx.ProductCategory on d.cat_id equals _cat.CatId into cat1
+                                   //from cat in cat1.DefaultIfEmpty()
+
+                                   //join _brand in ctx.ProductBrand on d.brand_id equals _brand.BrandId into brand1
+                                   //from brand in brand1.DefaultIfEmpty()
 
                                join _model in ctx.ProductModel on d.model_id equals _model.ModelId into model1
                                from model in model1.DefaultIfEmpty()
 
-                               join _type in ctx.ProductType on d.type_id equals _type.TypeId into type1
-                               from type in type1.DefaultIfEmpty()
+                               //join _type in ctx.ProductType on d.type_id equals _type.TypeId into type1
+                               //from type in type1.DefaultIfEmpty()
 
-                               join _color in ctx.ProductColor on d.color_id equals _color.ColorId into color1
-                               from color in color1.DefaultIfEmpty()
+                               //join _color in ctx.ProductColor on d.color_id equals _color.ColorId into color1
+                               //from color in color1.DefaultIfEmpty()
 
                                join _branch in ctx.Branch on d.branch_id equals _branch.BranchId into branch1
                                from branch in branch1.DefaultIfEmpty()
@@ -287,19 +141,19 @@ namespace KKHondaBackend.Controllers.mcs
                                    receive_no = d.receive_no,
                                    dealer_no = d.dealer_no,
 
-                                   cat_id = d.cat_id,
-                                   cat_code = cat.CatName,
-                                   brand_id = d.brand_id,
-                                   brand_code = brand.BrandCode,
+                                   //cat_id = d.cat_id,
+                                   //cat_code = cat.CatName,
+                                   //brand_id = d.brand_id,
+                                   //brand_code = brand.BrandCode,
                                    model_id = d.model_id,
                                    model_code = model.ModelCode,
-                                   type_id = d.type_id,
-                                   type_code = model.ModelType,
-                                   color_id = d.color_id,
-                                   color_code = color.ColorCode,
+                                   //type_id = d.type_id,
+                                   //type_code = model.ModelType,
+                                   //color_id = d.color_id,
+                                   //color_code = color.ColorCode,
 
-                                   frame_no = d.frame_no,
-                                   engine_no = d.engine_no,
+                                   //frame_no = d.frame_no,
+                                   //engine_no = d.engine_no,
                                    delivery_no = d.delivery_no,
                                    delivery_date = d.delivery_date,
                                    invoice_no = d.invoice_no,
@@ -330,8 +184,9 @@ namespace KKHondaBackend.Controllers.mcs
                                    log_id = d.log_id,
                                    item_id = d.item_id,
                                    province_code = d.province_code,
+                                   part_code = product.PartCode,
+                                   part_name = product.PartName,
                                    receive_qty = d.receive_qty
-
                                }).OrderByDescending(x => x.id).AsNoTracking();
 
 
@@ -509,8 +364,8 @@ namespace KKHondaBackend.Controllers.mcs
             }
         }
 
-        [HttpPost("upload_dos")]
-        public IActionResult upload_dos()
+        [HttpPost("upload_dcs")]
+        public IActionResult upload_dcs()
         {
             using (var transaction = ctx.Database.BeginTransaction())
             {
@@ -553,35 +408,64 @@ namespace KKHondaBackend.Controllers.mcs
                         {
 
                             //select* from _transfer_log where log_item_type = '1' and engine_no = '".$rowData[0][6]."'
-                            var engine_dup = (from p in ctx.TransferLog where p.EngineNo == row[6].ToString().Trim() select p.EngineNo).FirstOrDefault();
-                            var frame_dup = (from p in ctx.TransferLog where p.FrameNo == row[5].ToString().Trim() select p.FrameNo).FirstOrDefault();
-                            var model_id = (from p in ctx.ProductModel where p.ModelCode == row[2].ToString().Trim() && p.ModelType == row[3].ToString().Trim() select p.ModelId).FirstOrDefault();
-                            var color_id = (from p in ctx.ProductColor where p.ColorCode == row[4].ToString().Trim() select p.ColorId).FirstOrDefault();
-                            var item_id = (from p in ctx.Product where p.ItemType == 1 && p.ModelId == model_id && p.ColorId == color_id select p.ItemId).FirstOrDefault();
-                            var branch_id = (from p in ctx.Branch where p.BranchOrderFlag == 1 && p.BranchDealerCode == row[0].ToString().Trim() select p.BranchId).FirstOrDefault();
 
-                            if (branch_id == 0)
-                            {
-                                throw new Exception(row[0].ToString().Trim() + " (Dealer Code ไม่ถูกต้อง)");
-                            }
+                            var model_id = (from p in ctx.ProductModel where p.ModelCode == row[15].ToString().Trim() select p.ModelId).FirstOrDefault();
+
+                            var item_id = (from p in ctx.Product where p.ItemType == 2 && p.PartCode == row[13].ToString().Trim() && p.ModelId == model_id select p.ItemId).FirstOrDefault();
 
                             if (model_id == 0)
                             {
-                                throw new Exception(row[2].ToString().Trim() + " " + row[3].ToString().Trim() + " (ไม่พบรหัสโมเดล)");
+                                throw new Exception(row[15].ToString().Trim() + " (Model Code ไม่ถูกต้อง)");
                             }
 
-                            if (color_id == 0)
+                            if (item_id == 0)
                             {
-                                throw new Exception(row[4].ToString().Trim() + " (ไม่พบรหัสสี)");
+                                var part_code = row[13].ToString().Trim();
+                                var part_name = row[14].ToString().Trim();
+                                var sell_price = ToDecimalFormatted(row[16].ToString().Trim());
+                                var sell_vat_price = sell_price * (decimal)0.07;
+                                var sell_net = sell_price * (decimal)1.07;
+
+                                var cost_price = ToDecimalFormatted(row[18].ToString().Trim());
+                                var cost_vat_price = cost_price * (decimal)0.07;
+                                var cost_net = cost_price * (decimal)1.07;
+
+                                Product product = new Product();
+                                product.ItemType = 1;
+                                product.ModelId = model_id;
+                                product.PartCode = part_code;
+                                product.PartName = part_name;
+                                product.CostPrice = cost_price;
+                                product.CostVat = 7;
+                                product.CostVatPrice = cost_net;
+                                product.CostNet = cost_vat_price;
+                                product.SellPrice = sell_price;
+                                product.SellVat = 7;
+                                product.SellVatPrice = sell_vat_price;
+                                product.SellNet = sell_net;
+                                product.ItemStatus = 1;
+                                product.CreateBy = int.Parse(create_by);
+                                product.CreateDate = DateTime.Now;
+                                ctx.Entry(product).State = EntityState.Added;
+                                ctx.SaveChanges();
+                                item_id = product.ItemId;
+                                //throw new Exception(row[13].ToString().Trim() + " (Part Code ไม่ถูกต้อง)");
                             }
 
-                            if (engine_dup != null)
+                            var chk_item_model = (from p in ctx.Product where p.ItemId == item_id && p.ModelId == model_id select p.ItemId).FirstOrDefault();
+
+                            var chk_dup = (from p in ctx.TransferLog where p.LogItemType == 2 && p.PartCode == row[13].ToString().Trim() && p.LogRef == row[12].ToString().Trim() select p.LogId).FirstOrDefault();
+
+                            var branch_id = 1;
+
+                            if (chk_item_model == 0)
                             {
-                                throw new Exception(row[6].ToString().Trim() + " (มี Engine No. ในระบบแล้ว)");
+                                throw new Exception("(Part Code " + row[13].ToString().Trim() + " ยังไม่ได้ผูกกับ Model Code " + row[15].ToString().Trim() + ")");
                             }
-                            if (frame_dup != null)
+
+                            if (chk_dup != 0)
                             {
-                                throw new Exception(row[5].ToString().Trim() + " (มี Frame No. ในระบบแล้ว)");
+                                throw new Exception("(เลขที่ใบสั่งซื้อ " + row[12].ToString().Trim() + " มี Part code. " + row[13].ToString().Trim() + " ในระบบแล้ว)");
                             }
 
                             TransferLog log = new TransferLog();
@@ -589,24 +473,24 @@ namespace KKHondaBackend.Controllers.mcs
                             log.LogType = 3;
 
                             log.TranferNo = row[7].ToString().Replace(" ", "").Trim();
-                            log.LogRef = row[8].ToString().Replace(" ", "").Trim();
+                            log.LogRef = row[12].ToString().Replace(" ", "").Trim();
                             log.SenderId = null;
                             log.ReceiverId = branch_id;
-                            log.LogItemType = 1;
+                            log.LogItemType = 2;
                             log.LogSecondhand = 0;
                             log.ItemId = item_id;
                             log.ModelId = model_id;
-                            log.ColorId = color_id;
-                            log.EngineNo = row[6].ToString().Replace(" ", "").Trim();
-                            log.FrameNo = row[5].ToString().Replace(" ", "").Trim();
-                            log.PartCode = null;
-                            log.Qty = 1;
+                            log.ColorId = null;
+                            log.EngineNo = null;
+                            log.FrameNo = null;
+                            log.PartCode = row[13].ToString().Replace(" ", "").Trim();
+                            log.Qty = int.Parse(row[17].ToString().Replace(" ", "").Trim());
                             log.LogStatus = 1;
 
-                            log.TaxNo = row[9].ToString().Replace(" ", "").Trim();
-                            log.InvAmt = ToDecimalFormatted(row[10].ToString().Trim());
-                            log.VatAmt = ToDecimalFormatted(row[11].ToString().Trim());
-                            log.DeliveryDate = Convert.ToDateTime(row[1].ToString()).ToString("dd/MM/yyyy");
+                            log.TaxNo = row[3].ToString().Replace(" ", "").Trim();
+                            log.InvAmt = ToDecimalFormatted(row[18].ToString().Trim());
+                            log.VatAmt = 0;
+                            log.DeliveryDate = null;
                             log.DealerCode = row[0].ToString();
                             log.CreateBy = int.Parse(create_by);
                             log.CreateDate = DateTime.Now;
@@ -657,18 +541,24 @@ namespace KKHondaBackend.Controllers.mcs
             public string model_type { get; set; }
             public string color_code { get; set; }
 
+
             public string dealer_code { get; set; }
             public string delivery_code { get; set; }
             public DateTime? delivery_date { get; set; }
             public string invoice_no { get; set; }
+
+            public string part_code { get; set; }
+            public string part_name { get; set; }
+            public int? qty { get; set; }
+            public int? b_qty { get; set; }
         }
         [HttpGet("transfer_log_list")]
-        public IActionResult transfer_log_list(string engine_no, string frame_no, string tax_no)
+        public IActionResult transfer_log_list(string log_ref, string part_code, string tax_no)
         {
             try
             {
-                string f_engine_no = ToStringOrEmpty(engine_no);
-                string f_frame_no = ToStringOrEmpty(frame_no);
+                string f_log_ref = ToStringOrEmpty(log_ref);
+                string f_part_code = ToStringOrEmpty(part_code);
                 string f_tax_no = ToStringOrEmpty(tax_no);
 
                 var list = (from db in ctx.TransferLog
@@ -676,46 +566,31 @@ namespace KKHondaBackend.Controllers.mcs
                             join _product in ctx.Product on db.ItemId equals _product.ItemId into product1
                             from product in product1.DefaultIfEmpty()
 
-                            join _cat in ctx.ProductCategory on product.CatId equals _cat.CatId into cat1
-                            from cat in cat1.DefaultIfEmpty()
-
-                            join _brand in ctx.ProductBrand on product.BrandId equals _brand.BrandId into brand1
-                            from brand in brand1.DefaultIfEmpty()
-
-                            join _color in ctx.ProductColor on product.ColorId equals _color.ColorId into color1
-                            from color in color1.DefaultIfEmpty()
-
                             join _model in ctx.ProductModel on product.ModelId equals _model.ModelId into model1
                             from model in model1.DefaultIfEmpty()
 
                             where db.LogStatus.Equals(1)
-                            && db.LogItemType.Equals(1)
-                            && db.EngineNo.Contains(f_engine_no)
-                            && db.FrameNo.Contains(f_frame_no)
+                            && db.LogItemType.Equals(2)
+                            && db.LogRef.Contains(f_log_ref)
+                            && db.PartCode.Contains(f_part_code)
                             && db.TaxNo.Contains(f_tax_no)
                             orderby db.CreateDate descending
                             select new search_transfer
                             {
                                 log_id = db.LogId,
-                                engine_no = db.EngineNo,
-                                frame_no = db.FrameNo,
+                                part_code = db.PartCode,
+                                part_name = product.PartName,
                                 tax_no = db.TaxNo,
                                 inv_amt = db.InvAmt,
                                 vat_amt = db.VatAmt,
                                 item_id = product.ItemId,
-                                cat_id = product.CatId,
-                                brand_id = product.BrandId,
                                 model_id = product.ModelId,
-                                type_id = product.TypeId,
-                                color_id = product.ColorId,
-                                cat_code = cat.CatCode,
-                                brand_code = brand.BrandCode,
                                 model_code = model.ModelCode,
                                 model_type = model.ModelType,
-                                color_code = color.ColorCode,
                                 dealer_code = db.DealerCode,
                                 delivery_code = db.TranferNo,
-                                delivery_date = DateTime.ParseExact(db.DeliveryDate, "dd/MM/yyyy", null),
+                                qty = db.Qty,
+                                b_qty = db.BQty,
                                 invoice_no = db.LogRef
                             }).ToList();
 
@@ -780,6 +655,9 @@ namespace KKHondaBackend.Controllers.mcs
             public decimal? cost_vat { get; set; }
             public int? whl_id { get; set; }
             public int? item_id { get; set; }
+            public string part_code { get; set; }
+            public int r_qty { get; set; }
+            
         }
         [HttpPost("create_receive")]
         public IActionResult create_receive([FromBody] ReceiveHeadFormBody value)
@@ -790,7 +668,7 @@ namespace KKHondaBackend.Controllers.mcs
                 {
 
                     var h = value;
-                    var receive_no = iSysParamService.GenerateReceiveNo((int)h.receive_id);
+                    var receive_no = GenerateReceiveNo();
 
                     ReceiveH head = new ReceiveH();
                     head.receive_no = receive_no;
@@ -811,13 +689,18 @@ namespace KKHondaBackend.Controllers.mcs
                     var d = h.detail;
                     d.ForEach(item =>
                     {
+                        int receive_qty = item.r_qty;
+                        if (receive_qty <= 0)
+                        {
+                            throw new Exception(item.invoice_no + " " + item.part_code + " จำนวนรับต้องมากกว่า 0 เท่านั้น");
+                        }
 
                         var log_status = (from p in ctx.TransferLog where p.LogId == item.id select p.LogStatus).FirstOrDefault();
                         var wh = (from p in ctx.WarehouseLocation where p.WhlId == item.whl_id && p.BranchId == item.branch_id && p.WhlStatus == 1 && p.WhlType == 1 select p.WhlCode).Count();
 
                         if (log_status != 1)
                         {
-                            throw new Exception(item.engine_no + " " + item.frame_no + " รายการนี้ได้ทำการรับเข้าคลังเรียบร้อยแล้ว");
+                            throw new Exception(item.invoice_no + " " + item.part_code + " รายการนี้ได้ทำการรับเข้าคลังเรียบร้อยแล้ว");
                         }
                         if (wh == 0)
                         {
@@ -830,23 +713,24 @@ namespace KKHondaBackend.Controllers.mcs
 
                         detail.receive_no = receive_no;
                         detail.dealer_no = item.dealer_code;
-                        detail.cat_id = item.cat_id;
-                        detail.brand_id = item.brand_id;
+
+                        //detail.cat_id = item.cat_id;
+                        //detail.brand_id = item.brand_id;
                         detail.model_id = item.model_id;
-                        detail.type_id = item.type_id;
-                        detail.color_id = item.color_id;
-                        detail.frame_no = item.frame_no;
-                        detail.engine_no = item.engine_no;
+                        //detail.type_id = item.type_id;
+                        //detail.color_id = item.color_id;
+                        //detail.frame_no = item.frame_no;
+                        //detail.engine_no = item.engine_no;
                         detail.delivery_no = item.delivery_code;
-                        detail.delivery_date = item.delivery_date;
+                        //detail.delivery_date = item.delivery_date;
                         detail.invoice_no = item.invoice_no;
                         detail.tax_invoice_no = item.tax_invoice_no;
                         detail.create_id = h.create_id;
                         detail.create_date = DateTime.Now;
-                        detail.license_no = item.license_no;
+                        //detail.license_no = item.license_no;
                         detail.branch_id = item.branch_id;
-                        detail.line_remark = item.line_remark;
-                        detail.line_status = item.line_status;
+                        //detail.line_remark = item.line_remark;
+                        //detail.line_status = item.line_status;
                         detail.cost_inc_vat = item.cost_inc_vat;
                         detail.vat_flag = item.vat_flag;
                         detail.vat_rate = item.vat_rate;
@@ -858,13 +742,14 @@ namespace KKHondaBackend.Controllers.mcs
                         detail.whl_id = item.whl_id;
                         detail.log_id = item.id;
                         detail.item_id = item.item_id;
+                        detail.receive_qty = receive_qty;
 
                         ctx.Entry(detail).State = EntityState.Added;
                         ctx.SaveChanges();
 
 
                         var stock = (from p in ctx.StockReceive where p.ItemId == item.item_id && p.BranchId == item.branch_id && p.WhlId == item.whl_id && p.LogId == item.id select p.ReceiveId).Count();
-                        var receive_qty = 1;
+                        
                         if (stock == 0)
                         {
 
@@ -883,8 +768,18 @@ namespace KKHondaBackend.Controllers.mcs
                             ctx.SaveChanges();
 
                             var log = ctx.TransferLog.FirstOrDefault(x => x.LogId == item.id);
-                            log.BQty = log.BQty + receive_qty;
-                            log.LogStatus = 2;
+                            if ((log.BQty + receive_qty) < log.Qty )
+                            {
+                                log.BQty = log.BQty + receive_qty;
+                                log.LogStatus = 1;
+                            }
+                            else
+                            {
+                                log.BQty = log.BQty + receive_qty;
+                                log.LogStatus = 2;
+                            }
+                            log.InvAmt = item.cost_exc_vat;
+                            log.VatAmt = item.cost_vat;
                             ctx.Entry(log).State = EntityState.Modified;
                             ctx.SaveChanges();
 
@@ -892,222 +787,26 @@ namespace KKHondaBackend.Controllers.mcs
                         else
                         {
                             var rec = ctx.StockReceive.FirstOrDefault(x => x.ItemId == item.item_id && x.BranchId == item.branch_id && x.WhlId == item.whl_id && x.LogId == item.id);
+                            rec.ReceiveQty = rec.ReceiveQty + receive_qty;
+                            rec.BalanceQty = rec.BalanceQty + receive_qty;
                             rec.StockOnhand = rec.StockOnhand + receive_qty;
                             rec.StockAviable = rec.StockAviable + receive_qty;
                             ctx.Entry(rec).State = EntityState.Modified;
                             ctx.SaveChanges();
 
                             var log = ctx.TransferLog.FirstOrDefault(x => x.LogId == item.id);
-                            log.BQty = log.BQty + receive_qty;
-                            log.LogStatus = 2;
-                            ctx.Entry(log).State = EntityState.Modified;
-                            ctx.SaveChanges();
-                        }
-                    });
-
-                    transaction.Commit();
-                }
-                catch (Exception ex)
-                {
-                    transaction.Rollback();
-                    return StatusCode(500, ex.Message);
-                }
-            }
-            return NoContent();
-        }
-
-        [HttpPost("create_receive_single")]
-        public IActionResult create_receive_single([FromBody] ReceiveHeadFormBody value)
-        {
-            using (var transaction = ctx.Database.BeginTransaction())
-            {
-                try
-                {
-
-                    var h = value;
-                    var receive_no = iSysParamService.GenerateReceiveNo((int)h.receive_id);;
-
-                    ReceiveH head = new ReceiveH();
-                    head.receive_no = receive_no;
-                    head.receive_id = h.receive_id;
-                    head.receive_date = h.receive_date;
-                    head.receive_status = h.receive_status;
-                    head.receive_type = h.receive_type;
-                    head.dealer_code = h.dealer_code;
-                    head.delivery_code = h.delivery_code;
-                    head.delivery_date = h.delivery_date;
-                    head.purchase_no = h.purchase_no;
-                    head.remark = h.remark;
-                    head.transfer_code = h.transfer_code;
-                    head.create_id = h.create_id;
-                    head.create_date = DateTime.Now;
-                    ctx.Entry(head).State = EntityState.Added;
-                    ctx.SaveChanges();
-
-                    var d = h.detail;
-                    d.ForEach(item =>
-                    {
-                        var receive_qty = 1;
-
-                        var engine_dup = (from p in ctx.TransferLog where p.EngineNo == item.engine_no.Trim() select p.EngineNo).FirstOrDefault();
-                        var frame_dup = (from p in ctx.TransferLog where p.FrameNo == item.frame_no.Trim() select p.FrameNo).FirstOrDefault();
-                        var model_id = (from p in ctx.ProductModel where p.ModelId == item.model_id select p.ModelId).FirstOrDefault();
-                        var type_id = (from p in ctx.ProductType where p.TypeId == item.type_id select p.TypeId).FirstOrDefault();
-                        var color_id = (from p in ctx.ProductColor where p.ColorId == item.color_id select p.ColorId).FirstOrDefault();
-                        var item_id = (from p in ctx.Product where p.ItemType == 1 && p.ModelId == model_id && p.ColorId == color_id select p.ItemId).FirstOrDefault();
-                        var branch_id = (from p in ctx.Branch where p.BranchOrderFlag == 1 && p.BranchId == item.branch_id select p.BranchId).FirstOrDefault();
-
-                        if (branch_id == 0)
-                        {
-                            throw new Exception(item.branch_id + " (สาขาไม่ถูกต้อง)");
-                        }
-
-                        if (model_id == 0)
-                        {
-                            throw new Exception(item.model_id + " (ไม่พบรหัสโมเดล)");
-                        }
-
-                        if (color_id == 0)
-                        {
-                            throw new Exception(item.color_id + " (ไม่พบรหัสสี)");
-                        }
-
-                        if (engine_dup != null)
-                        {
-                            throw new Exception(item.engine_no + " (มี Engine No. ในระบบแล้ว)");
-                        }
-                        if (frame_dup != null)
-                        {
-                            throw new Exception(item.frame_no + " (มี Frame No. ในระบบแล้ว)");
-                        }
-
-                        if (item_id == 0)
-                        {
-                            throw new Exception(item.model_id + " | " + item.color_id + " (รหัสโมเดลยังไม่ได้ผูกกับรหัสสีนี้)");
-                        }
-
-                        TransferLog transfer_log = new TransferLog();
-                        //log.LogId = null;
-                        transfer_log.LogType = 3;
-
-                        transfer_log.TranferNo = null;
-                        transfer_log.LogRef = item.invoice_no;
-                        transfer_log.SenderId = null;
-                        transfer_log.ReceiverId = item.branch_id;
-                        transfer_log.LogItemType = 1;
-                        transfer_log.LogSecondhand = 1;
-                        transfer_log.ItemId = item_id;
-                        transfer_log.ModelId = item.model_id;
-                        transfer_log.ColorId = item.color_id;
-                        transfer_log.EngineNo = item.engine_no.ToString().Replace(" ", "").Trim();
-                        transfer_log.FrameNo = item.frame_no.ToString().Replace(" ", "").Trim();
-                        transfer_log.PartCode = null;
-                        transfer_log.Qty = 1;
-                        transfer_log.LogStatus = 1;
-
-                        transfer_log.TaxNo = null;
-                        transfer_log.InvAmt = item.cost_inc_vat;
-                        transfer_log.VatAmt = item.cost_vat;
-                        transfer_log.DeliveryDate = Convert.ToDateTime(h.delivery_date.ToString()).ToString("dd/MM/yyyy");
-                        transfer_log.DealerCode = h.dealer_code;
-                        transfer_log.CreateBy = h.create_id;
-                        transfer_log.CreateDate = DateTime.Now;
-                        transfer_log.UpdateBy = null;
-                        transfer_log.UpdateDate = null;
-                        ctx.Entry(transfer_log).State = EntityState.Added;
-                        ctx.SaveChanges();
-                        var log_id = transfer_log.LogId;
-                        var log_status = (from p in ctx.TransferLog where p.LogId == log_id select p.LogStatus).FirstOrDefault();
-                        var wh = (from p in ctx.WarehouseLocation where p.WhlId == item.whl_id && p.BranchId == item.branch_id && p.WhlStatus == 1 && p.WhlType == 1 select p.WhlCode).Count();
-
-                        if (log_status != 1)
-                        {
-                            throw new Exception(item.engine_no + " " + item.frame_no + " รายการนี้ได้ทำการรับเข้าคลังเรียบร้อยแล้ว");
-                        }
-                        if (wh == 0)
-                        {
-                            var wh_code = (from p in ctx.WarehouseLocation where p.WhlId == item.whl_id select p.WhlCode).FirstOrDefault();
-                            var wh_name = (from p in ctx.WarehouseLocation where p.WhlId == item.whl_id select p.WhlName).FirstOrDefault();
-                            throw new Exception(wh_code + " " + wh_name + " ไม่สามารถเก็บสินค้าชนิดนี้ได้");
-                        }
-
-                        ReceiveD detail = new ReceiveD();
-
-                        detail.receive_no = receive_no;
-                        detail.dealer_no = h.dealer_code;
-                        detail.cat_id = item.cat_id;
-                        detail.brand_id = item.brand_id;
-                        detail.model_id = item.model_id;
-                        detail.type_id = item.type_id;
-                        detail.color_id = item.color_id;
-                        detail.frame_no = item.frame_no;
-                        detail.engine_no = item.engine_no;
-                        detail.delivery_no = item.delivery_code;
-                        detail.delivery_date = item.delivery_date;
-                        detail.invoice_no = item.invoice_no;
-                        detail.tax_invoice_no = item.tax_invoice_no;
-                        detail.create_id = h.create_id;
-                        detail.create_date = DateTime.Now;
-                        detail.license_no = item.license_no;
-                        detail.branch_id = item.branch_id;
-                        detail.line_remark = item.line_remark;
-                        detail.line_status = item.line_status;
-                        detail.cost_inc_vat = item.cost_inc_vat;
-
-                        detail.vat_flag = item.vat_flag;
-                        detail.vat_rate = item.vat_rate;
-                        detail.cost_vat = item.cost_vat;
-                        detail.cost_exc_vat = item.cost_exc_vat;
-                        detail.cost_other_exc_vat = item.cost_other_exc_vat;
-                        detail.cost_repair_exc_vat = item.cost_repair_exc_vat;
-
-                        detail.whl_id = item.whl_id;
-                        detail.log_id = log_id;
-                        detail.item_id = item_id;
-
-                        detail.province_code = item.province_code;
-                        detail.receive_qty = receive_qty;
-                        ctx.Entry(detail).State = EntityState.Added;
-                        ctx.SaveChanges();
-
-
-                        var stock = (from p in ctx.StockReceive where p.ItemId == item.item_id && p.BranchId == item.branch_id && p.WhlId == item.whl_id && p.LogId == item.id select p.ReceiveId).Count();
-                        
-                        if (stock == 0)
-                        {
-
-                            StockReceive rec = new StockReceive();
-                            rec.WhlId = item.whl_id;
-                            rec.BranchId = item.branch_id;
-                            rec.ItemId = item_id;
-                            rec.ReceiveQty = receive_qty;
-                            rec.ReceiveBy = h.create_id;
-                            rec.ReceiveDate = DateTime.Now;
-                            rec.LogId = log_id;
-                            rec.BalanceQty = receive_qty;
-                            rec.StockOnhand = receive_qty;
-                            rec.StockAviable = receive_qty;
-                            ctx.Entry(rec).State = EntityState.Added;
-                            ctx.SaveChanges();
-
-                            var log = ctx.TransferLog.FirstOrDefault(x => x.LogId == log_id);
-                            log.BQty = log.BQty + receive_qty;
-                            log.LogStatus = 2;
-                            ctx.Entry(log).State = EntityState.Modified;
-                            ctx.SaveChanges();
-
-                        }
-                        else
-                        {
-                            var rec = ctx.StockReceive.FirstOrDefault(x => x.ItemId == item.item_id && x.BranchId == item.branch_id && x.WhlId == item.whl_id && x.LogId == log_id);
-                            rec.StockOnhand = rec.StockOnhand + receive_qty;
-                            rec.StockAviable = rec.StockAviable + receive_qty;
-                            ctx.Entry(rec).State = EntityState.Modified;
-                            ctx.SaveChanges();
-
-                            var log = ctx.TransferLog.FirstOrDefault(x => x.LogId == log_id);
-                            log.BQty = log.BQty + receive_qty;
-                            log.LogStatus = 2;
+                            if ((log.BQty + receive_qty) < log.Qty)
+                            {
+                                log.BQty = log.BQty + receive_qty;
+                                log.LogStatus = 1;
+                            }
+                            else
+                            {
+                                log.BQty = log.BQty + receive_qty;
+                                log.LogStatus = 2;
+                            }
+                            log.InvAmt = item.cost_exc_vat;
+                            log.VatAmt = item.cost_vat;
                             ctx.Entry(log).State = EntityState.Modified;
                             ctx.SaveChanges();
                         }
@@ -1176,15 +875,31 @@ namespace KKHondaBackend.Controllers.mcs
             }
         }
 
-        // public string GenerateReceiveNo()
-        // {
-        //     // ctx.CreditContractPayment
-        //     var receiptNo = (from db in ctx.ReceiveH
-        //                      orderby db.receive_no descending
-        //                      where db.receive_no.StartsWith("GR")
-        //                      select db.receive_no).FirstOrDefault();
+        public string GenerateReceiveNo()
+        {
+            // ctx.CreditContractPayment
+            var receiptNo = (from db in ctx.ReceiveH
+                             orderby db.receive_no descending
+                             where db.receive_no.StartsWith("RC")
+                             select db.receive_no).FirstOrDefault();
 
-        //     return iSysParamService.GenerateReceiveNo("GR", 1);
-        // }
+            return SetRunningCode("RC", 1, receiptNo);
+        }
+
+        private string SetRunningCode(string prefix, int branchId, string runningNumber)
+        {
+            string year = (DateTime.Now.Year + 543).ToString().Substring(2, 2);
+            string month = (DateTime.Now.Month).ToString("00");
+            string r = $"{prefix}{branchId.ToString("00")}{year}{month}";
+
+            if (runningNumber == null) return $"{r}/0001";
+
+            string preStr = runningNumber.Split("/")[0];
+            string endStr = runningNumber.Split("/")[1];
+
+            string preMonth = preStr.Substring(preStr.Length - 2);
+            int runNumber = (preMonth == month) ? int.Parse(endStr) + 1 : 1;
+            return $"{r}/{runNumber.ToString("0000")}";
+        }
     }
 }
