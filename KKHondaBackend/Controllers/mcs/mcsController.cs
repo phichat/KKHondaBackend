@@ -606,7 +606,7 @@ namespace KKHondaBackend.Controllers.mcs
                             log.TaxNo = row[9].ToString().Replace(" ", "").Trim();
                             log.InvAmt = ToDecimalFormatted(row[10].ToString().Trim());
                             log.VatAmt = ToDecimalFormatted(row[11].ToString().Trim());
-                            log.DeliveryDate = Convert.ToDateTime(row[1].ToString()).ToString("dd/MM/yyyy");
+                            log.DeliveryDate = Convert.ToDateTime(row[1].ToString());
                             log.DealerCode = row[0].ToString();
                             log.CreateBy = int.Parse(create_by);
                             log.CreateDate = DateTime.Now;
@@ -715,7 +715,7 @@ namespace KKHondaBackend.Controllers.mcs
                                 color_code = color.ColorCode,
                                 dealer_code = db.DealerCode,
                                 delivery_code = db.TranferNo,
-                                delivery_date = DateTime.ParseExact(db.DeliveryDate, "dd/MM/yyyy", null),
+                                delivery_date = db.DeliveryDate,
                                 invoice_no = db.LogRef
                             }).ToList();
 
@@ -788,7 +788,6 @@ namespace KKHondaBackend.Controllers.mcs
             {
                 try
                 {
-
                     var h = value;
                     var receive_no = iSysParamService.GenerateReceiveNo((int)h.receive_id);
 
@@ -1008,7 +1007,7 @@ namespace KKHondaBackend.Controllers.mcs
                         transfer_log.TaxNo = null;
                         transfer_log.InvAmt = item.cost_inc_vat;
                         transfer_log.VatAmt = item.cost_vat;
-                        transfer_log.DeliveryDate = Convert.ToDateTime(h.delivery_date.ToString()).ToString("dd/MM/yyyy");
+                        transfer_log.DeliveryDate = h.delivery_date;
                         transfer_log.DealerCode = h.dealer_code;
                         transfer_log.CreateBy = h.create_id;
                         transfer_log.CreateDate = DateTime.Now;
@@ -1175,16 +1174,5 @@ namespace KKHondaBackend.Controllers.mcs
                 return null;
             }
         }
-
-        // public string GenerateReceiveNo()
-        // {
-        //     // ctx.CreditContractPayment
-        //     var receiptNo = (from db in ctx.ReceiveH
-        //                      orderby db.receive_no descending
-        //                      where db.receive_no.StartsWith("GR")
-        //                      select db.receive_no).FirstOrDefault();
-
-        //     return iSysParamService.GenerateReceiveNo("GR", 1);
-        // }
     }
 }

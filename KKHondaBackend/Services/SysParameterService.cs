@@ -117,8 +117,10 @@ namespace KKHondaBackend.Services
 
       if (paramHd == null)
       {
-        paramHd.Module = module;
-        paramHd.Prefix = prefix;
+        paramHd = new MParameter {
+          Module = module,
+          Prefix = prefix
+        };
         ctx.Add(paramHd);
         ctx.SaveChanges();
       }

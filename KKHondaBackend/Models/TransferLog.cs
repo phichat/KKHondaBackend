@@ -30,7 +30,7 @@ namespace KKHondaBackend.Models
     public string TaxNo { get; set; }
     public decimal? InvAmt { get; set; }
     public decimal? VatAmt { get; set; }
-    public string DeliveryDate { get; set; }
+    public DateTime? DeliveryDate { get; set; }
     public string DealerCode {get;set;}
   }
 }
