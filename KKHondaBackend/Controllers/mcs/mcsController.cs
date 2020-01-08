@@ -659,7 +659,9 @@ namespace KKHondaBackend.Controllers.mcs
     [HttpGet("transfer_log_list")]
     public IActionResult transfer_log_list(string engine_no, string frame_no, string tax_no)
     {
-      var list = (from db in ctx.TransferLog
+      try
+      {
+          var list = (from db in ctx.TransferLog
 
                   join _product in ctx.Product on db.ItemId equals _product.ItemId into product1
                   from product in product1.DefaultIfEmpty()
@@ -711,6 +713,13 @@ namespace KKHondaBackend.Controllers.mcs
                   }).ToList();
 
       return Ok(list);
+      }
+      catch (Exception ex)
+      {
+          
+          throw;
+      }
+      
     }
 
 

@@ -218,6 +218,7 @@ namespace KKHondaBackend.Data
       modelBuilder.ApplyConfiguration(new PurchaseListItemConfiguration());
       modelBuilder.ApplyConfiguration(new ReceiveDConfiguration());
       modelBuilder.ApplyConfiguration(new InformationConfiguration());
+      modelBuilder.ApplyConfiguration(new ReceiveHConfiguration());
     }
   }
 }
