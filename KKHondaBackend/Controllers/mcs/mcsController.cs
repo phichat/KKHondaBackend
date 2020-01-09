@@ -219,7 +219,7 @@ namespace KKHondaBackend.Controllers.mcs
                         from cre in cr1.DefaultIfEmpty()
                         join _up in ctx.User on h.update_id equals _up.Id into up1
                         from upd in up1.DefaultIfEmpty()
-                        where h.receive_no.StartsWith("GR")
+                        where h.receive_type == 1 || h.receive_type == 2
                         select new ReceiveHRes
                         {
                             id = h.id,
@@ -789,7 +789,9 @@ namespace KKHondaBackend.Controllers.mcs
                 try
                 {
                     var h = value;
-                    var receive_no = iSysParamService.GenerateReceiveNo((int)h.receive_id);
+
+                    var branchId = (from db in ctx.User where db.Id == h.receive_id select db.BranchId).FirstOrDefault();
+                    var receive_no = iSysParamService.GenerateReceiveNo((int)branchId);
 
                     ReceiveH head = new ReceiveH();
                     head.receive_no = receive_no;
@@ -924,7 +926,9 @@ namespace KKHondaBackend.Controllers.mcs
                 {
 
                     var h = value;
-                    var receive_no = iSysParamService.GenerateReceiveNo((int)h.receive_id);;
+                    var branchId = (from db in ctx.User where db.Id == h.receive_id select db.BranchId).FirstOrDefault();
+                    var receive_no = iSysParamService.GenerateReceiveNo((int)branchId);
+                    //var receive_no = iSysParamService.GenerateReceiveNo((int)h.receive_id);;
 
                     ReceiveH head = new ReceiveH();
                     head.receive_no = receive_no;
