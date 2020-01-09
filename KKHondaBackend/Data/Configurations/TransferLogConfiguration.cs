@@ -24,7 +24,7 @@ namespace KKHondaBackend.Data.Configurations
       entity.Property(e => e.ColorId).HasColumnName("color_id");
       entity.Property(e => e.CreateBy).HasColumnName("create_by");
       entity.Property(e => e.CreateDate).HasColumnName("create_date").HasColumnType("datetime");
-      entity.Property(e => e.DeliveryDate).HasColumnName("delivery_date").HasMaxLength(250);
+      entity.Property(e => e.DeliveryDate).HasColumnName("delivery_date").HasColumnType("datetime");
       entity.Property(e => e.EngineNo).HasColumnName("engine_no").HasMaxLength(250);
       entity.Property(e => e.FrameNo).HasColumnName("frame_no").HasMaxLength(250);
       entity.Property(e => e.InvAmt).HasColumnName("inv_amt").HasColumnType("numeric(18, 0)");

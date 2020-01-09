@@ -215,15 +215,12 @@ namespace KKHondaBackend.Data
       modelBuilder.ApplyConfiguration(new WarehouseConfiguration());
       modelBuilder.ApplyConfiguration(new WarehouseLocationConfiguration());
       modelBuilder.ApplyConfiguration(new ZoneConfiguration());
-
-      modelBuilder.ApplyConfiguration(new CreditCollectionLetterConfiguration());
-      modelBuilder.ApplyConfiguration(new CreditCollectionLetterDetailConfiguration());
-      
       modelBuilder.ApplyConfiguration(new MDealerConfiguration());
       modelBuilder.ApplyConfiguration(new PurchaseListConfiguration());
       modelBuilder.ApplyConfiguration(new PurchaseListItemConfiguration());
       modelBuilder.ApplyConfiguration(new ReceiveDConfiguration());
       modelBuilder.ApplyConfiguration(new InformationConfiguration());
+      modelBuilder.ApplyConfiguration(new ReceiveHConfiguration());
     }
   }
 }
