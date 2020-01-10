@@ -221,6 +221,8 @@ namespace KKHondaBackend.Data
       modelBuilder.ApplyConfiguration(new ReceiveDConfiguration());
       modelBuilder.ApplyConfiguration(new InformationConfiguration());
       modelBuilder.ApplyConfiguration(new ReceiveHConfiguration());
+      modelBuilder.ApplyConfiguration(new CreditCollectionLetterConfiguration());
+      modelBuilder.ApplyConfiguration(new CreditCollectionLetterDetailConfiguration());
     }
   }
 }

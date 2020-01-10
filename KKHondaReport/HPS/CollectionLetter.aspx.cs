@@ -56,7 +56,7 @@ namespace KKHondaReport.HPS
                     rptDoc.SetParameterValue("@bookNo", bookNo);
                     rptDoc.Database.Tables[0].ApplyLogOnInfo(L1);
 
-                    StreamPdfReport(rptDoc, "CollectionLetter.pdf");
+                    StreamPdfReport(rptDoc, "CollectionLetter");
                 }
                 catch (Exception ex)
                 {

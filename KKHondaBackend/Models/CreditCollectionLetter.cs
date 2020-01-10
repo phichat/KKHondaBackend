@@ -21,12 +21,14 @@ namespace KKHondaBackend.Models
         public string CldReferNo { get; set; }
         public string CldSubject { get; set; }
         public string CldExpenses { get; set; }
-        public string CldStatus { get; set; }
+        public int CldStatus { get; set; }
         public int CldComeback { get; set; }
         public DateTime CldPaymentDate { get; set; }
         public int CldOperatorId { get; set; }
         public string CldTurnover { get; set; }
         public DateTime CldCompletDate { get; set; }
+        public int CldStatusLock { get; set; }
+        public string CldRemarkLock { get; set; }
     }
 
     public partial class CreditCollectionLetterGroup

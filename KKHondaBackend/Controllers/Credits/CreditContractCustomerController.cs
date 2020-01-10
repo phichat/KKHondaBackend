@@ -128,8 +128,9 @@ namespace KKHondaBackend.Controllers.Credits
         [HttpGet("StatusDropdown")]
         public IActionResult StatusDropdown()
         {
+            var status = new string[] { "14", "15", "16", "19", "21" };
             var Dropdowns = ctx.MStatus
-                  .Where(x => x.Id == 14 || x.Id == 15)
+                  .Where(x => status.Contains(x.Id.ToString()))
                   .Select(o => new Dropdown
                   {
                       Value = o.Id.ToString(),

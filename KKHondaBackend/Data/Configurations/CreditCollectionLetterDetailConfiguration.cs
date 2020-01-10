@@ -17,12 +17,14 @@ namespace KKHondaBackend.Data.Configurations
             entity.Property(e => e.CldReferNo).HasColumnName("cld_refer_no").HasMaxLength(50);
             entity.Property(e => e.CldSubject).HasColumnName("cld_subject").HasMaxLength(100);
             entity.Property(e => e.CldExpenses).HasColumnName("cld_expenses").HasMaxLength(100);
-            entity.Property(e => e.CldStatus).HasColumnName("cld_status").HasMaxLength(50);
+            entity.Property(e => e.CldStatus).HasColumnName("cld_status");
             entity.Property(e => e.CldComeback).HasColumnName("cld_comeback");
             entity.Property(e => e.CldOperatorId).HasColumnName("cld_operator_id");
             entity.Property(e => e.CldTurnover).HasColumnName("cld_turnover").HasMaxLength(50);
             entity.Property(e => e.CldPaymentDate).HasColumnName("cld_payment_date").HasColumnType("datetime");
             entity.Property(e => e.CldCompletDate).HasColumnName("cld_complet_date").HasColumnType("datetime");
+            entity.Property(e => e.CldStatusLock).HasColumnName("cld_status_lock");
+            entity.Property(e => e.CldRemarkLock).HasColumnName("cld_remark_lock").HasMaxLength(100);
         }
     }
 }
