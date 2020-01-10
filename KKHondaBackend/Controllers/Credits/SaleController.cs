@@ -328,7 +328,7 @@ namespace KKHondaBackend.Controllers.Credits
           if (reserve.ComPrice > 0)
           {
             // ใบเสร็จค่าคอมมิชั่น
-            var saleCom = iSaleCommission.SetSaleCommission(reserve, cHire, (int)contract.BranchId);
+            var saleCom = iSaleCommission.SetSaleCommission(reserve, cHire);
             saleCom.ComNo = iSysParamService.GenerateTaxInvNo((int)contract.BranchId);
             calculate.ComNo = saleCom.ComNo;
             calculate.ComStatus = saleCom.Status;
@@ -337,7 +337,7 @@ namespace KKHondaBackend.Controllers.Credits
           }
 
           // ใบส่งของ/ใบกำกับภาษี/ใบเสร็จรับเงิน
-          var invTaxRec = iSaleInvTaxRec.SetSaleInvTaxRec(cHire, (int)contract.BranchId);
+          var invTaxRec = iSaleInvTaxRec.SetSaleInvTaxRec(reserve.BranchTax, reserve.Branch, cHire);
           invTaxRec.InvTaxRecNo = iSysParamService.GenerateVatNo((int)contract.BranchId);
           calculate.InvTaxRecNo = invTaxRec.InvTaxRecNo;
           calculate.InvTaxRecStatus = invTaxRec.Status;
@@ -348,10 +348,19 @@ namespace KKHondaBackend.Controllers.Credits
           {
             case BookingPaymentType.Cash:
               // ใบเสร็จรับเงิน
-              var receipt = iSaleReceipt.SetSaleReceipt(cHire, (int)contract.BranchId);
+              var receipt = iSaleReceipt.SetSaleReceipt(reserve.BranchTax, reserve.Branch, cHire);
               receipt.ReceiptNo = iSysParamService.GenerateReceiptNo((int)contract.BranchId);
               calculate.ReceiptNo = receipt.ReceiptNo;
               calculate.ReceiptStatus = receipt.Status;
+              calculate.PaymentType = reserve.PaymentType;
+              calculate.PaymentPrice = reserve.PaymentPrice;
+              calculate.Discount = reserve.Discount;
+              calculate.TotalPaymentPrice = reserve.TotalPaymentPrice;
+              calculate.PaymentDate = reserve.PaymentDate;
+              calculate.AccBankId = reserve.AccBankId;
+              calculate.DocumentRef = reserve.DocumentRef;
+              calculate.TotalRemain = reserve.TotalRemain;
+              // calculate
               _context.SaleReceipt.Add(receipt);
               _context.SaveChanges();
               // ชำระครบรอโอนทะเบียน
@@ -412,9 +421,20 @@ namespace KKHondaBackend.Controllers.Credits
               item.PayPrice = item.Balance;
               item.PayVatPrice = item.BalanceVatPrice;
               item.PayNetPrice = item.BalanceNetPrice;
-              item.Status = 13; // สถานะยังไม่ชำระ
               item.CreateBy = contract.CreateBy;
               item.CreateDate = DateTime.Now;
+
+              if (booking.BookingPaymentType == BookingPaymentType.Cash)
+              {
+                item.Status = 11;
+                item.Remain = 0;
+                item.RemainVatPrice = 0;
+                item.RemainNetPrice = 0;
+              }
+              else
+              {
+                item.Status = 13; // สถานะยังไม่ชำระ
+              }
             }
             _context.CreditContractItem.AddRange(contractItems);
             _context.SaveChanges();
@@ -466,189 +486,189 @@ namespace KKHondaBackend.Controllers.Credits
       }
     }
 
-    private IActionResult Reviced(Credit credit)
-    {
-      using (var transaction = _context.Database.BeginTransaction())
-      {
-        Sale calculate = new Sale();
-        CreditContract contract = new CreditContract();
-        List<CreditContractItem> contractItems = new List<CreditContractItem>();
-        Models.Booking booking = new Models.Booking();
+    // private IActionResult Reviced(Credit credit)
+    // {
+    //   using (var transaction = _context.Database.BeginTransaction())
+    //   {
+    //     Sale calculate = new Sale();
+    //     CreditContract contract = new CreditContract();
+    //     List<CreditContractItem> contractItems = new List<CreditContractItem>();
+    //     Models.Booking booking = new Models.Booking();
 
-        try
-        {
-          var reserve = credit.sale;
-          calculate = credit.sale;
-          contract = credit.creditContract;
-          contractItems = credit.creditContactItem.ToList();
-          booking = _context.Booking.FirstOrDefault(b => b.BookingId == contract.BookingId);
+    //     try
+    //     {
+    //       var reserve = credit.sale;
+    //       calculate = credit.sale;
+    //       contract = credit.creditContract;
+    //       contractItems = credit.creditContactItem.ToList();
+    //       booking = _context.Booking.FirstOrDefault(b => b.BookingId == contract.BookingId);
 
-          // Calculate
-          calculate.UpdateDate = DateTime.Now;
-          _context.Sale.Update(calculate);
-          _context.SaveChanges();
+    //       // Calculate
+    //       calculate.UpdateDate = DateTime.Now;
+    //       _context.Sale.Update(calculate);
+    //       _context.SaveChanges();
 
-          // Contract
-          contract.UpdateDate = DateTime.Now;
-          contract.RefNo = GenerateReferenceContract(contract.ContractId);
-          _context.CreditContract.Update(contract);
-          _context.SaveChanges();
+    //       // Contract
+    //       contract.UpdateDate = DateTime.Now;
+    //       contract.RefNo = GenerateReferenceContract(contract.ContractId);
+    //       _context.CreditContract.Update(contract);
+    //       _context.SaveChanges();
 
-          // ContractItem
-          foreach (var item in contractItems)
-          {
-            item.ContractId = contract.ContractId;
-            item.RefNo = contract.RefNo;
+    //       // ContractItem
+    //       foreach (var item in contractItems)
+    //       {
+    //         item.ContractId = contract.ContractId;
+    //         item.RefNo = contract.RefNo;
 
-            //item.PayPrice = item.Balance;
-            //item.PayVatPrice = item.BalanceVatPrice;
-            //item.PayNetPrice = item.BalanceNetPrice;
-            // สถานะยังไม่ชำระ
-            item.Status = 13;
+    //         //item.PayPrice = item.Balance;
+    //         //item.PayVatPrice = item.BalanceVatPrice;
+    //         //item.PayNetPrice = item.BalanceNetPrice;
+    //         // สถานะยังไม่ชำระ
+    //         item.Status = 13;
 
-            item.CreateBy = contract.CreateBy;
-            item.CreateDate = DateTime.Now;
-            item.UpdateBy = contract.UpdateBy;
-            item.UpdateDate = DateTime.Now;
-          }
+    //         item.CreateBy = contract.CreateBy;
+    //         item.CreateDate = DateTime.Now;
+    //         item.UpdateBy = contract.UpdateBy;
+    //         item.UpdateDate = DateTime.Now;
+    //       }
 
-          _context.CreditContractItem.AddRange(contractItems);
-          _context.SaveChanges();
+    //       _context.CreditContractItem.AddRange(contractItems);
+    //       _context.SaveChanges();
 
-          // ค้นห่อผู้เช่าซื้อด้วยรหัส
-          var __branch = _context.Branch.SingleOrDefault(x => x.BranchId == 1);
+    //       // ค้นห่อผู้เช่าซื้อด้วยรหัส
+    //       var __branch = _context.Branch.SingleOrDefault(x => x.BranchId == 1);
 
-          var __company = _context.Company.FirstOrDefault(x => x.ComId == 1);
+    //       var __company = _context.Company.FirstOrDefault(x => x.ComId == 1);
 
-          // Booking
-          if (booking.SellDate == null)
-            booking.SellDate = DateTime.Now;
+    //       // Booking
+    //       if (booking.SellDate == null)
+    //         booking.SellDate = DateTime.Now;
 
-          booking.ReturnDepostit = reserve.ReturnDeposit;
-          // กรณีมีการคืนเงินมัดจำ
-          if (reserve.ReturnDeposit == 1 && booking.ReturnDepostit == 0)
-          {
-            booking.ReturnDepositPrice = reserve.ReturnDepositPrice;
-            booking.ReturnDepNo = iSysParamService.GeerateeReturnDepositNo((int)contract.BranchId);
-            booking.ReturnDepBy = contract.CreateBy;
-            booking.ReturnDepDate = DateTime.Now;
+    //       booking.ReturnDepostit = reserve.ReturnDeposit;
+    //       // กรณีมีการคืนเงินมัดจำ
+    //       if (reserve.ReturnDeposit == 1 && booking.ReturnDepostit == 0)
+    //       {
+    //         booking.ReturnDepositPrice = reserve.ReturnDepositPrice;
+    //         booking.ReturnDepNo = iSysParamService.GeerateeReturnDepositNo((int)contract.BranchId);
+    //         booking.ReturnDepBy = contract.CreateBy;
+    //         booking.ReturnDepDate = DateTime.Now;
 
-          }
-          else if (reserve.ReturnDeposit == 0)
-          {
-            booking.ReturnDepositPrice = 0;
-          }
+    //       }
+    //       else if (reserve.ReturnDeposit == 0)
+    //       {
+    //         booking.ReturnDepositPrice = 0;
+    //       }
 
-          booking.BookingStatus = 2; // สถานะขาย
-          booking.PaymentPrice = calculate.DepositPrice;
-          booking.PaymentType = booking.BookingDepositType;
-          booking.CusSellName = __company.ComName;
-          booking.CusTaxNo = __branch.BranchRegisterNo;
-          booking.SellBy = contract.CreateBy;
-          booking.LStartDate = calculate.FirstPayment.ToString("yyyy-MM-dd");
-          booking.LPayDay = calculate.DueDate;
-          booking.LTerm = calculate.InstalmentEnd;
-          booking.LInterest = calculate.Interest;
-          booking.LPriceTerm = calculate.InstalmentPrice;
-          booking.ReturnDepositPrice = reserve.ReturnDeposit;
+    //       booking.BookingStatus = 2; // สถานะขาย
+    //       booking.PaymentPrice = calculate.DepositPrice;
+    //       booking.PaymentType = booking.BookingDepositType;
+    //       booking.CusSellName = __company.ComName;
+    //       booking.CusTaxNo = __branch.BranchRegisterNo;
+    //       booking.SellBy = contract.CreateBy;
+    //       booking.LStartDate = calculate.FirstPayment.ToString("yyyy-MM-dd");
+    //       booking.LPayDay = calculate.DueDate;
+    //       booking.LTerm = calculate.InstalmentEnd;
+    //       booking.LInterest = calculate.Interest;
+    //       booking.LPriceTerm = calculate.InstalmentPrice;
+    //       booking.ReturnDepositPrice = reserve.ReturnDeposit;
 
-          // กรณีมีการคืนเงินมัดจำ
-          if (reserve.ReturnDeposit == 1 && booking.ReturnDepostit == 0)
-          {
-            booking.ReturnDepositPrice = reserve.ReturnDepositPrice;
-            booking.ReturnDepNo = iSysParamService.GeerateeReturnDepositNo((int)contract.BranchId);
-            booking.ReturnDepBy = contract.CreateBy;
-            booking.ReturnDepDate = DateTime.Now;
-          }
+    //       // กรณีมีการคืนเงินมัดจำ
+    //       if (reserve.ReturnDeposit == 1 && booking.ReturnDepostit == 0)
+    //       {
+    //         booking.ReturnDepositPrice = reserve.ReturnDepositPrice;
+    //         booking.ReturnDepNo = iSysParamService.GeerateeReturnDepositNo((int)contract.BranchId);
+    //         booking.ReturnDepBy = contract.CreateBy;
+    //         booking.ReturnDepDate = DateTime.Now;
+    //       }
 
-          _context.Booking.Update(booking);
-          _context.SaveChanges();
+    //       _context.Booking.Update(booking);
+    //       _context.SaveChanges();
 
-          transaction.Commit();
+    //       transaction.Commit();
 
-          var obj = new Dictionary<string, object>
-                    {
-                        {"contractId", contract.ContractId}
-                    };
+    //       var obj = new Dictionary<string, object>
+    //                 {
+    //                     {"contractId", contract.ContractId}
+    //                 };
 
-          return Ok(obj);
+    //       return Ok(obj);
 
-        }
-        catch (Exception ex)
-        {
-          transaction.Rollback();
-          return StatusCode(500, ex.Message);
-        }
-      }
-    }
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //       transaction.Rollback();
+    //       return StatusCode(500, ex.Message);
+    //     }
+    //   }
+    // }
 
-    private IActionResult Edited(Credit credit)
-    {
-      using (var transaction = _context.Database.BeginTransaction())
-      {
-        Sale calculate = new Sale();
-        CreditContract contract = new CreditContract();
-        List<CreditContractItem> contractItems = new List<CreditContractItem>();
+    // private IActionResult Edited(Credit credit)
+    // {
+    //   using (var transaction = _context.Database.BeginTransaction())
+    //   {
+    //     Sale calculate = new Sale();
+    //     CreditContract contract = new CreditContract();
+    //     List<CreditContractItem> contractItems = new List<CreditContractItem>();
 
-        try
-        {
-          calculate = credit.sale;
-          contract = credit.creditContract;
-          contractItems = credit.creditContactItem.ToList();
+    //     try
+    //     {
+    //       calculate = credit.sale;
+    //       contract = credit.creditContract;
+    //       contractItems = credit.creditContactItem.ToList();
 
-          // Calculate
-          calculate.UpdateDate = DateTime.Now;
-          _context.Update(calculate);
-          _context.SaveChanges();
+    //       // Calculate
+    //       calculate.UpdateDate = DateTime.Now;
+    //       _context.Update(calculate);
+    //       _context.SaveChanges();
 
-          // Contract
-          contract.UpdateDate = DateTime.Now;
-          _context.Update(contract);
-          _context.SaveChanges();
+    //       // Contract
+    //       contract.UpdateDate = DateTime.Now;
+    //       _context.Update(contract);
+    //       _context.SaveChanges();
 
-          // ContractItem
-          var contItem = _context.CreditContractItem.Where(o => o.ContractId == contract.ContractId).ToList();
-          _context.RemoveRange(contItem);
-          _context.SaveChanges();
+    //       // ContractItem
+    //       var contItem = _context.CreditContractItem.Where(o => o.ContractId == contract.ContractId).ToList();
+    //       _context.RemoveRange(contItem);
+    //       _context.SaveChanges();
 
-          foreach (var item in contractItems)
-          {
-            item.ContractId = contract.ContractId;
-            item.RefNo = contract.RefNo;
+    //       foreach (var item in contractItems)
+    //       {
+    //         item.ContractId = contract.ContractId;
+    //         item.RefNo = contract.RefNo;
 
-            //item.PayPrice = item.Balance;
-            //item.PayVatPrice = item.BalanceVatPrice;
-            //item.PayNetPrice = item.BalanceNetPrice;
-            // สถานะยังไม่ชำระ
-            item.Status = 13;
+    //         //item.PayPrice = item.Balance;
+    //         //item.PayVatPrice = item.BalanceVatPrice;
+    //         //item.PayNetPrice = item.BalanceNetPrice;
+    //         // สถานะยังไม่ชำระ
+    //         item.Status = 13;
 
-            item.CreateBy = contract.CreateBy;
-            item.CreateDate = DateTime.Now;
-            item.UpdateBy = contract.UpdateBy;
-            item.UpdateDate = DateTime.Now;
-          }
+    //         item.CreateBy = contract.CreateBy;
+    //         item.CreateDate = DateTime.Now;
+    //         item.UpdateBy = contract.UpdateBy;
+    //         item.UpdateDate = DateTime.Now;
+    //       }
 
-          _context.CreditContractItem.AddRange(contractItems);
-          _context.SaveChanges();
+    //       _context.CreditContractItem.AddRange(contractItems);
+    //       _context.SaveChanges();
 
 
-          transaction.Commit();
+    //       transaction.Commit();
 
-          var obj = new Dictionary<string, object>
-                    {
-                        {"contractId", contract.ContractId}
-                    };
+    //       var obj = new Dictionary<string, object>
+    //                 {
+    //                     {"contractId", contract.ContractId}
+    //                 };
 
-          return Ok(obj);
+    //       return Ok(obj);
 
-        }
-        catch (Exception ex)
-        {
-          transaction.Rollback();
-          return StatusCode(500, ex.Message);
-        }
-      }
-    }
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //       transaction.Rollback();
+    //       return StatusCode(500, ex.Message);
+    //     }
+    //   }
+    // }
 
     private string GenerateReferenceContract(int? contractId)
     {

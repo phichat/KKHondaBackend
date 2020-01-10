@@ -20,6 +20,7 @@ namespace KKHondaBackend.Data.Configurations
       entity.Property(e => e.FineSum).HasColumnName("fine_sum").IsRequired().HasDefaultValue(0);
       entity.Property(e => e.FineSumOther).HasColumnName("fine_sum_other").IsRequired().HasDefaultValue(0);
       entity.Property(e => e.RevenueStamp).HasColumnName("revenue_stamp").IsRequired().HasDefaultValue(0);
+      entity.Property(e => e.ComPrice).HasColumnName("com_price").HasDefaultValueSql("0");
       entity.Property(e => e.DelayDueDate).HasColumnName("delay_due_date").IsRequired().HasDefaultValue(0);
     }
   }

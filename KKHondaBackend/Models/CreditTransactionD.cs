@@ -13,6 +13,7 @@ namespace KKHondaBackend.Models
     public decimal FineSum { get; set; }
     public decimal FineSumOther { get; set; }
     public decimal RevenueStamp { get; set; }
+    public decimal ComPrice { get; set; }
     public int DelayDueDate { get; set; }
   }
 }

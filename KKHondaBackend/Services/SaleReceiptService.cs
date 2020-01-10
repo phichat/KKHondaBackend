@@ -8,7 +8,7 @@ namespace KKHondaBackend.Services
 {
   public interface ISaleReceiptService
   {
-    SaleReceipt SetSaleReceipt(MCustomer cHire, int branchId);
+    SaleReceipt SetSaleReceipt(string branchTax, string branch, MCustomer cHire);
   }
 
   public class SaleReceiptService : ISaleReceiptService
@@ -21,12 +21,11 @@ namespace KKHondaBackend.Services
       _context = context;
     }
 
-    public SaleReceipt SetSaleReceipt(MCustomer cHire, int branchId)
+    public SaleReceipt SetSaleReceipt(string branchTax, string branch, MCustomer cHire)
     {
       var cAddress = cHire.MCustomerAddress.FirstOrDefault();
       var amphor = _context.MAmphor.Where(x => x.AmphorCode == cAddress.AmphorCode).AsNoTracking().FirstOrDefault();
       var province = _context.MProvince.Where(x => x.ProvinceCode == cAddress.ProvinceCode).AsNoTracking().FirstOrDefault();
-      var branch = _context.Branch.Where(x => x.BranchId == branchId).AsNoTracking().FirstOrDefault();
       var receipt = new SaleReceipt
       {
         // ReceiptNo = iSysParamService.GenerateReceiptNo(branchId),
@@ -35,8 +34,8 @@ namespace KKHondaBackend.Services
         CustomerCode = cHire.CustomerCode,
         CustomerFullName = $"{cHire.CustomerPrename}{cHire.CustomerName} {cHire.CustomerSurname}",
         CustomerFullAddress = $"{cAddress.Address} อำเภอ{amphor.AmphorName} จังหวัด{province.ProvinceNameTh} {amphor.Zipcode}",
-        BranchTax = branch.BranchRegisterNo,
-        Branch = branch.BranchName,
+        BranchTax = branchTax,
+        Branch = branch,
       };
       return receipt;
     }

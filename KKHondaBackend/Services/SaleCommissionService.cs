@@ -8,7 +8,7 @@ namespace KKHondaBackend.Services
 {
   public interface ISaleCommissionService
   {
-    SaleCommission SetSaleCommission(SaleFormBody reserve, MCustomer cHire, int branchId);
+    SaleCommission SetSaleCommission(SaleFormBody reserve, MCustomer cHire);
   }
 
   public class SaleCommissionService : ISaleCommissionService
@@ -21,12 +21,11 @@ namespace KKHondaBackend.Services
       _context = context;
     }
 
-    public SaleCommission SetSaleCommission(SaleFormBody reserve, MCustomer cHire, int branchId)
+    public SaleCommission SetSaleCommission(SaleFormBody reserve, MCustomer cHire)
     {
       var cAddress = cHire.MCustomerAddress.FirstOrDefault();
       var amphor = _context.MAmphor.Where(x => x.AmphorCode == cAddress.AmphorCode).AsNoTracking().FirstOrDefault();
       var province = _context.MProvince.Where(x => x.ProvinceCode == cAddress.ProvinceCode).AsNoTracking().FirstOrDefault();
-      var branch = _context.Branch.Where(x => x.BranchId == branchId).AsNoTracking().FirstOrDefault();
       var saleCom = new SaleCommission
       {
         // ComNo = iSysParamService.GenerateTaxInvNo(branchId),
@@ -36,8 +35,8 @@ namespace KKHondaBackend.Services
         CustomerCode = cHire.CustomerCode,
         CustomerFullName = $"{cHire.CustomerPrename}{cHire.CustomerName} {cHire.CustomerSurname}",
         CustomerFullAddress = $"{cAddress.Address} อำเภอ{amphor.AmphorName} จังหวัด{province.ProvinceNameTh} {amphor.Zipcode}",
-        BranchTax = branch.BranchRegisterNo,
-        Branch = branch.BranchName,
+        BranchTax = reserve.BranchTax,
+        Branch = reserve.Branch,
         FiId = (int)reserve.FiId,
         FiintId = (int)reserve.FiintId,
         FiComId = (int)reserve.FiComId,

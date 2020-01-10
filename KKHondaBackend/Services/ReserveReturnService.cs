@@ -35,12 +35,11 @@ namespace KKHondaBackend.Services
         CustomerCode = cBooking.CustomerCode,
         CustomerFullName = $"{cBooking.CustomerPrename}{cBooking.CustomerName} {cBooking.CustomerSurname}",
         CustomerFullAddress = $"{cAddress.Address} อำเภอ{amphor.AmphorName} จังหวัด{province.ProvinceNameTh} {amphor.Zipcode}",
-        PaymentType = reserve.PaymentType,
-        AccBankId = reserve.AccBankId,
-        DiscountPrice = reserve.Discount,
-        TotalPaymentPrice = reserve.TotalPaymentPrice,
-        PaymentDate = reserve.PaymentDate,
-        DocumentRef = reserve.DocumentRef
+        PaymentType = 1,
+        PaymentPrice = reserve.ReturnDepositPrice,
+        DiscountPrice = 0,
+        TotalPaymentPrice = reserve.ReturnDepositPrice,
+        PaymentDate = DateTime.Now
       };
       return deposit;
     }
