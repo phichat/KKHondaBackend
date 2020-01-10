@@ -128,13 +128,13 @@ namespace KKHondaBackend.Controllers.Credits
         [HttpGet("StatusDropdown")]
         public IActionResult StatusDropdown()
         {
-            var status = new string[] { "14", "15", "16", "19", "21" };
+            var statusId = (14, 15, 16, 19, 21);
             var Dropdowns = ctx.MStatus
-                  .Where(x => status.Contains(x.Id.ToString()))
+                  .Where(x => statusId.ToString().Contains(x.Id.ToString()))
                   .Select(o => new Dropdown
                   {
                       Value = o.Id.ToString(),
-                      Text = o.StatusDesc,
+                      Text = o.StatusCode + " - " + o.StatusDesc,
                   })
                   .OrderByDescending(x => x.Value)
                   .ToList();
