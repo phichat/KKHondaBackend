@@ -107,10 +107,10 @@ namespace KKHondaBackend.Services
 
     public string GenerateContractBookNo(int branchId)
     {
-        return SetRunningCode("CONTRACT", "CT", branchId);
+      return SetRunningCode("CONTRACT", "CT", branchId);
     }
 
-        public string GetSysParameter(string prefix)
+    public string GetSysParameter(string prefix)
     {
       throw new NotImplementedException();
     }
@@ -123,7 +123,8 @@ namespace KKHondaBackend.Services
 
       if (paramHd == null)
       {
-        paramHd = new MParameter {
+        paramHd = new MParameter
+        {
           Module = module,
           Prefix = prefix
         };

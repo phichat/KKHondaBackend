@@ -8,7 +8,7 @@ namespace KKHondaBackend.Services
 {
   public interface ISaleInvTaxRecService
   {
-    SaleInvTaxRec SetSaleInvTaxRec(MCustomer cHire, int branchId);
+    SaleInvTaxRec SetSaleInvTaxRec(string branchTax, string branch, MCustomer cHire);
   }
 
   public class SaleInvTaxRecService : ISaleInvTaxRecService
@@ -20,12 +20,11 @@ namespace KKHondaBackend.Services
     {
       _context = context;
     }
-    public SaleInvTaxRec SetSaleInvTaxRec(MCustomer cHire, int branchId)
+    public SaleInvTaxRec SetSaleInvTaxRec(string branchTax, string branch, MCustomer cHire)
     {
       var cAddress = cHire.MCustomerAddress.FirstOrDefault();
       var amphor = _context.MAmphor.Where(x => x.AmphorCode == cAddress.AmphorCode).AsNoTracking().FirstOrDefault();
       var province = _context.MProvince.Where(x => x.ProvinceCode == cAddress.ProvinceCode).AsNoTracking().FirstOrDefault();
-      var branch = _context.Branch.Where(x => x.BranchId == branchId).AsNoTracking().FirstOrDefault();
       var ingTaxRec = new SaleInvTaxRec
       {
         // InvTaxRecNo = iSysParamService.GenerateVatNo(branchId),
@@ -34,8 +33,8 @@ namespace KKHondaBackend.Services
         CustomerCode = cHire.CustomerCode,
         CustomerFullName = $"{cHire.CustomerPrename}{cHire.CustomerName} {cHire.CustomerSurname}",
         CustomerFullAddress = $"{cAddress.Address} อำเภอ{amphor.AmphorName} จังหวัด{province.ProvinceNameTh} {amphor.Zipcode}",
-        BranchTax = branch.BranchRegisterNo,
-        Branch = branch.BranchName,
+        BranchTax = branchTax,
+        Branch = branch,
       };
       return ingTaxRec;
     }

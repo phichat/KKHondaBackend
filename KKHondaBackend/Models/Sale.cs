@@ -18,6 +18,7 @@ namespace KKHondaBackend.Models
     public decimal Interest { get; set; }
     public decimal InterestPrice { get; set; }
     public decimal Remain { get; set; }
+    public decimal TotalRemain { get; set; }
     public int TypePayment { get; set; }
     public DateTime FirstPayment { get; set; }
     public int DueDate { get; set; }
@@ -43,6 +44,14 @@ namespace KKHondaBackend.Models
     public bool? ReceiptStatus { get; set; }
     public bool? ComStatus { get; set; }
     public int? ApproveId { get; set; }
+
+    public int? PaymentType { get; set; }
+    public decimal? PaymentPrice { get; set; }
+    public decimal? Discount { get; set; }
+    public decimal? TotalPaymentPrice { get; set; }
+    public DateTime? PaymentDate { get; set; }
+    public int? AccBankId { get; set; }
+    public string DocumentRef { get; set; }
   }
 
   public class SearchSale
@@ -67,13 +76,10 @@ namespace KKHondaBackend.Models
     public int? FiintId { get; set; }
     public int? FiComId { get; set; }
 
-    public int PaymentType { get; set; }
-    public decimal PaymentPrice { get; set; }
-    public decimal? Discount { get; set; }
-    public decimal TotalPaymentPrice { get; set; }
-    public DateTime PaymentDate { get; set; }
-    public int? AccBankId { get; set; }
-    public string DocumentRef { get; set; }
+    public string BranchTax { get; set; }
+    public string Branch { get; set; }
+
+    
   }
 
   public partial class CancelSlip

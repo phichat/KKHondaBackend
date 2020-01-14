@@ -186,6 +186,8 @@ namespace KKHondaBackend.Controllers.Credits
                               db.PaymentType,
                               db.FineSum,
                               db.FineSumRemain,
+                              db.ComPrice,
+                              db.ComPriceRemain,
                               db.Remark,
                               db.RemainNetPrice,
                               db.Status,
@@ -259,12 +261,13 @@ namespace KKHondaBackend.Controllers.Credits
                   .ToList();
 
           var cHire = iCustomerService.GetCustomerByCode(contract.ContractHire).Result;
-          var tax = iSaleTax.SetSaleTax(cHire, payment.BranchId);
+          var branch = ctx.Branch.Where(x => x.BranchId == payment.BranchId).AsNoTracking().FirstOrDefault();
+          var tax = iSaleTax.SetSaleTax(branch.BranchRegisterNo, branch.BranchName, cHire);
           tax.TaxNo = iSysParamService.GenerateTaxInvNo(payment.BranchId);
           ctx.SaleTax.Add(tax);
           ctx.SaveChanges();
 
-          var receiptNo = iSaleReceipt.SetSaleReceipt(cHire, payment.BranchId);
+          var receiptNo = iSaleReceipt.SetSaleReceipt(branch.BranchRegisterNo, branch.BranchName, cHire);
           receiptNo.ReceiptNo = iSysParamService.GenerateReceiptNo(payment.BranchId);
           ctx.SaleReceipt.Add(receiptNo);
           ctx.SaveChanges();
@@ -323,6 +326,7 @@ namespace KKHondaBackend.Controllers.Credits
                                ContractItemId = g.Key,
                                PayNetPrice = g.Sum(x => x.PayNetPrice),
                                FineSum = g.Sum(x => x.FineSum),
+                               ComPrice = g.Sum(x => x.ComPrice),
                                Count = g.Count()
                              })
                               .AsNoTracking()
@@ -338,6 +342,14 @@ namespace KKHondaBackend.Controllers.Credits
                  Item.FineSumRemain -= fineSum;
                  totalPaymentPrice -= fineSum;
                  CreditTransDT.FineSum = fineSum;
+               }
+               // ตัดยอดค่าส่งเสริมการขาย
+               if (Item.ComPriceRemain > oldTrans.ComPrice && totalPaymentPrice > 0)
+               {
+                 var com = (decimal)Item.ComPriceRemain - oldTrans.ComPrice;
+                 Item.ComPriceRemain -= com;
+                 totalPaymentPrice -= com;
+                 CreditTransDT.ComPrice = com;
                }
                // ตัดยอดชำระค่างวด
                if (Item.PayNetPrice > oldTrans.PayNetPrice && totalPaymentPrice > 0)
@@ -357,12 +369,36 @@ namespace KKHondaBackend.Controllers.Credits
                  totalPaymentPrice -= fineSum;
                  CreditTransDT.FineSum = fineSum;
                }
+               // ตัดยอดค่าส่งเสริมการขาย
+               if (Item.ComPriceRemain > 0 && totalPaymentPrice > 0)
+               {
+                 var com = (decimal)Item.ComPriceRemain;
+                 Item.ComPriceRemain -= com;
+                 totalPaymentPrice -= com;
+                 CreditTransDT.ComPrice = com;
+               }
                // ตัดยอดชำระค่างวด
                Payment(ref totalPaymentPrice, ref CreditTransDT, ref Item, (decimal)Item.PayNetPrice);
              }
 
              int paymentCount = oldTrans != null ? oldTrans.Count + 1 : 1;
-             CreditTransDT.Description = Item.InstalmentNo == 0 ? "เงินดาวน์" : $"ค่างวดที่ {Item.InstalmentNo}/{paymentCount}";
+
+             var booking = ctx.Booking.Where(x => x.BookingId == calculate.BookingId).AsNoTracking().FirstOrDefault();
+
+             switch (booking.BookingPaymentType)
+             {
+               case BookingPaymentType.Credit:
+                 CreditTransDT.Description = Item.InstalmentNo == 0 ? "ชำระส่วนแรก" : $"ยอดคงค้าง {Item.InstalmentNo}/{paymentCount}";
+                 break;
+
+               case BookingPaymentType.HierPurchase:
+                 CreditTransDT.Description = Item.InstalmentNo == 0 ? "เงินดาวน์" : $"ค่างวดที่ {Item.InstalmentNo}/{paymentCount}";
+                 break;
+
+               case BookingPaymentType.Leasing:
+                 CreditTransDT.Description = Item.InstalmentNo == 0 ? "เงินดาวน์" : $"ยอดคงค้าง {Item.InstalmentNo}/{paymentCount}";
+                 break;
+             }
              CreditTransDTList.Add(CreditTransDT);
 
              Item.UpdateBy = payment.Payeer;

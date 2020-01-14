@@ -8,7 +8,7 @@ namespace KKHondaBackend.Services
 {
   public interface ISaleTaxService
   {
-    SaleTax SetSaleTax(MCustomer cHire, int branchId);
+    SaleTax SetSaleTax(string branchTax, string branch, MCustomer cHire);
   }
 
   public class SaleTaxService : ISaleTaxService
@@ -21,12 +21,11 @@ namespace KKHondaBackend.Services
       _context = context;
     }
 
-    public SaleTax SetSaleTax(MCustomer cHire, int branchId)
+    public SaleTax SetSaleTax(string branchTax, string branch, MCustomer cHire)
     {
       var cAddress = cHire.MCustomerAddress.FirstOrDefault();
       var amphor = _context.MAmphor.Where(x => x.AmphorCode == cAddress.AmphorCode).AsNoTracking().FirstOrDefault();
       var province = _context.MProvince.Where(x => x.ProvinceCode == cAddress.ProvinceCode).AsNoTracking().FirstOrDefault();
-      var branch = _context.Branch.Where(x => x.BranchId == branchId).AsNoTracking().FirstOrDefault();
       var tax = new SaleTax
       {
         // TaxNo = iSysParamService.GenerateTaxInvNo(branchId),
@@ -35,8 +34,8 @@ namespace KKHondaBackend.Services
         CustomerCode = cHire.CustomerCode,
         CustomerFullName = $"{cHire.CustomerPrename}{cHire.CustomerName} {cHire.CustomerSurname}",
         CustomerFullAddress = $"{cAddress.Address} อำเภอ{amphor.AmphorName} จังหวัด{province.ProvinceNameTh} {amphor.Zipcode}",
-        BranchTax = branch.BranchRegisterNo,
-        Branch = branch.BranchName,
+        BranchTax = branchTax,
+        Branch = branch
       };
       return tax;
     }
