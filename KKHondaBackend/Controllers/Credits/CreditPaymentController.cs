@@ -383,10 +383,13 @@ namespace KKHondaBackend.Controllers.Credits
 
              int paymentCount = oldTrans != null ? oldTrans.Count + 1 : 1;
 
-             var booking = ctx.Booking.Where(x => x.BookingId == calculate.BookingId).AsNoTracking().FirstOrDefault();
+             var booking = ctx.Booking.Where(x => x.BookingId == calculate.BookingId).FirstOrDefault();
 
              switch (booking.BookingPaymentType)
              {
+               case BookingPaymentType.Cash:
+                 CreditTransDT.Description = oldTrans.Count == 0 ? "ชำระค่าสินค้า" : $"ชำระค่าสินค้า {paymentCount}";
+                 break;
                case BookingPaymentType.Credit:
                  CreditTransDT.Description = Item.InstalmentNo == 0 ? "ชำระส่วนแรก" : $"ยอดคงค้าง {Item.InstalmentNo}/{paymentCount}";
                  break;

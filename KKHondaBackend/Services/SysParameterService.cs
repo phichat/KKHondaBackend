@@ -9,9 +9,8 @@ namespace KKHondaBackend.Services
 {
   public interface ISysParameterService
   {
-    string GetSysParameter(string prefix);
-    string GeerateeDepositNo(int branchId);
-    string GeerateeReturnDepositNo(int branchId);
+    string GenerateDepositNo(int branchId);
+    string GenerateReturnDepositNo(int branchId);
     string GenerateSellNo(int branchId);
     string GenerateVatNo(int branchId);
     string GenerateTaxInvNo(int branchId);
@@ -36,11 +35,11 @@ namespace KKHondaBackend.Services
     {
       ctx = context;
     }
-    public string GeerateeDepositNo(int branchId)
+    public string GenerateDepositNo(int branchId)
     {
       return SetRunningCode("RESERVE", "PR", branchId);
     }
-    public string GeerateeReturnDepositNo(int branchId)
+    public string GenerateReturnDepositNo(int branchId)
     {
       return SetRunningCode("RESERVE", "DEPR", branchId);
     }
@@ -99,7 +98,6 @@ namespace KKHondaBackend.Services
       return SetRunningCode("RIS", "PFD", branchId);
     }
 
-
     public string GenerateReceiveNo(int branchId)
     {
       return SetRunningCode("STOCK", "GR", branchId);
@@ -108,11 +106,6 @@ namespace KKHondaBackend.Services
     public string GenerateContractBookNo(int branchId)
     {
       return SetRunningCode("CONTRACT", "CT", branchId);
-    }
-
-    public string GetSysParameter(string prefix)
-    {
-      throw new NotImplementedException();
     }
 
     private string SetRunningCode(string module, string prefix, int branchId)
