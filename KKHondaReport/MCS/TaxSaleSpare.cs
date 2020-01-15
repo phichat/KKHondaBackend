@@ -130,7 +130,7 @@ namespace KKHondaReport.MCS {
         
         [Browsable(false)]
         [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.Shared.IParameterField Parameter_branch_ids {
+        public CrystalDecisions.Shared.IParameterField Parameter_txtDate {
             get {
                 return this.DataDefinition.ParameterFields[0];
             }
@@ -138,7 +138,7 @@ namespace KKHondaReport.MCS {
         
         [Browsable(false)]
         [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.Shared.IParameterField Parameter_sDate {
+        public CrystalDecisions.Shared.IParameterField Parameter_branch_ids {
             get {
                 return this.DataDefinition.ParameterFields[1];
             }
@@ -146,7 +146,7 @@ namespace KKHondaReport.MCS {
         
         [Browsable(false)]
         [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.Shared.IParameterField Parameter_eDate {
+        public CrystalDecisions.Shared.IParameterField Parameter_sDate {
             get {
                 return this.DataDefinition.ParameterFields[2];
             }
@@ -154,7 +154,7 @@ namespace KKHondaReport.MCS {
         
         [Browsable(false)]
         [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.Shared.IParameterField Parameter_txtDate {
+        public CrystalDecisions.Shared.IParameterField Parameter_eDate {
             get {
                 return this.DataDefinition.ParameterFields[3];
             }

@@ -16,14 +16,14 @@ namespace KKHondaReport.MCS {
     using CrystalDecisions.CrystalReports.Engine;
     
     
-    public class TopRankReportSpare : ReportClass {
+    public class BalanceStock : ReportClass {
         
-        public TopRankReportSpare() {
+        public BalanceStock() {
         }
         
         public override string ResourceName {
             get {
-                return "TopRankReportSpare.rpt";
+                return "BalanceStock.rpt";
             }
             set {
                 // Do nothing
@@ -41,7 +41,7 @@ namespace KKHondaReport.MCS {
         
         public override string FullResourceName {
             get {
-                return "KKHondaReport.MCS.TopRankReportSpare.rpt";
+                return "KKHondaReport.MCS.BalanceStock.rpt";
             }
             set {
                 // Do nothing
@@ -66,7 +66,7 @@ namespace KKHondaReport.MCS {
         
         [Browsable(false)]
         [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.CrystalReports.Engine.Section PageHeaderSection2 {
+        public CrystalDecisions.CrystalReports.Engine.Section GroupHeaderSection1 {
             get {
                 return this.ReportDefinition.Sections[2];
             }
@@ -74,7 +74,7 @@ namespace KKHondaReport.MCS {
         
         [Browsable(false)]
         [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.CrystalReports.Engine.Section GroupHeaderSection3 {
+        public CrystalDecisions.CrystalReports.Engine.Section Section3 {
             get {
                 return this.ReportDefinition.Sections[3];
             }
@@ -82,7 +82,7 @@ namespace KKHondaReport.MCS {
         
         [Browsable(false)]
         [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.CrystalReports.Engine.Section GroupHeaderSection1 {
+        public CrystalDecisions.CrystalReports.Engine.Section GroupFooterSection1 {
             get {
                 return this.ReportDefinition.Sections[4];
             }
@@ -90,7 +90,7 @@ namespace KKHondaReport.MCS {
         
         [Browsable(false)]
         [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.CrystalReports.Engine.Section GroupHeaderSection2 {
+        public CrystalDecisions.CrystalReports.Engine.Section Section4 {
             get {
                 return this.ReportDefinition.Sections[5];
             }
@@ -98,7 +98,7 @@ namespace KKHondaReport.MCS {
         
         [Browsable(false)]
         [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.CrystalReports.Engine.Section Section3 {
+        public CrystalDecisions.CrystalReports.Engine.Section Section5 {
             get {
                 return this.ReportDefinition.Sections[6];
             }
@@ -106,39 +106,7 @@ namespace KKHondaReport.MCS {
         
         [Browsable(false)]
         [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.CrystalReports.Engine.Section GroupFooterSection1 {
-            get {
-                return this.ReportDefinition.Sections[7];
-            }
-        }
-        
-        [Browsable(false)]
-        [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.CrystalReports.Engine.Section GroupFooterSection2 {
-            get {
-                return this.ReportDefinition.Sections[8];
-            }
-        }
-        
-        [Browsable(false)]
-        [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.CrystalReports.Engine.Section Section4 {
-            get {
-                return this.ReportDefinition.Sections[9];
-            }
-        }
-        
-        [Browsable(false)]
-        [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.CrystalReports.Engine.Section Section5 {
-            get {
-                return this.ReportDefinition.Sections[10];
-            }
-        }
-        
-        [Browsable(false)]
-        [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.Shared.IParameterField Parameter_txt {
+        public CrystalDecisions.Shared.IParameterField Parameter_branch_ids {
             get {
                 return this.DataDefinition.ParameterFields[0];
             }
@@ -146,7 +114,7 @@ namespace KKHondaReport.MCS {
         
         [Browsable(false)]
         [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.Shared.IParameterField Parameter_branch_ids {
+        public CrystalDecisions.Shared.IParameterField Parameter_brandId {
             get {
                 return this.DataDefinition.ParameterFields[1];
             }
@@ -154,7 +122,7 @@ namespace KKHondaReport.MCS {
         
         [Browsable(false)]
         [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.Shared.IParameterField Parameter_sDate {
+        public CrystalDecisions.Shared.IParameterField Parameter_modelId {
             get {
                 return this.DataDefinition.ParameterFields[2];
             }
@@ -162,7 +130,7 @@ namespace KKHondaReport.MCS {
         
         [Browsable(false)]
         [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.Shared.IParameterField Parameter_eDate {
+        public CrystalDecisions.Shared.IParameterField Parameter_typeId {
             get {
                 return this.DataDefinition.ParameterFields[3];
             }
@@ -170,17 +138,25 @@ namespace KKHondaReport.MCS {
         
         [Browsable(false)]
         [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.Shared.IParameterField Parameter_toprank {
+        public CrystalDecisions.Shared.IParameterField Parameter_colorId {
             get {
                 return this.DataDefinition.ParameterFields[4];
+            }
+        }
+        
+        [Browsable(false)]
+        [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
+        public CrystalDecisions.Shared.IParameterField Parameter_itemType {
+            get {
+                return this.DataDefinition.ParameterFields[5];
             }
         }
     }
     
     [System.Drawing.ToolboxBitmapAttribute(typeof(CrystalDecisions.Shared.ExportOptions), "report.bmp")]
-    public class CachedTopRankReportSpare : Component, ICachedReport {
+    public class CachedBalanceStock : Component, ICachedReport {
         
-        public CachedTopRankReportSpare() {
+        public CachedBalanceStock() {
         }
         
         [Browsable(false)]
@@ -217,7 +193,7 @@ namespace KKHondaReport.MCS {
         }
         
         public virtual CrystalDecisions.CrystalReports.Engine.ReportDocument CreateReport() {
-            TopRankReportSpare rpt = new TopRankReportSpare();
+            BalanceStock rpt = new BalanceStock();
             rpt.Site = this.Site;
             return rpt;
         }

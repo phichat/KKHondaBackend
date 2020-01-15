@@ -52,7 +52,6 @@ namespace KKHondaBackend.Controllers.Users
     [HttpGet("GetUserById")]
     public IActionResult GetUserById(int id)
     {
-
       var u = (from db in ctx.User
                join b in ctx.Branch on db.BranchId equals b.BranchId into _b
                from brh in _b.DefaultIfEmpty()

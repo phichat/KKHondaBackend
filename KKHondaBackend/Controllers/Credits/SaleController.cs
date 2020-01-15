@@ -317,7 +317,7 @@ namespace KKHondaBackend.Controllers.Credits
           {
             // กรณีมีการคืนเงินมัดจำ
             var deposit = iReserveReturn.SetReserve(reserve, cBooking);
-            deposit.ReturnDepositNo = iSysParamService.GeerateeReturnDepositNo((int)contract.BranchId);
+            deposit.ReturnDepositNo = iSysParamService.GenerateReturnDepositNo((int)contract.BranchId);
             // ใบคืนเงินมัดจำ
             calculate.ReturnDepositNo = deposit.ReturnDepositNo;
             calculate.ReturnDepositStatus = deposit.Status;
@@ -347,24 +347,24 @@ namespace KKHondaBackend.Controllers.Credits
           switch (booking.BookingPaymentType)
           {
             case BookingPaymentType.Cash:
-              // ใบเสร็จรับเงิน
-              var receipt = iSaleReceipt.SetSaleReceipt(reserve.BranchTax, reserve.Branch, cHire);
-              receipt.ReceiptNo = iSysParamService.GenerateReceiptNo((int)contract.BranchId);
-              calculate.ReceiptNo = receipt.ReceiptNo;
-              calculate.ReceiptStatus = receipt.Status;
-              calculate.PaymentType = reserve.PaymentType;
-              calculate.PaymentPrice = reserve.PaymentPrice;
-              calculate.Discount = reserve.Discount;
-              calculate.TotalPaymentPrice = reserve.TotalPaymentPrice;
-              calculate.PaymentDate = reserve.PaymentDate;
-              calculate.AccBankId = reserve.AccBankId;
-              calculate.DocumentRef = reserve.DocumentRef;
-              calculate.TotalRemain = reserve.TotalRemain;
-              // calculate
-              _context.SaleReceipt.Add(receipt);
-              _context.SaveChanges();
-              // ชำระครบรอโอนทะเบียน
-              contract.ContractStatus = 30;
+              //   // ใบเสร็จรับเงิน
+              //   var receipt = iSaleReceipt.SetSaleReceipt(reserve.BranchTax, reserve.Branch, cHire);
+              //   receipt.ReceiptNo = iSysParamService.GenerateReceiptNo((int)contract.BranchId);
+              //   calculate.ReceiptNo = receipt.ReceiptNo;
+              //   calculate.ReceiptStatus = receipt.Status;
+              //   calculate.PaymentType = reserve.PaymentType;
+              //   calculate.PaymentPrice = reserve.PaymentPrice;
+              //   calculate.Discount = reserve.Discount;
+              //   calculate.TotalPaymentPrice = reserve.TotalPaymentPrice;
+              //   calculate.PaymentDate = reserve.PaymentDate;
+              //   calculate.AccBankId = reserve.AccBankId;
+              //   calculate.DocumentRef = reserve.DocumentRef;
+              //   calculate.TotalRemain = reserve.TotalRemain;
+              //   // calculate
+              //   _context.SaleReceipt.Add(receipt);
+              //   _context.SaveChanges();
+              // ยังไม่ชำระ
+              contract.ContractStatus = 13;
               break;
 
             case BookingPaymentType.Leasing:
@@ -423,18 +423,18 @@ namespace KKHondaBackend.Controllers.Credits
               item.PayNetPrice = item.BalanceNetPrice;
               item.CreateBy = contract.CreateBy;
               item.CreateDate = DateTime.Now;
-
-              if (booking.BookingPaymentType == BookingPaymentType.Cash)
-              {
-                item.Status = 11;
-                item.Remain = 0;
-                item.RemainVatPrice = 0;
-                item.RemainNetPrice = 0;
-              }
-              else
-              {
-                item.Status = 13; // สถานะยังไม่ชำระ
-              }
+              item.Status = 13; // สถานะยังไม่ชำระ
+              // if (booking.BookingPaymentType == BookingPaymentType.Cash)
+              // {
+              //   item.Status = 11;
+              //   item.Remain = 0;
+              //   item.RemainVatPrice = 0;
+              //   item.RemainNetPrice = 0;
+              // }
+              // else
+              // {
+              //   item.Status = 13; // สถานะยังไม่ชำระ
+              // }
             }
             _context.CreditContractItem.AddRange(contractItems);
             _context.SaveChanges();

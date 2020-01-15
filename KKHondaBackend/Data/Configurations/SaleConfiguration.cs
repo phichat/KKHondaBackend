@@ -51,13 +51,13 @@ namespace KKHondaBackend.Data.Configurations
       entity.Property(e => e.ReceiptStatus).HasColumnName("receipt_status").HasColumnType("bit");
       entity.Property(e => e.ComStatus).HasColumnName("com_status").HasColumnType("bit");
       entity.Property(e => e.ApproveId).HasColumnName("approve_id");
-      entity.Property(e => e.PaymentType).HasColumnName("payment_type");
-      entity.Property(e => e.PaymentPrice).HasColumnName("payment_price").IsRequired().HasDefaultValueSql("0");
-      entity.Property(e => e.Discount).HasColumnName("discount").HasDefaultValueSql("0");
-      entity.Property(e => e.TotalPaymentPrice).HasColumnName("total_payment_price").IsRequired().HasDefaultValueSql("0");
-      entity.Property(e => e.PaymentDate).HasColumnName("payment_date").HasColumnType("datetime");
-      entity.Property(e => e.AccBankId).HasColumnName("acc_bank_id");
-      entity.Property(e => e.DocumentRef).HasColumnName("document_ref");
+      // entity.Property(e => e.PaymentType).HasColumnName("payment_type");
+      // entity.Property(e => e.PaymentPrice).HasColumnName("payment_price").IsRequired().HasDefaultValueSql("0");
+      // entity.Property(e => e.Discount).HasColumnName("discount").HasDefaultValueSql("0");
+      // entity.Property(e => e.TotalPaymentPrice).HasColumnName("total_payment_price").IsRequired().HasDefaultValueSql("0");
+      // entity.Property(e => e.PaymentDate).HasColumnName("payment_date").HasColumnType("datetime");
+      // entity.Property(e => e.AccBankId).HasColumnName("acc_bank_id");
+      // entity.Property(e => e.DocumentRef).HasColumnName("document_ref");
     }
   }
 }

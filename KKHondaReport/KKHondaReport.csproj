@@ -96,6 +96,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <Content Include="HPS\CollectionLetter.aspx" />
     <Content Include="MCS\refundBookingReport.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>refundBookingReport.cs</LastGenOutput>
@@ -221,6 +222,25 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>sumPaymentHistory.rpt</DependentUpon>
       <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HPS\CollectionLetter2.cs">
+      <DependentUpon>CollectionLetter2.rpt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <SubType>Component</SubType>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="HPS\CollectionLetter.aspx.cs">
+      <DependentUpon>CollectionLetter.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="HPS\CollectionLetter.aspx.designer.cs">
+      <DependentUpon>CollectionLetter.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="HPS\CollectionLetter.cs">
+      <DependentUpon>CollectionLetter.rpt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <SubType>Component</SubType>
+      <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="HPS\ContractGradePayment.cs">
       <AutoGen>True</AutoGen>
@@ -489,6 +509,14 @@
     <EmbeddedResource Include="Credits\sumPaymentHistory.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>sumPaymentHistory.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="HPS\CollectionLetter2.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>CollectionLetter2.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="HPS\CollectionLetter.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>CollectionLetter.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="HPS\ContractGradePayment.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>

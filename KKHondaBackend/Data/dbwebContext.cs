@@ -112,6 +112,8 @@ namespace KKHondaBackend.Data
     public virtual DbSet<Warehouse> Warehouse { get; set; }
     public virtual DbSet<WarehouseLocation> WarehouseLocation { get; set; }
     public virtual DbSet<Zone> Zone { get; set; }
+    public virtual DbSet<CreditCollectionLetter> CreditCollectionLetter { get; set; }
+    public virtual DbSet<CreditCollectionLetterDetail> CreditCollectionLetterDetail { get; set; }
 
     public virtual DbSet<MDealer> MDealer { get; set; }
     public virtual DbSet<PurchaseList> PurchaseList { get; set; }
@@ -219,6 +221,8 @@ namespace KKHondaBackend.Data
       modelBuilder.ApplyConfiguration(new ReceiveDConfiguration());
       modelBuilder.ApplyConfiguration(new InformationConfiguration());
       modelBuilder.ApplyConfiguration(new ReceiveHConfiguration());
+      modelBuilder.ApplyConfiguration(new CreditCollectionLetterConfiguration());
+      modelBuilder.ApplyConfiguration(new CreditCollectionLetterDetailConfiguration());
     }
   }
 }
