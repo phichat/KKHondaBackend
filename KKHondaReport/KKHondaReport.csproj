@@ -421,6 +421,12 @@
       <DependentUpon>RegisTag.rpt</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="RIS\RegisTagSecondHand.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>RegisTagSecondHand.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="RIS\RegisVihecleTax.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -566,6 +572,10 @@
     <EmbeddedResource Include="RIS\RegisTag.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>RegisTag.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="RIS\RegisTagSecondHand.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>RegisTagSecondHand.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="RIS\RegisVihecleTax.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
