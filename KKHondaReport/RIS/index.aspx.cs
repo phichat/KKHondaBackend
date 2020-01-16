@@ -65,6 +65,14 @@ namespace KKHondaReport.RIS
                 ExportRegisTag(sdate, edate, paymentType);
             }
 
+            if (Request.QueryString["formRegisTagSecondHand"] != null)
+            {
+                var sdate = Request.QueryString["sDate"].ToString();
+                var edate = Request.QueryString["eDate"].ToString();
+                var paymentType = Int32.Parse(Request.QueryString["paymentType"].ToString());
+                ExportformRegisTagSecondHand(sdate, edate, paymentType);
+            }
+
             if (Request.QueryString["formRegisVehicleTax"] != null)
             {
                 var sdate = Request.QueryString["sDate"].ToString();
@@ -174,6 +182,34 @@ namespace KKHondaReport.RIS
                 rptDoc.Database.Tables[0].ApplyLogOnInfo(L1);
 
                 StreamXlsReport(rptDoc, "regis-tag-doc.xls");
+            }
+            catch (Exception ex)
+            {
+                Response.Write(ex.Message);
+            }
+        }
+
+        private void ExportformRegisTagSecondHand(string sdate, string edate, int paymentType)
+        {
+            try
+            {
+                //RIS/index.aspx?sDate=2019-09-11&eDate=2019-09-12&formRegisVehicleTax=true
+                rptDoc = new ReportDocument();
+
+                var file = "./RegisTagSecondHand.rpt";
+                rptDoc.Load(Server.MapPath(file));
+                rptDoc.Refresh();
+
+                TableLogOnInfo L1 = rptDoc.Database.Tables[0].LogOnInfo;
+                GetLoginfo(L1);
+                var s = sdate != "" ? DateTime.Parse(sdate).ToString("yyyy-MM-dd") : "";
+                var e = edate != "" ? DateTime.Parse(edate).ToString("yyyy-MM-dd") : "";
+                rptDoc.SetParameterValue("@start_sell_date", s);
+                rptDoc.SetParameterValue("@end_sell_date", e);
+                rptDoc.SetParameterValue("@paymentType", paymentType);
+                rptDoc.Database.Tables[0].ApplyLogOnInfo(L1);
+
+                StreamXlsReport(rptDoc, "RegisTagSecondHand.xls");
             }
             catch (Exception ex)
             {
