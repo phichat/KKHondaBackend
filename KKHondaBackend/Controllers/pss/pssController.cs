@@ -4,14 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
-using KKHondaBackend.Entities;
 using System;
 using KKHondaBackend.Services;
 using System.Data;
 using Microsoft.AspNetCore.Hosting;
-using System.IO;
-using System.Net.Http;
-// using System.Web.Script.Serialization;
+using System.Threading.Tasks;
 
 namespace KKHondaBackend.Controllers.mcs
 {
@@ -113,11 +110,11 @@ namespace KKHondaBackend.Controllers.mcs
                                join _model in ctx.ProductModel on d.model_id equals _model.ModelId into model1
                                from model in model1.DefaultIfEmpty()
 
-                               //join _type in ctx.ProductType on d.type_id equals _type.TypeId into type1
-                               //from type in type1.DefaultIfEmpty()
+                                   //join _type in ctx.ProductType on d.type_id equals _type.TypeId into type1
+                                   //from type in type1.DefaultIfEmpty()
 
-                               //join _color in ctx.ProductColor on d.color_id equals _color.ColorId into color1
-                               //from color in color1.DefaultIfEmpty()
+                                   //join _color in ctx.ProductColor on d.color_id equals _color.ColorId into color1
+                                   //from color in color1.DefaultIfEmpty()
 
                                join _branch in ctx.Branch on d.branch_id equals _branch.BranchId into branch1
                                from branch in branch1.DefaultIfEmpty()
@@ -655,7 +652,7 @@ namespace KKHondaBackend.Controllers.mcs
             public int? item_id { get; set; }
             public string part_code { get; set; }
             public int r_qty { get; set; }
-            
+
         }
         [HttpPost("create_receive")]
         public IActionResult create_receive([FromBody] ReceiveHeadFormBody value)
@@ -750,7 +747,7 @@ namespace KKHondaBackend.Controllers.mcs
 
 
                         var stock = (from p in ctx.StockReceive where p.ItemId == item.item_id && p.BranchId == item.branch_id && p.WhlId == item.whl_id && p.LogId == item.id select p.ReceiveId).Count();
-                        
+
                         if (stock == 0)
                         {
 
@@ -769,7 +766,7 @@ namespace KKHondaBackend.Controllers.mcs
                             ctx.SaveChanges();
 
                             var log = ctx.TransferLog.FirstOrDefault(x => x.LogId == item.id);
-                            if ((log.BQty + receive_qty) < log.Qty )
+                            if ((log.BQty + receive_qty) < log.Qty)
                             {
                                 log.BQty = log.BQty + receive_qty;
                                 log.LogStatus = 1;
@@ -875,32 +872,549 @@ namespace KKHondaBackend.Controllers.mcs
                 return null;
             }
         }
+               
+        //------------------------
 
-        public string GenerateReceiveNo()
+        [HttpGet("return_list")]
+        public IActionResult return_list()
         {
-            // ctx.CreditContractPayment
-            var receiptNo = (from db in ctx.ReceiveH
-                             orderby db.receive_no descending
-                             where db.receive_no.StartsWith("RC")
-                             select db.receive_no).FirstOrDefault();
 
-            return SetRunningCode("RC", 1, receiptNo);
+            var list = (from h in ctx.ReturnH
+
+                        join _dealer in ctx.MDealer on h.dealer_code equals _dealer.dealer_code into dealer1
+                        from dealer in dealer1.DefaultIfEmpty()
+
+                        join _status in ctx.Information
+                        on (from inf in ctx.Information
+                            where inf.code_type == "RET_STATUS" && inf.code_id == h.return_status
+                            select inf.id).FirstOrDefault()
+                        equals _status.id
+                        into status1
+                        from status in status1.DefaultIfEmpty()
+
+                        join _type in ctx.Information
+                        on (from inf in ctx.Information
+                            where inf.code_type == "REC_TYPE" && inf.code_id == h.return_type
+                            select inf.id).FirstOrDefault()
+                        equals _type.id
+                        into type1
+                        from type in type1.DefaultIfEmpty()
+                        
+                        join _cr in ctx.User on h.create_id equals _cr.Id into cr1
+                        from cre in cr1.DefaultIfEmpty()
+                        join _up in ctx.User on h.update_id equals _up.Id into up1
+                        from upd in up1.DefaultIfEmpty()
+                        where h.return_type == 3
+                        select new 
+                        {
+                            return_no = h.return_no,
+                            return_date = h.return_date,
+                            return_type = h.return_type,
+                            return_type_name = type.code_value,
+                            return_status = h.return_status,
+                            return_status_name = status.code_value,
+                            dealer_code = h.dealer_code,
+                            dealer_name = dealer.dealer_name_th,
+                            receive_no = h.receive_no,
+                            receive_date = h.receive_date,
+                            remark = h.remark,
+
+                            create_id = h.create_id,
+                            create_name = cre.FullName,
+                            create_date = h.create_date,
+                            update_id = h.update_id,
+                            update_name = upd.FullName,
+                            update_date = h.update_date,
+                        }).AsNoTracking();
+
+            return Ok(list);
         }
 
-        private string SetRunningCode(string prefix, int branchId, string runningNumber)
+        [HttpGet("return_detail")]
+        public IActionResult return_detail(string return_no)
         {
-            string year = (DateTime.Now.Year + 543).ToString().Substring(2, 2);
-            string month = (DateTime.Now.Month).ToString("00");
-            string r = $"{prefix}{branchId.ToString("00")}{year}{month}";
 
-            if (runningNumber == null) return $"{r}/0001";
+            var detail_list = (from d in ctx.ReturnD
 
-            string preStr = runningNumber.Split("/")[0];
-            string endStr = runningNumber.Split("/")[1];
+                               join _product in ctx.Product on d.item_id equals _product.ItemId into product1
+                               from product in product1.DefaultIfEmpty()
+                               
+                               where d.return_no == return_no
 
-            string preMonth = preStr.Substring(preStr.Length - 2);
-            int runNumber = (preMonth == month) ? int.Parse(endStr) + 1 : 1;
-            return $"{r}/{runNumber.ToString("0000")}";
+                               select new
+                               {
+                                   return_no = d.return_no,
+                                   
+                                   receive_no = d.receive_no,
+                                   tax_invoice_no = d.tax_invoice_no,                                   
+                                   log_id = d.log_id,
+                                   item_id = d.item_id,
+                                   item_name = product.PartName,
+                                   return_qty = d.return_qty,
+                                   return_amt = d.return_amt
+                               }).AsNoTracking();
+
+
+            var list = (from h in ctx.ReturnH
+
+                        join _cr in ctx.User on h.create_id equals _cr.Id into cr1
+                        from cre in cr1.DefaultIfEmpty()
+                        join _up in ctx.User on h.update_id equals _up.Id into up1
+                        from upd in up1.DefaultIfEmpty()
+                        where h.return_no == return_no
+                        select new
+                        {
+                            return_no = h.return_no,
+                            return_date = h.return_date,
+                            return_type = h.return_type,
+                            return_status = h.return_status,
+                            dealer_code = h.dealer_code,
+                            receive_no = h.receive_no,
+                            receive_date = h.receive_date,
+                            remark = h.remark,
+                            create_id = h.create_id,
+                            create_name = cre.FullName,
+                            create_date = h.create_date,
+                            update_id = h.update_id,
+                            update_name = upd.FullName,
+                            update_date = h.update_date,
+                            detail = detail_list.ToList()
+
+                        }).AsNoTracking();
+
+            return Ok(list.SingleOrDefault());
         }
+
+        public partial class ReturnHead
+        {
+            public string return_no { get; set; }
+            public DateTime? return_date { get; set; }            
+            public int? return_type { get; set; }
+            public int? return_status { get; set; }
+            public string dealer_code { get; set; }
+            public string receive_no { get; set; }
+            public DateTime? receive_date { get; set; }            
+            public string remark { get; set; }
+            public int? create_id { get; set; }
+            public DateTime? create_date { get; set; }
+            public int? update_id { get; set; }
+            public DateTime? update_date { get; set; }
+            public List<ReturnDetail> detail { get; set; }
+        }
+        public partial class ReturnDetail
+        {
+            public string return_no { get; set; }
+            public string receive_no { get; set; }
+            public string tax_invoice_no { get; set; }
+            public int? item_id { get; set; }
+            public int? log_id { get; set; }
+            public int return_qty { get; set; }
+            public decimal? return_amt { get; set; }
+
+        }
+        [HttpPost("create_return")]
+        public IActionResult create_return([FromBody] ReturnHead value)
+        {
+            using (var transaction = ctx.Database.BeginTransaction())
+            {
+                try
+                {
+                    var h = value;                    
+                    var return_no = iSysParamService.GenerateReturnNo();
+
+                    ReturnH head = new ReturnH();
+                    head.return_no = return_no;
+                    head.return_date = h.return_date;
+                    head.return_type = h.return_type;
+                    head.return_status = h.return_status;
+                    head.dealer_code = h.dealer_code;
+                    head.receive_no = h.receive_no;
+                    head.receive_date = h.receive_date;
+                    head.remark = h.remark;                   
+                    head.create_id = h.create_id;
+                    head.create_date = DateTime.Now;
+                    ctx.Entry(head).State = EntityState.Added;
+                    ctx.SaveChanges();
+
+                    var d = h.detail;
+                    d.ForEach(item =>
+                    {
+                        var PartCode = (from p in ctx.Product where p.ItemId == item.item_id select p.PartCode).FirstOrDefault();
+                        var StockQty = (from p in ctx.StockReceive where p.ItemId == item.item_id && p.LogId == item.log_id select p.StockAviable).FirstOrDefault();
+
+                        int return_qty = item.return_qty;
+                        if (return_qty <= 0)
+                        {
+                            throw new Exception(PartCode + " จำนวนคืนต้องมากกว่า 0 เท่านั้น");
+                        }
+                        
+                        if (StockQty < return_qty)
+                        {
+                            throw new Exception(PartCode + " รายการนี้มีจำนวนคงเหลือน้อยกว่าจำนวนที่ต้องการคืน");
+                        }
+
+                        ReturnD detail = new ReturnD();
+
+                        detail.return_no = return_no;
+                        detail.receive_no = item.receive_no;
+                        detail.tax_invoice_no = item.tax_invoice_no;                        
+
+                        detail.item_id = item.item_id;
+                        detail.log_id = item.log_id;
+                        detail.return_qty = item.return_qty;
+                        detail.return_amt = item.return_amt;
+
+                        ctx.Entry(detail).State = EntityState.Added;
+                        ctx.SaveChanges();
+
+
+                        var rec = ctx.StockReceive.FirstOrDefault(x => x.ItemId == item.item_id && x.LogId == item.log_id);
+                        rec.BalanceQty = rec.BalanceQty - return_qty;
+                        rec.StockOnhand = rec.StockOnhand - return_qty;
+                        rec.StockAviable = rec.StockAviable - return_qty;
+                        ctx.Entry(rec).State = EntityState.Modified;
+                        ctx.SaveChanges();
+
+                    });
+
+                    transaction.Commit();
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    return StatusCode(500, ex.Message);
+                }
+            }
+            return NoContent();
+        }
+
+        [HttpGet("available_return")]
+        public IActionResult available_return(string receive_no)
+        {
+            var detail_list = (from d in ctx.ReceiveD
+
+                               join _log in ctx.TransferLog on d.log_id equals _log.LogId into log1
+                               from log in log1.DefaultIfEmpty()
+
+                               join _stock in ctx.StockReceive on d.log_id equals _stock.LogId  into stock1
+                               from stock in stock1.DefaultIfEmpty()
+
+                               join _product in ctx.Product on stock.ItemId equals _product.ItemId into product1
+                               from product in product1.DefaultIfEmpty()
+
+                               where d.receive_no == receive_no
+
+                               select new
+                               {
+                                   item_id = stock.ItemId,
+                                   log_id = stock.LogId,
+                                   receive_no = d.receive_no,
+                                   tax_invoice_no = d.tax_invoice_no,
+
+                                   stock_amt = log.InvAmt,
+                                   stock_qty = stock.StockAviable,
+
+                                   return_qty = stock.StockAviable,
+                                   return_amt = log.InvAmt,
+                                   product_code = product.PartCode,
+                                   product_name = product.PartName
+                               }).AsNoTracking();            
+
+            return Ok(detail_list.ToList());
+        }
+
+
+        //-------------------------
+
+        [HttpGet("purchase_list")]
+        public IActionResult purchase_list()
+        {
+
+            var list = (from h in ctx.PurchaseHead
+
+                        join _branch in ctx.Branch on h.branch_id equals _branch.BranchId into branch1
+                        from branch in branch1.DefaultIfEmpty()
+
+                        join _dealer in ctx.MDealer on h.dealer_code equals _dealer.dealer_code into dealer1
+                        from dealer in dealer1.DefaultIfEmpty()
+
+                        join _status in ctx.Information
+                        on (from inf in ctx.Information
+                            where inf.code_type == "PO_STATUS" && inf.code_id == h.po_status
+                            select inf.id).FirstOrDefault()
+                        equals _status.id
+                        into status1
+                        from status in status1.DefaultIfEmpty()
+
+                        join _type in ctx.Information
+                        on (from inf in ctx.Information
+                            where inf.code_type == "REC_TYPE" && inf.code_id == h.po_type
+                            select inf.id).FirstOrDefault()
+                        equals _type.id
+                        into type1
+                        from type in type1.DefaultIfEmpty()
+
+                        join _cr in ctx.User on h.create_id equals _cr.Id into cr1
+                        from cre in cr1.DefaultIfEmpty()
+                        join _up in ctx.User on h.update_id equals _up.Id into up1
+                        from upd in up1.DefaultIfEmpty()
+                        where h.po_type == 3
+                        select new
+                        {
+                            po_no = h.po_no,
+                            branch_id = h.branch_id,
+                            branch_name = branch.BranchName,
+                            dealer_code = h.dealer_code,
+                            dealer_name = dealer.dealer_name_th,
+                            po_type = h.po_type,
+                            po_type_name = type.code_value,
+                            po_status = h.po_status,
+                            po_status_name = status.code_value,
+                            po_date = h.po_date,
+                            delivery_date = h.delivery_date,
+
+                            contact_name = h.contact_name,
+                            contact_phone = h.contact_phone,
+                            contact_fax = h.contact_fax,
+                            po_remark = h.po_remark,
+
+                            create_id = h.create_id,
+                            create_name = cre.FullName,
+                            create_date = h.create_date,
+                            update_id = h.update_id,
+                            update_name = upd.FullName,
+                            update_date = h.update_date,
+                        }).AsNoTracking();
+
+            return Ok(list);
+        }
+
+        [HttpGet("purchase_detail")]
+        public IActionResult purchase_detail(string po_no)
+        {
+
+            var detail_list = (from d in ctx.PurchaseDetail
+
+                               join _product in ctx.Product on d.item_id equals _product.ItemId into product1
+                               from product in product1.DefaultIfEmpty()
+
+                               where d.po_no == po_no
+
+                               select new
+                               {
+                                   po_no = d.po_no,
+                                   log_id = d.log_id,
+                                   item_id = d.item_id,
+                                   item_code = product.PartCode,
+                                   item_name = product.PartName,
+                                   cost_inc_vat = d.cost_inc_vat,
+                                   vat_flag = d.vat_flag,
+                                   vat_rate = d.vat_rate,
+                                   cost_vat = d.cost_vat,
+                                   cost_exc_vat = d.cost_exc_vat,
+                                   cost_other_exc_vat = d.cost_other_exc_vat,
+                                   cost_repair_exc_vat = d.cost_repair_exc_vat,
+                                   po_qty = d.po_qty,
+                                   receive_qty = d.receive_qty,
+                                   cost_discount = d.cost_discount,
+                               }).AsNoTracking();
+
+
+            var list = (from h in ctx.PurchaseHead
+                        where h.po_no == po_no
+                        select new
+                        {
+                            po_no = h.po_no,
+                            branch_id = h.branch_id,
+                            dealer_code = h.dealer_code,
+                            po_type = h.po_type,
+                            po_status = h.po_status,
+                            po_date = h.po_date,
+                            delivery_date = h.delivery_date,
+
+                            contact_name = h.contact_name,
+                            contact_phone = h.contact_phone,
+                            contact_fax = h.contact_fax,
+                            po_remark = h.po_remark,
+
+                            create_id = h.create_id,
+                            create_date = h.create_date,
+                            update_id = h.update_id,
+                            update_date = h.update_date,
+
+                            detail = detail_list.ToList()
+                        }).AsNoTracking();
+
+            return Ok(list.SingleOrDefault());
+        }
+
+        public partial class POHead
+        {
+            public string po_no { get; set; }
+            public int branch_id { get; set; }
+            public string dealer_code { get; set; }
+            public int po_type { get; set; }
+            public int po_status { get; set; }
+            public DateTime? po_date { get; set; }
+            public DateTime? delivery_date { get; set; }
+            public string contact_name { get; set; }
+            public string contact_phone { get; set; }
+            public string contact_fax { get; set; }
+            public string po_remark { get; set; }
+            public int? create_id { get; set; }
+            public DateTime? create_date { get; set; }
+            public int? update_id { get; set; }
+            public DateTime? update_date { get; set; }
+            public List<PODetail> detail { get; set; }
+
+            public string vat_flag { get; set; }
+            public int? vat_rate { get; set; }
+        }
+        public partial class PODetail
+        {
+            public string po_no { get; set; }            
+            public int? item_id { get; set; }
+
+            public decimal? cost_inc_vat { get; set; }
+            public string vat_flag { get; set; }
+            public decimal? vat_rate { get; set; }
+            public decimal? cost_vat { get; set; }
+            public decimal? cost_exc_vat { get; set; }
+            public decimal? cost_other_exc_vat { get; set; }
+            public decimal? cost_repair_exc_vat { get; set; }
+            public int? po_qty { get; set; }
+            public int? receive_qty { get; set; }
+            public decimal? cost_discount { get; set; }            
+        }
+        [HttpPost("create_purchase")]
+        public IActionResult create_purchase([FromBody] POHead value)
+        {
+            using (var transaction = ctx.Database.BeginTransaction())
+            {
+                try
+                {
+                    var h = value;
+                    var po_no = iSysParamService.GeneratePurchaseNo((int)h.branch_id);
+
+                    PurchaseHead head = new PurchaseHead();
+                    head.po_no = po_no;
+                    head.branch_id = h.branch_id;
+                    head.dealer_code = h.dealer_code;
+                    head.po_type = h.po_type;
+                    head.po_status = h.po_status;
+                    head.po_date = h.po_date;
+                    head.delivery_date = h.delivery_date;
+                    head.contact_name = h.contact_name;
+                    head.contact_phone = h.contact_phone;
+                    head.contact_fax = h.contact_fax;
+                    head.po_remark = h.po_remark;
+                    head.create_id = h.create_id;
+                    head.create_date = DateTime.Now;
+                    ctx.Entry(head).State = EntityState.Added;
+                    ctx.SaveChanges();
+
+                    var d = h.detail;
+                    d.ForEach(item =>
+                    {
+                        var ModelId = (from p in ctx.Product where p.ItemId == item.item_id select p.ModelId).FirstOrDefault();
+                        var PartCode = (from p in ctx.Product where p.ItemId == item.item_id select p.PartCode).FirstOrDefault();
+
+                        if (item.po_qty <= 0)
+                        {
+                            throw new Exception(" จำนวนสั่งซื้อต้องมากกว่า 0 เท่านั้น");
+                        }
+
+                        var vat_flag = h.vat_flag;
+                        var vat_rate = h.vat_rate;
+                        var po_qty = item.po_qty;
+                        var cost_exc_vat = item.cost_exc_vat;
+                        var cost_discount = item.cost_discount;
+
+                        var cost_vat =  (item.cost_exc_vat / (decimal)100.00) * vat_rate;
+                        var cost_inc_vat = item.cost_exc_vat + cost_vat;
+                        var cost_other_exc_vat = 0;
+                        var cost_repair_exc_vat = 0;
+
+                        TransferLog log = new TransferLog();
+                        log.LogType = 3;
+                        log.TranferNo = null;
+                        log.LogRef = po_no;
+                        log.SenderId = null;
+                        log.ReceiverId = h.branch_id;
+                        log.LogItemType = 2;
+                        log.LogSecondhand = 0;
+                        log.ItemId = item.item_id;
+                        log.ModelId = ModelId;
+                        log.ColorId = null;
+                        log.EngineNo = null;
+                        log.FrameNo = null;
+                        log.PartCode = PartCode;
+                        log.Qty = item.po_qty;
+                        log.LogStatus = 1;
+                        log.TaxNo = null;
+                        log.InvAmt = cost_inc_vat;
+                        log.VatAmt = cost_vat;
+                        log.DeliveryDate = h.delivery_date;
+                        log.DealerCode = h.dealer_code;
+                        log.CreateBy = h.create_id;
+                        log.CreateDate = DateTime.Now;
+                        log.UpdateBy = null;
+                        log.UpdateDate = null;
+                        ctx.Entry(log).State = EntityState.Added;
+                        ctx.SaveChanges();
+
+                        var log_id = log.LogId;
+
+                        PurchaseDetail detail = new PurchaseDetail();
+                        detail.po_no = po_no;
+                        detail.item_id = item.item_id;
+                        detail.cost_inc_vat = cost_inc_vat;
+                        detail.vat_flag = vat_flag;
+                        detail.vat_rate = vat_rate;
+                        detail.cost_vat = cost_vat;
+                        detail.cost_exc_vat = cost_exc_vat;
+                        detail.cost_other_exc_vat = cost_other_exc_vat;
+                        detail.cost_repair_exc_vat = cost_repair_exc_vat;
+                        detail.po_qty = po_qty;
+                        detail.log_id = log_id;
+                        detail.cost_discount = cost_discount;
+                        ctx.Entry(detail).State = EntityState.Added;
+                        ctx.SaveChanges();
+                        
+
+                    });
+
+                    transaction.Commit();
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    return StatusCode(500, ex.Message);
+                }
+            }
+            return NoContent();
+        }
+
+        //-------------------------
+
+        [HttpGet("GetItemKeyword")]
+        public async Task<IActionResult> GetItemKeyword(string key)
+        {
+            var list = (from p in ctx.Product
+                        where p.ItemType == 2 && p.ItemStatus == 1 &&
+                        ($"{p.PartCode} {p.PartName}").ToLower().Contains(key.ToLower())
+                        select new
+                        {
+                            item_id = p.ItemId,
+                            item_code = p.PartCode,
+                            item_name = p.PartName,
+                            item_cost = p.CostPrice
+                        });
+            return Ok(await list.ToListAsync());
+        }
+
     }
+
+
+
 }

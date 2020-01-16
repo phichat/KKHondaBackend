@@ -25,6 +25,8 @@ namespace KKHondaBackend.Services
         string GenerateRegisRevNo(int branchId);
         string GenerateRegisCLDepositNo(int branchId);
         string GenerateReceiveNo(int branchId);
+        string GenerateReturnNo();
+        string GeneratePurchaseNo(int branchId);
     }
 
     public class SysParameterService : ISysParameterService
@@ -104,6 +106,16 @@ namespace KKHondaBackend.Services
             return SetRunningCode("STOCK", "GR", branchId);
         }
 
+        public string GenerateReturnNo()
+        {
+            return SetRunningCodeWithoutBranch("RETURN", "RE");
+        }
+
+        public string GeneratePurchaseNo(int branchId)
+        {
+            return SetRunningCode("PURCHASE", "PO", branchId);
+        }
+
         public string GetSysParameter(string prefix)
         {
             throw new NotImplementedException();
@@ -134,6 +146,70 @@ namespace KKHondaBackend.Services
               .Where(x => x.BranchId == branchId)
               .Select(x => int.Parse(x.BranchCode).ToString("00"))
               .FirstOrDefault();
+
+            var paramDt = ctx.MParameterD
+              .Where(dt =>
+                  dt.ParamHdId == paramHd.ParamHdId &&
+                  dt.Branch == branchCode)
+              .FirstOrDefault();
+
+            var r = $"{prefix}{branchCode}{year}{month}";
+            if (paramDt == null)
+            {
+                var p = new MParameterD
+                {
+                    ParamHdId = paramHd.ParamHdId,
+                    Branch = branchCode,
+                    Year = year,
+                    Month = month,
+                    RunningNo = 1,
+                };
+                ctx.Add(p);
+                ctx.SaveChanges();
+                runningNo = (1).ToString("0000");
+            }
+            else
+            {
+                if (paramDt.Month == month && paramDt.Year == year)
+                {
+                    paramDt.RunningNo += 1;
+                }
+                else
+                {
+                    paramDt.Year = year;
+                    paramDt.Month = month;
+                    paramDt.RunningNo = 1;
+                }
+                ctx.Update(paramDt);
+                ctx.SaveChanges();
+                runningNo = paramDt.RunningNo.ToString("0000");
+            }
+            return $"{r}/{runningNo}";
+
+        }
+
+        private string SetRunningCodeWithoutBranch(string module, string prefix)
+        {
+            var paramHd = ctx.MParameter
+                .Where(x => x.Prefix == prefix)
+                .FirstOrDefault();
+
+            if (paramHd == null)
+            {
+                paramHd = new MParameter
+                {
+                    Module = module,
+                    Prefix = prefix
+                };
+                ctx.Add(paramHd);
+                ctx.SaveChanges();
+            }
+
+            string year = (DateTime.Now.Year + 543).ToString().Substring(2, 2);
+            string month = (DateTime.Now.Month).ToString("00");
+            string runningNo = string.Empty;
+
+            var branchCode = (0).ToString("00");
 
             var paramDt = ctx.MParameterD
               .Where(dt =>

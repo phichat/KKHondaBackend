@@ -37,156 +37,156 @@ namespace KKHondaBackend.Controllers.mcs
             _hostingEnvironment = hostingEnvironment;
         }
 
-        [HttpGet("all")]
-        public IActionResult All()
-        {
+        //[HttpGet("all")]
+        //public IActionResult All()
+        //{
 
-            var list = (from h in ctx.PurchaseList
-                        join _cr in ctx.User on h.create_id equals _cr.Id into cr1
-                        join _up in ctx.User on h.update_id equals _up.Id into up1
-                        from cre in cr1.DefaultIfEmpty()
-                        from upd in up1.DefaultIfEmpty()
+        //    var list = (from h in ctx.PurchaseList
+        //                join _cr in ctx.User on h.create_id equals _cr.Id into cr1
+        //                join _up in ctx.User on h.update_id equals _up.Id into up1
+        //                from cre in cr1.DefaultIfEmpty()
+        //                from upd in up1.DefaultIfEmpty()
 
-                        select new PurchaseListRes
-                        {
-                            po_id = h.po_id,
-                            po_no = h.po_no,
-                            status = h.status,
-                            status_desc = StatusPurchase.status.FirstOrDefault(o => o.Id == h.status).Desc,
-                            po_date = h.po_date,
-                            due_date = h.due_date,
-                            supplier_id = h.supplier_id,
-                            supplier_name = DealerPurchase.dealer.FirstOrDefault(o => o.Id == h.supplier_id).Desc,
-                            remark = h.remark,
-                            create_id = h.create_id,
-                            create_name = cre.FullName,
-                            create_date = h.create_date,
-                            update_id = h.update_id,
-                            update_name = upd.FullName,
-                            update_date = h.update_date,
-                            cash_flag = h.cash_flag,
-                            cash_price = h.cash_price,
-                            cheque_flag = h.cheque_flag,
-                            cheque_bank_id = h.cheque_bank_id,
-                            cheque_branch = h.cheque_branch,
-                            cheque_no = h.cheque_no,
-                            cheque_date = h.cheque_date,
-                            cheque_price = h.cheque_price,
-                            total_price = h.total_price,
-                            vat_flag = h.vat_flag,
-                            total_vat_price = h.total_vat_price,
-                            total_net_price = h.total_net_price,
+        //                select new PurchaseListRes
+        //                {
+        //                    po_id = h.po_id,
+        //                    po_no = h.po_no,
+        //                    status = h.status,
+        //                    status_desc = StatusPurchase.status.FirstOrDefault(o => o.Id == h.status).Desc,
+        //                    po_date = h.po_date,
+        //                    due_date = h.due_date,
+        //                    supplier_id = h.supplier_id,
+        //                    supplier_name = DealerPurchase.dealer.FirstOrDefault(o => o.Id == h.supplier_id).Desc,
+        //                    remark = h.remark,
+        //                    create_id = h.create_id,
+        //                    create_name = cre.FullName,
+        //                    create_date = h.create_date,
+        //                    update_id = h.update_id,
+        //                    update_name = upd.FullName,
+        //                    update_date = h.update_date,
+        //                    cash_flag = h.cash_flag,
+        //                    cash_price = h.cash_price,
+        //                    cheque_flag = h.cheque_flag,
+        //                    cheque_bank_id = h.cheque_bank_id,
+        //                    cheque_branch = h.cheque_branch,
+        //                    cheque_no = h.cheque_no,
+        //                    cheque_date = h.cheque_date,
+        //                    cheque_price = h.cheque_price,
+        //                    total_price = h.total_price,
+        //                    vat_flag = h.vat_flag,
+        //                    total_vat_price = h.total_vat_price,
+        //                    total_net_price = h.total_net_price,
 
-                        }).OrderByDescending(x => x.po_id).AsNoTracking();
+        //                }).OrderByDescending(x => x.po_id).AsNoTracking();
 
-            return Ok(list);
-        }
+        //    return Ok(list);
+        //}
 
-        [HttpGet("GetDetail")]
-        public IActionResult GetDetail(string po_no)
-        {
+        //[HttpGet("GetDetail")]
+        //public IActionResult GetDetail(string po_no)
+        //{
 
-            var detail_list = (from d in ctx.PurchaseListItem
+        //    var detail_list = (from d in ctx.PurchaseListItem
 
-                               join _cat in ctx.ProductCategory on d.cat_id equals _cat.CatId into cat1
-                               from cat in cat1.DefaultIfEmpty()
+        //                       join _cat in ctx.ProductCategory on d.cat_id equals _cat.CatId into cat1
+        //                       from cat in cat1.DefaultIfEmpty()
 
-                               join _brand in ctx.ProductBrand on d.brand_id equals _brand.BrandId into brand1
-                               from brand in brand1.DefaultIfEmpty()
+        //                       join _brand in ctx.ProductBrand on d.brand_id equals _brand.BrandId into brand1
+        //                       from brand in brand1.DefaultIfEmpty()
 
-                               join _model in ctx.ProductModel on d.model_id equals _model.ModelId into model1
-                               from model in model1.DefaultIfEmpty()
+        //                       join _model in ctx.ProductModel on d.model_id equals _model.ModelId into model1
+        //                       from model in model1.DefaultIfEmpty()
 
-                               join _type in ctx.ProductType on d.type_id equals _type.TypeId into type1
-                               from type in type1.DefaultIfEmpty()
+        //                       join _type in ctx.ProductType on d.type_id equals _type.TypeId into type1
+        //                       from type in type1.DefaultIfEmpty()
 
-                               join _color in ctx.ProductColor on d.color_id equals _color.ColorId into color1
-                               from color in color1.DefaultIfEmpty()
+        //                       join _color in ctx.ProductColor on d.color_id equals _color.ColorId into color1
+        //                       from color in color1.DefaultIfEmpty()
 
-                               join _cr in ctx.User on d.create_id equals _cr.Id into cr1
-                               from cre in cr1.DefaultIfEmpty()
+        //                       join _cr in ctx.User on d.create_id equals _cr.Id into cr1
+        //                       from cre in cr1.DefaultIfEmpty()
 
-                               join _up in ctx.User on d.update_id equals _up.Id into up1
-                               from upd in up1.DefaultIfEmpty()
+        //                       join _up in ctx.User on d.update_id equals _up.Id into up1
+        //                       from upd in up1.DefaultIfEmpty()
 
-                               where d.po_no == po_no
+        //                       where d.po_no == po_no
 
-                               select new PurchaseListItemRes
-                               {
-                                   po_id = d.po_id,
-                                   po_no = d.po_no,
+        //                       select new PurchaseListItemRes
+        //                       {
+        //                           po_id = d.po_id,
+        //                           po_no = d.po_no,
 
-                                   cat_id = d.cat_id,
-                                   cat_name = cat.CatName,
-                                   brand_id = d.brand_id,
-                                   brand_name = brand.BrandName,
-                                   model_id = d.model_id,
-                                   model_name = model.ModelName,
-                                   type_id = d.type_id,
-                                   type_name = type.TypeName,
-                                   color_id = d.color_id,
-                                   color_name = color.ColorName,
-                                   unit_price = d.unit_price,
-                                   unit_qty = d.unit_qty,
+        //                           cat_id = d.cat_id,
+        //                           cat_name = cat.CatName,
+        //                           brand_id = d.brand_id,
+        //                           brand_name = brand.BrandName,
+        //                           model_id = d.model_id,
+        //                           model_name = model.ModelName,
+        //                           type_id = d.type_id,
+        //                           type_name = type.TypeName,
+        //                           color_id = d.color_id,
+        //                           color_name = color.ColorName,
+        //                           unit_price = d.unit_price,
+        //                           unit_qty = d.unit_qty,
 
-                                   create_id = d.create_id,
-                                   create_name = cre.FullName,
-                                   create_date = d.create_date,
-                                   update_id = d.update_id,
-                                   update_name = upd.FullName,
-                                   update_date = d.update_date,
+        //                           create_id = d.create_id,
+        //                           create_name = cre.FullName,
+        //                           create_date = d.create_date,
+        //                           update_id = d.update_id,
+        //                           update_name = upd.FullName,
+        //                           update_date = d.update_date,
 
-                               }).OrderByDescending(x => x.po_id).AsNoTracking();
+        //                       }).OrderByDescending(x => x.po_id).AsNoTracking();
 
 
-            var list = (from h in ctx.PurchaseList
+        //    var list = (from h in ctx.PurchaseList
 
-                        join _cr in ctx.User on h.create_id equals _cr.Id into cr1
-                        from cre in cr1.DefaultIfEmpty()
+        //                join _cr in ctx.User on h.create_id equals _cr.Id into cr1
+        //                from cre in cr1.DefaultIfEmpty()
 
-                        join _up in ctx.User on h.update_id equals _up.Id into up1
-                        from upd in up1.DefaultIfEmpty()
+        //                join _up in ctx.User on h.update_id equals _up.Id into up1
+        //                from upd in up1.DefaultIfEmpty()
 
-                        where h.po_no == po_no
+        //                where h.po_no == po_no
 
-                        select new PurchaseListDetailRes
-                        {
-                            po_id = h.po_id,
-                            po_no = h.po_no,
-                            status = h.status,
-                            status_desc = StatusPurchase.status.FirstOrDefault(o => o.Id == h.status).Desc,
-                            po_date = h.po_date,
-                            due_date = h.due_date,
-                            supplier_id = h.supplier_id,
-                            supplier_name = DealerPurchase.dealer.FirstOrDefault(o => o.Id == h.supplier_id).Desc,
-                            remark = h.remark,
+        //                select new PurchaseListDetailRes
+        //                {
+        //                    po_id = h.po_id,
+        //                    po_no = h.po_no,
+        //                    status = h.status,
+        //                    status_desc = StatusPurchase.status.FirstOrDefault(o => o.Id == h.status).Desc,
+        //                    po_date = h.po_date,
+        //                    due_date = h.due_date,
+        //                    supplier_id = h.supplier_id,
+        //                    supplier_name = DealerPurchase.dealer.FirstOrDefault(o => o.Id == h.supplier_id).Desc,
+        //                    remark = h.remark,
 
-                            cash_flag = h.cash_flag,
-                            cash_price = h.cash_price,
-                            cheque_flag = h.cheque_flag,
-                            cheque_bank_id = h.cheque_bank_id,
-                            cheque_branch = h.cheque_branch,
-                            cheque_no = h.cheque_no,
-                            cheque_date = h.cheque_date,
-                            cheque_price = h.cheque_price,
-                            total_price = h.total_price,
-                            vat_flag = h.vat_flag,
-                            total_vat_price = h.total_vat_price,
-                            total_net_price = h.total_net_price,
+        //                    cash_flag = h.cash_flag,
+        //                    cash_price = h.cash_price,
+        //                    cheque_flag = h.cheque_flag,
+        //                    cheque_bank_id = h.cheque_bank_id,
+        //                    cheque_branch = h.cheque_branch,
+        //                    cheque_no = h.cheque_no,
+        //                    cheque_date = h.cheque_date,
+        //                    cheque_price = h.cheque_price,
+        //                    total_price = h.total_price,
+        //                    vat_flag = h.vat_flag,
+        //                    total_vat_price = h.total_vat_price,
+        //                    total_net_price = h.total_net_price,
 
-                            create_id = h.create_id,
-                            create_name = cre.FullName,
-                            create_date = h.create_date,
-                            update_id = h.update_id,
-                            update_name = upd.FullName,
-                            update_date = h.update_date,
+        //                    create_id = h.create_id,
+        //                    create_name = cre.FullName,
+        //                    create_date = h.create_date,
+        //                    update_id = h.update_id,
+        //                    update_name = upd.FullName,
+        //                    update_date = h.update_date,
 
-                            detail = detail_list.ToList()
+        //                    detail = detail_list.ToList()
 
-                        }).OrderByDescending(x => x.po_id).AsNoTracking();
+        //                }).OrderByDescending(x => x.po_id).AsNoTracking();
 
-            return Ok(list.SingleOrDefault());
-        }
+        //    return Ok(list.SingleOrDefault());
+        //}
 
         [HttpGet("receive_list")]
         public IActionResult receive_list()
