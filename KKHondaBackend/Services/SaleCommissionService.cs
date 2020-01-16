@@ -8,7 +8,7 @@ namespace KKHondaBackend.Services
 {
   public interface ISaleCommissionService
   {
-    SaleCommission SetSaleCommission(SaleFormBody reserve, MCustomer cHire);
+    SaleCommission SetSaleCommission(decimal comPrice, MCustomer cHire);
   }
 
   public class SaleCommissionService : ISaleCommissionService
@@ -21,25 +21,22 @@ namespace KKHondaBackend.Services
       _context = context;
     }
 
-    public SaleCommission SetSaleCommission(SaleFormBody reserve, MCustomer cHire)
+    public SaleCommission SetSaleCommission(decimal comPrice, MCustomer cHire)
     {
+      // ข้อมูลในใบส่งเสริมการขายชื่อลูกค้าเป็น บริษัทไฟแนนซ์
       var cAddress = cHire.MCustomerAddress.FirstOrDefault();
       var amphor = _context.MAmphor.Where(x => x.AmphorCode == cAddress.AmphorCode).AsNoTracking().FirstOrDefault();
       var province = _context.MProvince.Where(x => x.ProvinceCode == cAddress.ProvinceCode).AsNoTracking().FirstOrDefault();
       var saleCom = new SaleCommission
       {
-        // ComNo = iSysParamService.GenerateTaxInvNo(branchId),
         ComDate = DateTime.Now,
-        ComPrice = (decimal)reserve.ComPrice,
+        ComPrice = comPrice,
         Status = true,
         CustomerCode = cHire.CustomerCode,
         CustomerFullName = $"{cHire.CustomerPrename}{cHire.CustomerName} {cHire.CustomerSurname}",
         CustomerFullAddress = $"{cAddress.Address} อำเภอ{amphor.AmphorName} จังหวัด{province.ProvinceNameTh} {amphor.Zipcode}",
-        BranchTax = reserve.BranchTax,
-        Branch = reserve.Branch,
-        FiId = (int)reserve.FiId,
-        FiintId = (int)reserve.FiintId,
-        FiComId = (int)reserve.FiComId,
+        BranchTax = cHire.IdCard,
+        Branch = $"{cHire.CustomerPrename}{cHire.CustomerName} {cHire.CustomerSurname}"
       };
       return saleCom;
     }

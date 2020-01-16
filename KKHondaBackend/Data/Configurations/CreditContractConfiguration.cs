@@ -50,7 +50,7 @@ namespace KKHondaBackend.Data.Configurations
       entity.Property(e => e.UpdateBy).HasColumnName("update_by");
       entity.Property(e => e.UpdateDate).HasColumnName("update_date").HasColumnType("datetime");
       entity.Property(e => e.EndContractDate).HasColumnName("end_contract_date").HasColumnType("datetime");
-      entity.Property(e => e.FinnanceCode).HasColumnName("finance_code").HasMaxLength(50);
+      entity.Property(e => e.FinanceCode).HasColumnName("finance_code").HasMaxLength(50);
     }
   }
 }

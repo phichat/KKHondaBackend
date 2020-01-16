@@ -21,11 +21,11 @@ namespace KKHondaBackend.Data.Configurations
       entity.Property(e => e.Payeer).HasColumnName("payeer").IsRequired();
       entity.Property(e => e.PaymentType).HasColumnName("payment_type").IsRequired();
       entity.Property(e => e.DocumentRef).HasColumnName("document_ref").HasMaxLength(100);
-      entity.Property(e => e.OutstandingBalance).HasColumnName("outstanding_balance").HasColumnType("decimal(18, 2)").IsRequired().HasDefaultValueSql("0");
-      entity.Property(e => e.CutBalance).HasColumnName("cut_balance").IsRequired().HasColumnType("decimal(18, 2)").HasDefaultValueSql("0");
-      entity.Property(e => e.DiscountInterest).HasColumnName("discount_interest").HasColumnType("decimal(18, 2)").IsRequired().HasDefaultValueSql("0");
-      entity.Property(e => e.PaymentPrice).HasColumnName("payment_price").HasColumnType("decimal(18, 2)").IsRequired().HasDefaultValueSql("0");
-      entity.Property(e => e.DiscountPrice).HasColumnName("discount_price").HasColumnType("decimal(18, 2)").IsRequired().HasDefaultValue(0);
+      entity.Property(e => e.OutstandingBalance).HasColumnName("outstanding_balance").HasColumnType("decimal(18, 2)").IsRequired();
+      entity.Property(e => e.CutBalance).HasColumnName("cut_balance").IsRequired().HasColumnType("decimal(18, 2)");
+      entity.Property(e => e.DiscountInterest).HasColumnName("discount_interest").HasColumnType("decimal(18, 2)").IsRequired();
+      entity.Property(e => e.PaymentPrice).HasColumnName("payment_price").HasColumnType("decimal(18, 2)").IsRequired();
+      entity.Property(e => e.DiscountPrice).HasColumnName("discount_price").HasColumnType("decimal(18, 2)").IsRequired();
       entity.Property(e => e.TotalPaymentPrice).HasColumnName("total_payment_price").HasColumnType("decimal(18, 2)").IsRequired();
       entity.Property(e => e.PaymentDate).HasColumnName("payment_date").IsRequired().HasColumnType("date");
       entity.Property(e => e.BranchId).HasColumnName("branch_id").IsRequired();

@@ -22,7 +22,6 @@ namespace KKHondaBackend.Controllers.Credits
     private readonly ISysParameterService iSysParamService;
     private readonly ICustomerServices iCustomerService;
     private readonly IReserveReturnService iReserveReturn;
-    private readonly ISaleCommissionService iSaleCommission;
     private readonly ISaleInvTaxRecService iSaleInvTaxRec;
     private readonly ISaleReceiptService iSaleReceipt;
 
@@ -32,7 +31,6 @@ namespace KKHondaBackend.Controllers.Credits
         ISysParameterService isysParamService,
         ICustomerServices icustService,
         IReserveReturnService _iReserveReturn,
-        ISaleCommissionService _iSaleCommission,
         ISaleInvTaxRecService _iSaleInvTaxRec,
         ISaleReceiptService _iSaleReceipt
     )
@@ -42,7 +40,6 @@ namespace KKHondaBackend.Controllers.Credits
       iSysParamService = isysParamService;
       iCustomerService = icustService;
       iReserveReturn = _iReserveReturn;
-      iSaleCommission = _iSaleCommission;
       iSaleInvTaxRec = _iSaleInvTaxRec;
       iSaleReceipt = _iSaleReceipt;
     }
@@ -325,16 +322,16 @@ namespace KKHondaBackend.Controllers.Credits
             _context.SaveChanges();
           }
 
-          if (reserve.ComPrice > 0)
-          {
-            // ใบเสร็จค่าคอมมิชั่น
-            var saleCom = iSaleCommission.SetSaleCommission(reserve, cHire);
-            saleCom.ComNo = iSysParamService.GenerateTaxInvNo((int)contract.BranchId);
-            calculate.ComNo = saleCom.ComNo;
-            calculate.ComStatus = saleCom.Status;
-            _context.SaleCommission.Add(saleCom);
-            _context.SaveChanges();
-          }
+          // if (reserve.ComPrice > 0)
+          // {
+          //   // ใบเสร็จค่าคอมมิชั่น
+          //   var saleCom = iSaleCommission.SetSaleCommission(reserve, cHire);
+          //   saleCom.ComNo = iSysParamService.GenerateTaxInvNo((int)contract.BranchId);
+          //   calculate.ComNo = saleCom.ComNo;
+          //   calculate.ComStatus = saleCom.Status;
+          //   _context.SaleCommission.Add(saleCom);
+          //   _context.SaveChanges();
+          // }
 
           // ใบส่งของ/ใบกำกับภาษี/ใบเสร็จรับเงิน
           var invTaxRec = iSaleInvTaxRec.SetSaleInvTaxRec(reserve.BranchTax, reserve.Branch, cHire);

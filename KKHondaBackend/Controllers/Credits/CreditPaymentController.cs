@@ -18,6 +18,7 @@ namespace KKHondaBackend.Controllers.Credits
   {
     private readonly dbwebContext ctx;
     private readonly ISysParameterService iSysParamService;
+    private readonly ISaleCommissionService iSaleCommission;
     private readonly IStatusService iStatusService;
     private readonly IBankingService iBankingService;
     private readonly ICustomerServices iCustomerService;
@@ -31,7 +32,8 @@ namespace KKHondaBackend.Controllers.Credits
         IBankingService ibankingService,
         ICustomerServices icustService,
         ISaleReceiptService _iSaleReceipt,
-        ISaleTaxService _iSaleTax
+        ISaleTaxService _iSaleTax,
+        ISaleCommissionService _iSaleCommission
     )
     {
       ctx = _ctx;
@@ -41,6 +43,7 @@ namespace KKHondaBackend.Controllers.Credits
       iCustomerService = icustService;
       iSaleReceipt = _iSaleReceipt;
       iSaleTax = _iSaleTax;
+      iSaleCommission = _iSaleCommission;
     }
 
     // GET: api/CreditPayment/5
@@ -302,7 +305,6 @@ namespace KKHondaBackend.Controllers.Credits
 
           _contractItem.ForEach(Item =>
            {
-             if (totalPaymentPrice <= 0) return;
 
              var CreditTransDT = new CreditTransactionD
              {
@@ -350,6 +352,19 @@ namespace KKHondaBackend.Controllers.Credits
                  Item.ComPriceRemain -= com;
                  totalPaymentPrice -= com;
                  CreditTransDT.ComPrice = com;
+
+                 // ใบเสร็จค่าส่งเสริมการขาย
+                 var cc = ctx.CreditContract
+                 .Where(_cc => _cc.ContractId == payment.ContractId)
+                 .FirstOrDefault();
+
+                 var finanace = iCustomerService.GetCustomerByCode(cc.FinanceCode).Result;
+                 var saleCom = iSaleCommission.SetSaleCommission(com, finanace);
+                 saleCom.ComNo = iSysParamService.GenerateTaxInvNo((int)contract.BranchId);
+                 calculate.ComNo = saleCom.ComNo;
+                 calculate.ComStatus = saleCom.Status;
+                 ctx.SaleCommission.Add(saleCom);
+                 ctx.SaveChanges();
                }
                // ตัดยอดชำระค่างวด
                if (Item.PayNetPrice > oldTrans.PayNetPrice && totalPaymentPrice > 0)

@@ -53,12 +53,12 @@ namespace KKHondaBackend.Data.Configurations
       entity.Property(e => e.GoodsPrice).HasColumnName("goods_price").HasColumnType("decimal(18,4)");
       entity.Property(e => e.GoodsPriceRemain).HasColumnName("goods_price_remain").HasColumnType("decimal(18,4)");
       entity.Property(e => e.InstalmentPrice).HasColumnName("instalment_price").HasColumnType("decimal(18,4)");
-      entity.Property(e => e.DelayDueDate).HasColumnName("delay_due_date").IsRequired().HasDefaultValue(0);
+      entity.Property(e => e.DelayDueDate).HasColumnName("delay_due_date").IsRequired();
       entity.Property(e => e.CheckDueDate).HasColumnName("check_due_date").HasColumnType("datetime");
       entity.Property(e => e.ComPrice).HasColumnName("com_price").HasColumnType("decimal(18, 4)").HasDefaultValueSql("0");
       entity.Property(e => e.ComPriceRemain).HasColumnName("com_price_remain").HasColumnType("decimal(18, 4)").HasDefaultValueSql("0");
-      entity.Property(e => e.FineSum).HasColumnName("fine_sum").HasColumnType("decimal(18,4)").IsRequired().HasDefaultValueSql("0");
-      entity.Property(e => e.FineSumRemain).HasColumnName("fine_sum_remain").HasColumnType("decimal(18,4)").IsRequired().HasDefaultValueSql("0");
+      entity.Property(e => e.FineSum).HasColumnName("fine_sum").HasColumnType("decimal(18,4)").IsRequired();
+      entity.Property(e => e.FineSumRemain).HasColumnName("fine_sum_remain").HasColumnType("decimal(18,4)").IsRequired();
       entity.Property(e => e.FineSumStatus).HasColumnName("fine_sum_status");
       entity.Property(e => e.FineSumOther).HasColumnName("fine_sum_other").HasColumnType("decimal(18,4)");
       entity.Property(e => e.Remark).HasColumnName("remark");

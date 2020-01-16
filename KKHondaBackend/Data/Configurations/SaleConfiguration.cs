@@ -43,14 +43,14 @@ namespace KKHondaBackend.Data.Configurations
       entity.Property(e => e.SellNo).HasColumnName("sell_no").HasMaxLength(50);
       entity.Property(e => e.ReturnDepositNo).HasColumnName("return_deposit_no").HasMaxLength(50);
       entity.Property(e => e.InvTaxRecNo).HasColumnName("inv_tax_rec_no").HasMaxLength(50);
-      entity.Property(e => e.ReceiptNo).HasColumnName("receipt_no").HasMaxLength(50);
       entity.Property(e => e.ComNo).HasColumnName("com_no").HasMaxLength(50);
       entity.Property(e => e.SellStatus).HasColumnName("sell_status").HasColumnType("bit");
       entity.Property(e => e.ReturnDepositStatus).HasColumnName("return_deposit_status").HasColumnType("bit");
       entity.Property(e => e.InvTaxRecStatus).HasColumnName("inv_tax_rec_status").HasColumnType("bit");
-      entity.Property(e => e.ReceiptStatus).HasColumnName("receipt_status").HasColumnType("bit");
       entity.Property(e => e.ComStatus).HasColumnName("com_status").HasColumnType("bit");
       entity.Property(e => e.ApproveId).HasColumnName("approve_id");
+      // entity.Property(e => e.ReceiptNo).HasColumnName("receipt_no").HasMaxLength(50);
+      // entity.Property(e => e.ReceiptStatus).HasColumnName("receipt_status").HasColumnType("bit");
       // entity.Property(e => e.PaymentType).HasColumnName("payment_type");
       // entity.Property(e => e.PaymentPrice).HasColumnName("payment_price").IsRequired().HasDefaultValueSql("0");
       // entity.Property(e => e.Discount).HasColumnName("discount").HasDefaultValueSql("0");

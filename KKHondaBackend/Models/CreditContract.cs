@@ -43,7 +43,7 @@ namespace KKHondaBackend.Models
     public DateTime CreateDate { get; set; }
     public int? UpdateBy { get; set; }
     public DateTime? UpdateDate { get; set; }
-    public string FinnanceCode { get; set; }
+    public string FinanceCode { get; set; }
     public DateTime? EndContractDate { get; set; }
 
   }
