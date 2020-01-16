@@ -36,12 +36,10 @@ namespace KKHondaBackend.Models
     public string SellNo { get; set; }
     public string ReturnDepositNo { get; set; }
     public string InvTaxRecNo { get; set; }
-    public string ReceiptNo { get; set; }
     public string ComNo { get; set; }
     public bool? SellStatus { get; set; }
     public bool? ReturnDepositStatus { get; set; }
     public bool? InvTaxRecStatus { get; set; }
-    public bool? ReceiptStatus { get; set; }
     public bool? ComStatus { get; set; }
     public int? ApproveId { get; set; }
 

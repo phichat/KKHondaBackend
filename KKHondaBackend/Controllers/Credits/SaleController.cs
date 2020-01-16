@@ -198,22 +198,6 @@ namespace KKHondaBackend.Controllers.Credits
     }
 
     [HttpPost("[Action]")]
-    public IActionResult CancelReceipt([FromBody] CancelSlip form)
-    {
-      var slip = _context.SaleReceipt.Where(x => x.ReceiptNo == form.SlipNo).Single();
-      slip.Status = false;
-      slip.ApproveId = form.ApproveId;
-      slip.Reason = form.Reason;
-
-      var sale = _context.Sale.Where(x => x.ReceiptNo == form.SlipNo).Single();
-      sale.ReceiptStatus = slip.Status;
-
-      _context.SaveChanges();
-
-      return NoContent();
-    }
-
-    [HttpPost("[Action]")]
     public IActionResult CancelSale([FromBody] CancelSlip form)
     {
       var slip = _context.Sale.Where(x => x.SellNo == form.SlipNo).Single();
@@ -344,22 +328,6 @@ namespace KKHondaBackend.Controllers.Credits
           switch (booking.BookingPaymentType)
           {
             case BookingPaymentType.Cash:
-              //   // ใบเสร็จรับเงิน
-              //   var receipt = iSaleReceipt.SetSaleReceipt(reserve.BranchTax, reserve.Branch, cHire);
-              //   receipt.ReceiptNo = iSysParamService.GenerateReceiptNo((int)contract.BranchId);
-              //   calculate.ReceiptNo = receipt.ReceiptNo;
-              //   calculate.ReceiptStatus = receipt.Status;
-              //   calculate.PaymentType = reserve.PaymentType;
-              //   calculate.PaymentPrice = reserve.PaymentPrice;
-              //   calculate.Discount = reserve.Discount;
-              //   calculate.TotalPaymentPrice = reserve.TotalPaymentPrice;
-              //   calculate.PaymentDate = reserve.PaymentDate;
-              //   calculate.AccBankId = reserve.AccBankId;
-              //   calculate.DocumentRef = reserve.DocumentRef;
-              //   calculate.TotalRemain = reserve.TotalRemain;
-              //   // calculate
-              //   _context.SaleReceipt.Add(receipt);
-              //   _context.SaveChanges();
               // ยังไม่ชำระ
               contract.ContractStatus = 13;
               break;
