@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace KKHondaBackend.Controllers.Credits
 {
+    [Produces("application/json")]
     [Route("api/Credit/Contract")]
     public class CreditContractController : Controller
     {
@@ -172,9 +173,9 @@ namespace KKHondaBackend.Controllers.Credits
 
         }
 
-        // // GET api/values/5
+        // GET api/values/5
         [HttpGet("GetById")]
-        public IActionResult Get(int id)
+        public async Task<IActionResult> Get(int id)
         {
             try
             {
@@ -218,33 +219,33 @@ namespace KKHondaBackend.Controllers.Credits
 
                 var userDropdown = iUserService.GetDropdowns();
 
-                var customerDropdown = iCustService.GetDropdowns();
+                var customerDropdown = await iCustService.GetDropdowns();
 
                 var contractMateDropdown = customerDropdown;
                 if (cont.ContractMate != null)
                 {
-                    var mateDd = iCustService.GetDropdownByKey(cont.ContractMate);
+                    var mateDd = await iCustService.GetDropdownByKey(cont.ContractMate);
                     contractMateDropdown = contractMateDropdown.Concat(mateDd).ToArray();
                 }
 
                 var contractHireDropdown = customerDropdown;
                 if (cont.ContractHire != null)
                 {
-                    var userDd = iCustService.GetDropdownByKey(cont.ContractHire);
+                    var userDd = await iCustService.GetDropdownByKey(cont.ContractHire);
                     contractHireDropdown = contractHireDropdown.Concat(userDd).ToArray();
                 }
 
                 var contractGurantor1Dropdown = customerDropdown;
                 if (cont.ContractGurantor1 != null)
                 {
-                    var gurantorDd = iCustService.GetDropdownByKey(cont.ContractGurantor1);
+                    var gurantorDd = await iCustService.GetDropdownByKey(cont.ContractGurantor1);
                     contractGurantor1Dropdown = contractGurantor1Dropdown.Concat(gurantorDd).ToArray();
                 }
 
                 var contractGurantor2Dropdown = customerDropdown;
                 if (cont.ContractGurantor2 != null)
                 {
-                    var gurantorDd = iCustService.GetDropdownByKey(cont.ContractGurantor2);
+                    var gurantorDd = await iCustService.GetDropdownByKey(cont.ContractGurantor2);
                     contractGurantor2Dropdown = contractGurantor2Dropdown.Concat(gurantorDd).ToArray();
                 }
 
@@ -366,10 +367,10 @@ namespace KKHondaBackend.Controllers.Credits
                                   GurantorRelation1 = relation1.RelationDesc,
                                   ContractGurantor2 = $"{gurantor2.CustomerPrename}{gurantor2.CustomerName} {gurantor2.CustomerSurname}",
                                   GurantorRelation2 = relation2.RelationDesc,
-                                  CreatedBy = created.Fullname,
-                                  CheckedBy = checkedBy.Fullname,
-                                  ApprovedBy = approve.Fullname,
-                                  KeeperBy = keeper.Fullname,
+                                  CreatedBy = created.FullName,
+                                  CheckedBy = checkedBy.FullName,
+                                  ApprovedBy = approve.FullName,
+                                  KeeperBy = keeper.FullName,
                                   StatusDesc = status.StatusDesc,
                                   Remark = db.Remark
 
@@ -564,8 +565,8 @@ namespace KKHondaBackend.Controllers.Credits
                     Models.Booking booking = new Models.Booking();
                     booking = ctx.Booking.SingleOrDefault(b => b.BookingId == creditContract.BookingId);
 
-                    // ค้นหาชื่อเช่าซื้อด้วยรหัส
-                    var customer = iCustService.GetCustomerByCode(creditContract.ContractHire);
+                    // // ค้นหาชื่อเช่าซื้อด้วยรหัส
+                    // var customer = iCustService.GetCustomerByCode(creditContract.ContractHire);
 
                     if (booking.SellDate == null)
                         booking.SellDate = DateTime.Now;

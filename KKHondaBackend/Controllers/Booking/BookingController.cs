@@ -10,6 +10,7 @@ using KKHondaBackend.Services;
 
 namespace KKHondaBackend.Controllers.Booking
 {
+    [Produces("application/json")]
     [Route("api/Booking")] 
     public class BookingController : Controller
     {
@@ -51,7 +52,7 @@ namespace KKHondaBackend.Controllers.Booking
                                 ContractDate = db.ContractDate,
                                 //StatusDesc = status.StatusDesc,
                                 //ContractHire = contrachHire.CustomerPrename + contrachHire.CustomerName + " " + contrachHire.CustomerSurname,
-                                //SaleName = sale.Fullname,
+                                //SaleName = sale.FullName,
                                 Remark = db.Remark
                             }).ToList();
 
@@ -169,7 +170,7 @@ namespace KKHondaBackend.Controllers.Booking
                             select new
                             {
                                 Value = db.Id,
-                                Text = db.Fullname
+                                Text = db.FullName
                             }).ToList();
 
             return Ok(sellName);

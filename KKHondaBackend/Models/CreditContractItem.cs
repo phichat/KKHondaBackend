@@ -22,6 +22,7 @@ namespace KKHondaBackend.Models
         public int? Payeer { get; set; }
         public string BankCode { get; set; }
         public int? PaymentType { get; set; }
+        public string PaymentName {get;set;}
         public decimal? DiscountRate { get; set; }
         public decimal? DiscountPrice { get; set; }
         public int? UseDiscount { get; set; }
@@ -47,7 +48,7 @@ namespace KKHondaBackend.Models
         public int? DelayDueDate { get; set; }
         public DateTime? CheckDueDate { get; set; }
         public int CreateBy { get; set; }
-        public DateTime CreateDate { get; set; }
+        public DateTime? CreateDate { get; set; }
         public int? UpdateBy { get; set; }
         public DateTime? UpdateDate { get; set; }
         public string Remark { get; set; }
@@ -60,6 +61,7 @@ namespace KKHondaBackend.Models
         public decimal? PrincipalRemain {get; set;}
         public decimal? InterestPrincipalRemain {get; set;}
         public decimal? DiscountInterest {get; set;} 
+        public decimal? RevenueStamp {get;set;}
     }
 
     public partial class CreditContractItemNew {
