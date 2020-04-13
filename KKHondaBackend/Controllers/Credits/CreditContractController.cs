@@ -476,8 +476,6 @@ namespace KKHondaBackend.Controllers.Credits
                     return StatusCode(500, ex.Message);
                 }
             }
-
-
         }
 
         public class Contract
